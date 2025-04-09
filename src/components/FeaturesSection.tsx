@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Map, 
   FileCheck, 
-  Barrier, 
+  CircuitBoard, 
   LineChart
 } from 'lucide-react';
 
@@ -38,7 +38,7 @@ const FeaturesSection = () => {
     },
     {
       id: "grid",
-      icon: <Barrier className="h-5 w-5" />,
+      icon: <CircuitBoard className="h-5 w-5" />,
       label: "Grid Insights",
       title: "Grid Insights",
       description: "Real-time analysis of local grid constraints and connection opportunities.",
