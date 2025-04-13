@@ -64,13 +64,20 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
         australis: {
-          blue: '#1E3A8A',
-          green: '#065F46',
-          teal: '#0D9488',
-          lightBlue: '#38BDF8',
-          lightGreen: '#6EE7B7',
-          background: '#F8FAFC',
-          gray: '#64748B'
+          blue: '#1E3A8A', // Keeping original blue
+          green: '#065F46', // Keeping original green
+          teal: '#0D9488', // Keeping original teal
+          lightBlue: '#38BDF8', // Keeping original lightBlue
+          lightGreen: '#6EE7B7', // Keeping original lightGreen
+          background: '#F8FAFC', // Keeping original background
+          gray: '#64748B', // Keeping original gray
+          navy: '#3a3d5d', // New color from user's request
+          aqua: '#3bf5b7', // New color from user's request
+          indigo: '#6062ff', // New color from user's request
+          darkBlue: '#002060', // New color from user's request
+          offWhite: '#ebfef8', // New color from user's request
+          lightGray: '#f0f0f4', // New color from user's request
+          black: '#000000', // New color from user's request
         }
 			},
 			borderRadius: {
@@ -94,13 +101,23 @@ export default {
         'pulse-slow': {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.8' }
+        },
+        'typewriter': {
+          '0%': { width: '0' },
+          '100%': { width: '100%' }
+        },
+        'blink-caret': {
+          '0%, 100%': { borderColor: 'transparent' },
+          '50%': { borderColor: '#3bf5b7' }
         }
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in': 'fade-in 0.6s ease-out',
-        'pulse-slow': 'pulse-slow 3s infinite'
+        'pulse-slow': 'pulse-slow 3s infinite',
+        'typewriter': 'typewriter 4s steps(44) 1s forwards',
+        'blink-caret': 'blink-caret .75s step-end infinite'
 			}
 		}
 	},

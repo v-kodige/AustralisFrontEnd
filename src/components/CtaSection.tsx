@@ -4,7 +4,7 @@ import NewsletterForm from './NewsletterForm';
 
 const CtaSection = () => {
   return (
-    <section className="py-20 bg-australis-blue text-white">
+    <section className="py-20 bg-australis-navy text-white">
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
@@ -18,13 +18,13 @@ const CtaSection = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-australis-blue"
+                className="border-white text-white hover:bg-white hover:text-australis-navy"
               >
                 Book a Demo
               </Button>
               <Button 
                 size="lg"
-                className="bg-white text-australis-blue hover:bg-white/90"
+                className="bg-australis-aqua text-australis-navy hover:bg-australis-aqua/90"
               >
                 Join the Waitlist
               </Button>
