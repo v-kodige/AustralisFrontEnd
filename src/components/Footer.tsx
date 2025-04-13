@@ -1,5 +1,5 @@
 
-import { Github, Linkedin, Twitter } from 'lucide-react';
+import { Twitter, Linkedin, Instagram, ExternalLink } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -14,14 +14,17 @@ const Footer = () => {
               Accelerating renewable energy development with AI-powered site selection tools.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-australis-blue">
+              <a href="#" className="text-gray-400 hover:text-australis-blue" aria-label="X (Twitter)">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-australis-blue">
+              <a href="#" className="text-gray-400 hover:text-australis-blue" aria-label="LinkedIn">
                 <Linkedin className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-australis-blue">
-                <Github className="h-5 w-5" />
+              <a href="#" className="text-gray-400 hover:text-australis-blue" aria-label="Instagram">
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-australis-blue" aria-label="Bluesky">
+                <ExternalLink className="h-5 w-5" />
               </a>
             </div>
           </div>
@@ -37,6 +40,9 @@ const Footer = () => {
               </li>
               <li>
                 <a href="#" className="text-gray-600 hover:text-australis-blue">Contact</a>
+              </li>
+              <li>
+                <a href="mailto:hello@australis.energy" className="text-gray-600 hover:text-australis-blue">hello@australis.energy</a>
               </li>
             </ul>
           </div>

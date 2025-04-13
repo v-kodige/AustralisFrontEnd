@@ -47,10 +47,10 @@ const BenefitsSection = () => {
           {benefits.map((benefit, index) => (
             <div 
               key={index} 
-              className={`flex flex-col items-center text-center p-6 rounded-xl border border-transparent hover:border-australis-aqua/20 hover:bg-white/80 transition-all ${inView ? 'animate-fade-in' : 'opacity-0'}`}
+              className={`flex flex-col items-center text-center p-6 rounded-xl backdrop-blur-sm bg-white/40 border border-white/30 hover:border-australis-aqua/20 hover:bg-white/60 transition-all shadow-sm ${inView ? 'animate-fade-in' : 'opacity-0'}`}
               style={{ animationDelay: `${index * 200}ms` }}
             >
-              <div className="p-4 bg-white rounded-full shadow-sm mb-6 border border-australis-offWhite">
+              <div className="p-4 bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-md rounded-full shadow-sm mb-6 border border-white/50">
                 {benefit.icon}
               </div>
               <h3 className="text-xl font-semibold mb-3 text-australis-navy">

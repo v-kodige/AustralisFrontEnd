@@ -13,7 +13,7 @@ const HeroSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="animate-fade-in">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-australis-navy">
-              Find the best solar sites.<br />
+              Find the best renewable energy sites.<br />
               <span className="bg-gradient-to-r from-australis-indigo to-australis-aqua bg-clip-text text-transparent">
                 In minutes, not months.
               </span>
@@ -40,7 +40,7 @@ const HeroSection = () => {
             </div>
           </div>
           <div className="relative animate-fade-in">
-            <div className="aspect-square md:aspect-[4/3] bg-gradient-to-br from-australis-navy/20 via-australis-indigo/20 to-australis-aqua/30 rounded-xl shadow-lg overflow-hidden">
+            <div className="aspect-square md:aspect-[4/3] bg-gradient-to-br from-australis-navy/20 via-australis-indigo/20 to-australis-aqua/30 rounded-xl shadow-lg overflow-hidden backdrop-blur-sm border border-white/20">
               <div className="absolute inset-0 flex items-center justify-center">
                 <p className="text-center text-australis-navy italic">
                   Interactive map visualization

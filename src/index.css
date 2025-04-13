@@ -67,4 +67,9 @@
   .text-gradient {
     @apply bg-gradient-to-r from-australis-blue to-australis-teal bg-clip-text text-transparent;
   }
+  
+  .glass-card {
+    @apply bg-white/50 backdrop-blur-sm border border-white/20 shadow-sm;
+  }
 }
+
