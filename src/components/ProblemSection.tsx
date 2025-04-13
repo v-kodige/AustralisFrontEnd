@@ -24,7 +24,7 @@ const ProblemSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-australis-lightGray">
+    <section className="py-16 bg-australis-lightGray" id="problem">
       <div className="container-custom">
         <div className="flex flex-col items-center justify-center gap-2 mb-10">
           <AlertCircle className="h-6 w-6 text-australis-aqua" />

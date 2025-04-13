@@ -29,6 +29,12 @@ const CtaSection = () => {
                 Join the Waitlist
               </Button>
             </div>
+            
+            <div className="mt-10 pt-6 border-t border-white/20">
+              <p className="text-white/70 text-sm">
+                Join the waitlist of top UK developers assessing 500+ sites for 2025 deployments.
+              </p>
+            </div>
           </div>
           
           <NewsletterForm />
