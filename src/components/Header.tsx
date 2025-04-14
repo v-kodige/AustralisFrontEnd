@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
@@ -9,8 +8,9 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-lg border-b border-gray-200/50">
       <div className="container-custom flex items-center justify-between h-16">
-        <div className="flex items-center">
-          <a href="#" className="text-xl font-bold text-australis-blue">
+        <div className="flex items-center gap-2">
+          <img src="/ae-logo.png" alt="AE Logo" className="h-8 w-auto" />
+          <a href="#" className="text-xl font-bold text-black">
             Australis
           </a>
         </div>

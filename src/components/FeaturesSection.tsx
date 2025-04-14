@@ -1,13 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Map, 
-  FileCheck, 
-  CircuitBoard, 
-  LineChart
-} from 'lucide-react';
+import { Map, FileCheck, CircuitBoard, LineChart } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
+import DevelopabilityRings from './DevelopabilityRings';
 
 const FeaturesSection = () => {
   const features = [
@@ -92,7 +87,7 @@ const FeaturesSection = () => {
         </div>
 
         <Tabs defaultValue={features[0].id} className="w-full" onValueChange={setActiveTab}>
-          <TabsList className={`grid grid-cols-2 md:grid-cols-4 gap-2 p-1 mb-8 bg-white rounded-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: '200ms' }}>
+          <TabsList className={`grid grid-cols-2 md:grid-cols-4 gap-2 p-1 mb-8 bg-white/50 backdrop-blur-sm rounded-lg border border-white/20 ${isVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: '200ms' }}>
             {features.map((feature) => (
               <TabsTrigger 
                 key={feature.id} 
@@ -112,7 +107,7 @@ const FeaturesSection = () => {
               className={`${activeTab === feature.id ? 'animate-fade-in' : 'opacity-0'}`}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-                <div>
+                <div className="glass-card p-8 rounded-xl">
                   <h3 className="text-2xl font-bold mb-4 text-australis-navy">
                     {feature.title}
                   </h3>
@@ -128,11 +123,18 @@ const FeaturesSection = () => {
                     ))}
                   </ul>
                 </div>
-                <div className={`${feature.image} rounded-xl h-64 md:h-80 shadow-md`}>
-                  <div className="h-full w-full flex items-center justify-center text-australis-navy">
-                    Feature visualization
+                
+                {feature.id === 'scoring' ? (
+                  <div className="glass-card p-8 rounded-xl">
+                    <DevelopabilityRings />
                   </div>
-                </div>
+                ) : (
+                  <div className={`${feature.image} glass-card rounded-xl h-64 md:h-80 p-8`}>
+                    <div className="h-full w-full flex items-center justify-center text-australis-navy">
+                      Feature visualization
+                    </div>
+                  </div>
+                )}
               </div>
             </TabsContent>
           ))}
