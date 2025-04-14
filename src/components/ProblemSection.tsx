@@ -1,3 +1,4 @@
+
 import { AlertCircle } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 const ProblemSection = () => {
@@ -29,7 +30,8 @@ const ProblemSection = () => {
         
         <div ref={sectionRef} className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
           {stats.map((stat, index) => <div key={index} className={`glass-card bg-white/30 backdrop-blur-sm p-8 rounded-xl shadow-sm border border-white/20 hover:shadow-md transition-shadow transform ${inView ? 'animate-fade-in' : 'opacity-0'}`} style={{
-          animationDelay: `${index * 200}ms`
+          animationDelay: `${index * 400}ms`, // Increased delay between cards
+          animationDuration: '1s' // Longer animation duration
         }}>
               <div className="text-3xl font-bold text-australis-indigo mb-4">
                 {stat.highlight}
