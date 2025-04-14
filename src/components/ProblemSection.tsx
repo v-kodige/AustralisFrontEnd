@@ -21,7 +21,7 @@ const ProblemSection = () => {
   return <section className="py-16 bg-australis-lightGray" id="problem">
       <div className="container-custom">
         <div className="flex flex-col items-center justify-center gap-2 mb-10 bg-transparent">
-          <AlertCircle className="h-6 w-6 text-australis-aqua" />
+          
           <h2 className="text-2xl font-bold text-transparent text-center">Focus on what works. Skip what doesn't.</h2>
           
           <p className="max-w-3xl mt-6 text-lg text-center font-bold text-australis-navy my-[23px] mx-0 md:text-3xl">Australis cuts through the noise to surface the sites that matter.</p>
