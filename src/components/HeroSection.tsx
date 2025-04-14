@@ -1,13 +1,10 @@
-
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PlayCircle } from 'lucide-react';
-
 const HeroSection = () => {
-  return (
-    <section className="pt-32 pb-20 bg-gradient-to-br from-australis-offWhite to-australis-lightGray relative overflow-hidden">
+  return <section className="pt-32 pb-20 bg-gradient-to-br from-australis-offWhite to-australis-lightGray relative overflow-hidden">
       {/* Aurora-style light effects */}
       <div className="absolute -top-20 -right-20 w-96 h-96 bg-australis-aqua/20 rounded-full blur-3xl animate-pulse-slow"></div>
-      <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-australis-indigo/20 rounded-full blur-3xl animate-pulse-slow"></div>
+      <div className="absolute -bottom-20 -left-20 w-96 h-96 rounded-full blur-3xl animate-pulse-slow bg-australis-indigo/[0.17]"></div>
       
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -20,12 +17,8 @@ const HeroSection = () => {
             </h1>
             
             <div className="relative max-w-xl mt-6 mb-8 overflow-hidden">
-              <p className="typewriter-text inline-block overflow-hidden whitespace-nowrap border-r-2 animate-typewriter animate-blink-caret text-lg md:text-xl text-australis-navy">
-                Focus on what works. Skip what doesn't.
-              </p>
-              <p className="text-lg md:text-xl text-gray-600 mt-4">
-                Australis cuts through the noise to surface the sites that matter.
-              </p>
+              <p className="typewriter-text inline-block overflow-hidden whitespace-nowrap border-r-2 animate-typewriter animate-blink-caret text-lg md:text-xl text-australis-navy">Focus on what works. Skip what doesn't. </p>
+              
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4">
@@ -52,8 +45,6 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default HeroSection;
