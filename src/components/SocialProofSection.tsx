@@ -7,7 +7,12 @@ import Autoplay from 'embla-carousel-autoplay';
 
 const SocialProofSection = () => {
   const [emblaRef] = useEmblaCarousel(
-    { loop: true, align: "center" },
+    { 
+      loop: true, 
+      align: "center",
+      dragFree: true,
+      speed: 5 // Slower movement
+    },
     [Autoplay({ delay: 3000, stopOnInteraction: false })]
   );
   
@@ -17,9 +22,9 @@ const SocialProofSection = () => {
   });
   
   const partners = [
-    { name: "Geovation", logo: "/lovable-uploads/6736aa2b-8316-409c-9cfc-e3b900d6114e.png" },
-    { name: "Ordnance Survey", logo: "/lovable-uploads/094aef44-10b7-4221-b997-f7e9dd76a058.png" },
-    { name: "Microsoft for Startups", logo: "/lovable-uploads/b10e0c68-8cdd-4bba-a90c-097ac5de8c4b.png" }
+    { name: "Geovation", logo: "/lovable-uploads/7bf2a95a-42ca-4004-aee8-ecd6db3aa1da.png" },
+    { name: "Ordnance Survey", logo: "/lovable-uploads/8624a46a-939e-4720-bb86-9838bd50d189.png" },
+    { name: "Microsoft for Startups", logo: "/lovable-uploads/5480d427-a1da-4dfb-8136-ce692da9901e.png" }
   ];
 
   return (
@@ -38,7 +43,7 @@ const SocialProofSection = () => {
                     <img 
                       src={partner.logo} 
                       alt={partner.name} 
-                      className="max-h-16 max-w-full object-contain" 
+                      className="max-h-16 max-w-full object-contain filter-none" 
                     />
                   </div>
                 </CarouselItem>
