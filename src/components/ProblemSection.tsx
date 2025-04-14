@@ -24,9 +24,7 @@ const ProblemSection = () => {
           <AlertCircle className="h-6 w-6 text-australis-aqua" />
           <h2 className="text-2xl font-bold text-transparent text-center">Focus on what works. Skip what doesn't.</h2>
           
-          <p className="max-w-3xl mx-auto mt-6 text-lg md:text-xl text-australis-navy text-center">
-            Our platform helps you concentrate efforts where they matter most, avoiding unnecessary noise.
-          </p>
+          <p className="max-w-3xl mt-6 text-lg text-center font-bold text-australis-navy my-[23px] mx-0 md:text-3xl">Australis cuts through the noise to surface the sites that matter.</p>
         </div>
         
         <div ref={sectionRef} className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
