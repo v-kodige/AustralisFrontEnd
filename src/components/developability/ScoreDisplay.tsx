@@ -15,7 +15,7 @@ const ScoreDisplay = ({ score }: ScoreDisplayProps) => {
       </div>
       
       <div className="text-sm text-gray-500">
-        These rings grow as the developability score increases
+        These rings represent the developability score components
       </div>
     </div>
   );

@@ -10,23 +10,41 @@ const DevelopabilityRings = () => {
   });
   
   const [showLegends, setShowLegends] = useState(false);
+  const [expandCard, setExpandCard] = useState(false);
   
   useEffect(() => {
     if (inView) {
-      const interval = setInterval(() => {
-        setScore((prev) => {
-          if (prev >= 88) {
-            clearInterval(interval);
-            setShowLegends(true);
-            return 88;
-          }
-          return prev + 1;
-        });
-      }, 20);
+      setIsVisible(true);
       
-      return () => clearInterval(interval);
+      if (score < 88) {
+        animationRef.current = setTimeout(() => {
+          setScore((prev) => Math.min(prev + 1, 88));
+        }, 20);
+      }
+      
+      return () => {
+        if (animationRef.current) {
+          clearTimeout(animationRef.current);
+        }
+      };
     }
-  }, [inView]);
+  }, [inView, score]);
+  
+  // Set up the animation sequence
+  useEffect(() => {
+    if (score >= 88) {
+      setTimeout(() => {
+        setExpandCard(true);
+        
+        setTimeout(() => {
+          setShowLegends(true);
+        }, 500); // Delay showing legends after card expansion
+      }, 300); // Small delay after score reaches 88
+    }
+  }, [score]);
+
+  const [isVisible, setIsVisible] = useState(false);
+  const animationRef = useRef(null);
 
   const legends = [
     { name: "Landscape", color: "bg-australis-aqua", score: 82 },
@@ -50,7 +68,6 @@ const DevelopabilityRings = () => {
               (score / 100) * legend.score,
               radius
             );
-            const delay = index * 0.2;
             
             return (
               <circle
@@ -63,7 +80,6 @@ const DevelopabilityRings = () => {
                 strokeWidth="6"
                 strokeDasharray={strokeDasharray}
                 className="transition-all duration-1000"
-                style={{ transitionDelay: `${delay}s` }}
               />
             );
           })}
@@ -80,19 +96,26 @@ const DevelopabilityRings = () => {
         </svg>
       </div>
       
-      {showLegends && (
-        <div className="mt-8 w-full space-y-3 animate-fade-in">
-          {legends.map((legend) => (
-            <div key={legend.name} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${legend.color}`}></div>
-                <span className="text-sm text-gray-600">{legend.name}</span>
-              </div>
-              <span className="font-medium">{legend.score}%</span>
+      <div 
+        className={`mt-8 w-full space-y-3 transition-all duration-500 ease-in-out overflow-hidden ${
+          expandCard ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        {legends.map((legend) => (
+          <div 
+            key={legend.name} 
+            className={`flex items-center justify-between transition-opacity duration-300 ${
+              showLegends ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <div className={`w-3 h-3 rounded-full ${legend.color}`}></div>
+              <span className="text-sm text-gray-600">{legend.name}</span>
             </div>
-          ))}
-        </div>
-      )}
+            <span className="font-medium">{legend.score}%</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

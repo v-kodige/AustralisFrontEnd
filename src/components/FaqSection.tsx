@@ -36,7 +36,7 @@ const FaqSection = () => {
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
           <p className="text-lg text-gray-600">
-            Have other questions? Contact us at <a href="mailto:hello@australis.tech" className="text-australis-blue hover:underline">hello@australis.tech</a>
+            Have other questions? Contact us at <a href="mailto:hello@australis.energy" className="text-australis-blue hover:underline">hello@australis.energy</a>
           </p>
         </div>
         

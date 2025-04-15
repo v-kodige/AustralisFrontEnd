@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -33,6 +36,12 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    /* Add variables for the australis colors */
+    --aqua: #3bf5b7;
+    --indigo: #6062ff;
+    --navy: #3a3d5d;
+    --blue: #1E3A8A;
   }
 }
 
@@ -43,10 +52,12 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Poppins', sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
+    font-family: 'Poppins', sans-serif;
   }
   
   section {
@@ -71,3 +82,22 @@
     @apply bg-white/50 backdrop-blur-sm border border-white/20 shadow-sm;
   }
 }
+
+/* Parallax scroll effect */
+.parallax {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.parallax-slow {
+  transform: translateZ(-10px) scale(2);
+}
+
+.parallax-medium {
+  transform: translateZ(-5px) scale(1.5);
+}
+
+.parallax-fast {
+  transform: translateZ(0);
+}
+

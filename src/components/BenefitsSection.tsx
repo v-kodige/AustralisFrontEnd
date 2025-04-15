@@ -1,5 +1,5 @@
 
-import { Clock, Shield, Zap, Database } from 'lucide-react';
+import { Clock, Shield, Zap } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 
 const BenefitsSection = () => {
@@ -23,11 +23,6 @@ const BenefitsSection = () => {
       icon: <Zap className="h-8 w-8 text-australis-indigo" />,
       title: "Optimised Solar Site Selection",
       description: "Developability Index Scoring ranks sites based on buildability, grid access, and environmental impact, reducing project risk and maximising success rates."
-    },
-    {
-      icon: <Database className="h-8 w-8 text-australis-aqua" />,
-      title: "Unique Innovation",
-      description: "We have developed a unique innovation combining Geospatial Analytics and Agentic AI to transform renewable energy development."
     }
   ];
 
@@ -40,15 +35,17 @@ const BenefitsSection = () => {
               Australis will reduce the time taken for early-stage site assessments by 95%
             </span>
           </h2>
+          <p className="text-gray-600 mt-4 mb-6 max-w-2xl mx-auto">
+            We have developed a unique innovation combining Geospatial Analytics and Agentic AI to transform renewable energy development.
+          </p>
           <div className="h-1 w-40 mx-auto bg-gradient-to-r from-australis-indigo to-australis-aqua rounded-full"></div>
         </div>
         
-        <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-16">
+        <div ref={ref} className={`grid grid-cols-1 md:grid-cols-3 gap-10 mt-16 ${inView ? 'animate-fade-in' : 'opacity-0'}`}>
           {benefits.map((benefit, index) => (
             <div 
               key={index} 
-              className={`flex flex-col items-center text-center p-6 rounded-xl backdrop-blur-sm bg-white/40 border border-white/30 hover:border-australis-aqua/20 hover:bg-white/60 transition-all shadow-sm ${inView ? 'animate-fade-in' : 'opacity-0'}`}
-              style={{ animationDelay: `${index * 200}ms` }}
+              className="flex flex-col items-center text-center p-6 rounded-xl backdrop-blur-sm bg-white/40 border border-white/30 hover:border-australis-aqua/20 hover:bg-white/60 transition-all shadow-sm"
             >
               <div className="p-4 bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-md rounded-full shadow-sm mb-6 border border-white/50">
                 {benefit.icon}
