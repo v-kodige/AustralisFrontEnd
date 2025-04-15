@@ -79,6 +79,7 @@ const DevelopabilityRings = () => {
                 stroke={`var(--${legend.color.split('-')[2]})`}
                 strokeWidth="6"
                 strokeDasharray={strokeDasharray}
+                strokeLinecap="round"
                 className="transition-all duration-1000"
               />
             );
@@ -104,7 +105,7 @@ const DevelopabilityRings = () => {
         {legends.map((legend) => (
           <div 
             key={legend.name} 
-            className={`flex items-center justify-between transition-opacity duration-300 ${
+            className={`flex items-center justify-between transition-opacity duration-300 p-3 rounded-lg hover:bg-white/50 ${
               showLegends ? 'opacity-100' : 'opacity-0'
             }`}
           >

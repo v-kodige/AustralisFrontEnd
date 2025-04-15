@@ -1,7 +1,27 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PlayCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
 const HeroSection = () => {
-  return <section className="pt-32 pb-20 bg-gradient-to-br from-australis-offWhite to-australis-lightGray relative overflow-hidden">
+  const [showSecondLine, setShowSecondLine] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSecondLine(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleEarlyAccess = () => {
+    const element = document.getElementById('expert-panel');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <section className="pt-32 pb-20 bg-gradient-to-br from-australis-offWhite to-australis-lightGray relative overflow-hidden">
       {/* Aurora-style light effects */}
       <div className="absolute -top-20 -right-20 w-96 h-96 bg-australis-aqua/20 rounded-full blur-3xl animate-pulse-slow"></div>
       <div className="absolute -bottom-20 -left-20 w-96 h-96 rounded-full blur-3xl animate-pulse-slow bg-australis-indigo/[0.17]"></div>
@@ -16,13 +36,21 @@ const HeroSection = () => {
               </span>
             </h1>
             
-            <div className="relative max-w-xl mt-6 mb-8 overflow-hidden">
-              <p className="typewriter-text inline-block overflow-hidden whitespace-nowrap border-r-2 animate-typewriter animate-blink-caret text-lg md:text-xl text-australis-navy">Focus on what works. Skip what doesn't. </p>
-              
+            <div className="space-y-2 mt-6 mb-8">
+              <p className="transition-opacity duration-500 text-lg md:text-xl text-australis-navy opacity-100">
+                Focus on what works.
+              </p>
+              <p className={`transition-opacity duration-500 text-lg md:text-xl text-australis-navy ${showSecondLine ? 'opacity-100' : 'opacity-0'}`}>
+                Skip what doesn't.
+              </p>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-australis-indigo hover:bg-australis-indigo/90">
+              <Button 
+                size="lg" 
+                className="bg-australis-indigo hover:bg-australis-indigo/90"
+                onClick={handleEarlyAccess}
+              >
                 Request Early Access
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -45,6 +73,8 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default HeroSection;

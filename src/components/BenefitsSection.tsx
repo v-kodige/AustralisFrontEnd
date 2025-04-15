@@ -21,7 +21,7 @@ const BenefitsSection = () => {
     },
     {
       icon: <Zap className="h-8 w-8 text-australis-indigo" />,
-      title: "Optimised Solar Site Selection",
+      title: "Optimised Site Selection",
       description: "Developability Index Scoring ranks sites based on buildability, grid access, and environmental impact, reducing project risk and maximising success rates."
     }
   ];
@@ -41,11 +41,11 @@ const BenefitsSection = () => {
           <div className="h-1 w-40 mx-auto bg-gradient-to-r from-australis-indigo to-australis-aqua rounded-full"></div>
         </div>
         
-        <div ref={ref} className={`grid grid-cols-1 md:grid-cols-3 gap-10 mt-16 ${inView ? 'animate-fade-in' : 'opacity-0'}`}>
+        <div ref={ref} className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-16 animate-fade-in">
           {benefits.map((benefit, index) => (
             <div 
               key={index} 
-              className="flex flex-col items-center text-center p-6 rounded-xl backdrop-blur-sm bg-white/40 border border-white/30 hover:border-australis-aqua/20 hover:bg-white/60 transition-all shadow-sm"
+              className="flex flex-col items-center text-center p-6 rounded-xl backdrop-blur-sm bg-white/40 border border-white/30 hover:border-australis-aqua/20 hover:bg-white/60 transition-all shadow-sm hover:shadow-lg transform hover:-translate-y-1"
             >
               <div className="p-4 bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-md rounded-full shadow-sm mb-6 border border-white/50">
                 {benefit.icon}
