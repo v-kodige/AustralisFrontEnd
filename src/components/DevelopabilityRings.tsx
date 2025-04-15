@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 const DevelopabilityRings = () => {
