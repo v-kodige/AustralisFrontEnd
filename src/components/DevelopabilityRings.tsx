@@ -29,11 +29,16 @@ const DevelopabilityRings = () => {
   }, [inView]);
 
   const legends = [
-    { name: "Landscape", color: "bg-australis-aqua", score: "82%" },
-    { name: "Environmental", color: "bg-australis-indigo", score: "76%" },
-    { name: "Planning", color: "bg-australis-navy", score: "68%" },
-    { name: "Other", color: "bg-australis-blue", score: "72%" }
+    { name: "Landscape", color: "bg-australis-aqua", score: 82 },
+    { name: "Environmental", color: "bg-australis-indigo", score: 76 },
+    { name: "Planning", color: "bg-australis-navy", score: 68 },
+    { name: "Other", color: "bg-australis-blue", score: 72 }
   ];
+
+  const calculateStrokeDasharray = (percentage: number, radius: number) => {
+    const circumference = 2 * Math.PI * radius;
+    return `${(percentage / 100) * circumference} ${circumference}`;
+  };
 
   return (
     <div ref={ref} className="flex flex-col items-center">
@@ -41,8 +46,10 @@ const DevelopabilityRings = () => {
         <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
           {legends.map((legend, index) => {
             const radius = 40 - (index * 8);
-            const circumference = 2 * Math.PI * radius;
-            const strokeDasharray = `${(score / 100) * circumference} ${circumference}`;
+            const strokeDasharray = calculateStrokeDasharray(
+              (score / 100) * legend.score,
+              radius
+            );
             const delay = index * 0.2;
             
             return (
@@ -81,7 +88,7 @@ const DevelopabilityRings = () => {
                 <div className={`w-3 h-3 rounded-full ${legend.color}`}></div>
                 <span className="text-sm text-gray-600">{legend.name}</span>
               </div>
-              <span className="font-medium">{legend.score}</span>
+              <span className="font-medium">{legend.score}%</span>
             </div>
           ))}
         </div>

@@ -1,4 +1,3 @@
-
 import { Twitter, Linkedin, Instagram, ExternalLink } from 'lucide-react';
 
 const Footer = () => {
@@ -42,7 +41,9 @@ const Footer = () => {
                 <a href="#" className="text-gray-600 hover:text-australis-blue">Contact</a>
               </li>
               <li>
-                <a href="mailto:hello@australis.energy" className="text-gray-600 hover:text-australis-blue">hello@australis.energy</a>
+                <a href="mailto:hello@australis.energy" className="text-gray-600 hover:text-australis-blue">
+                  hello@australis.energy
+                </a>
               </li>
             </ul>
           </div>

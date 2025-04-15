@@ -8,16 +8,16 @@ import DevelopabilityRings from './DevelopabilityRings';
 const FeaturesSection = () => {
   const features = [
     {
-      id: "design",
-      icon: <Map className="h-5 w-5" />,
-      label: "Design Engine",
-      title: "Design Engine",
-      description: "Analyses land features, buildability, and power capacity to assess early-stage site potential.",
-      image: "bg-gradient-to-br from-australis-navy/10 to-australis-indigo/10",
+      id: "scoring",
+      icon: <LineChart className="h-5 w-5" />,
+      label: "Developability Scoring",
+      title: "Developability Scoring",
+      description: "Aggregates constraints and opportunities to give you clear prioritisation.",
+      image: "bg-gradient-to-br from-australis-navy/10 to-australis-aqua/10",
       highlights: [
-        "Automated terrain analysis",
-        "Solar capacity calculation",
-        "Land suitability assessment"
+        "Weighted scoring algorithm",
+        "Comparative site ranking",
+        "Priority recommendations"
       ]
     },
     {
@@ -34,6 +34,19 @@ const FeaturesSection = () => {
       ]
     },
     {
+      id: "design",
+      icon: <Map className="h-5 w-5" />,
+      label: "Design Engine",
+      title: "Design Engine",
+      description: "Analyses land features, buildability, and power capacity to assess early-stage site potential.",
+      image: "bg-gradient-to-br from-australis-navy/10 to-australis-indigo/10",
+      highlights: [
+        "Automated terrain analysis",
+        "Solar capacity calculation",
+        "Land suitability assessment"
+      ]
+    },
+    {
       id: "grid",
       icon: <CircuitBoard className="h-5 w-5" />,
       label: "Grid Insights",
@@ -44,19 +57,6 @@ const FeaturesSection = () => {
         "Connection point identification",
         "Capacity analysis",
         "Distance calculation"
-      ]
-    },
-    {
-      id: "scoring",
-      icon: <LineChart className="h-5 w-5" />,
-      label: "Developability Scoring",
-      title: "Developability Scoring",
-      description: "Aggregates constraints and opportunities to give you clear prioritisation.",
-      image: "bg-gradient-to-br from-australis-navy/10 to-australis-aqua/10",
-      highlights: [
-        "Weighted scoring algorithm",
-        "Comparative site ranking",
-        "Priority recommendations"
       ]
     }
   ];

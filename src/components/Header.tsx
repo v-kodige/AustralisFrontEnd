@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
+
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return <header className="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-lg border-b border-gray-200/50">
@@ -20,8 +21,8 @@ const Header = () => {
           <a href="#features" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
             Features
           </a>
-          <a href="#demo" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
-            Demo
+          <a href="#blog" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
+            Blog
           </a>
           <a href="#faq" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
             FAQ
@@ -48,8 +49,8 @@ const Header = () => {
             <a href="#features" className="block text-gray-600 hover:text-australis-blue">
               Features
             </a>
-            <a href="#demo" className="block text-gray-600 hover:text-australis-blue">
-              Demo
+            <a href="#blog" className="block text-gray-600 hover:text-australis-blue">
+              Blog
             </a>
             <a href="#faq" className="block text-gray-600 hover:text-australis-blue">
               FAQ
@@ -61,4 +62,5 @@ const Header = () => {
         </div>}
     </header>;
 };
+
 export default Header;

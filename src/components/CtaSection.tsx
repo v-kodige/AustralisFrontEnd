@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import NewsletterForm from './NewsletterForm';
 
@@ -23,7 +22,7 @@ const CtaSection = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-australis-navy"
+                className="border-white text-australis-navy bg-white hover:bg-transparent hover:text-white"
               >
                 Book a Demo
               </Button>
