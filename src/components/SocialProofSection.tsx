@@ -11,7 +11,7 @@ const SocialProofSection = () => {
       loop: true, 
       align: "center",
       dragFree: true,
-      speed: 5 // Slower movement
+      duration: 50 // Controls the scroll animation speed (higher = slower)
     },
     [Autoplay({ delay: 3000, stopOnInteraction: false })]
   );
