@@ -1,16 +1,19 @@
+
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PlayCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const HeroSection = () => {
+  const [showFirstLine, setShowFirstLine] = useState(false);
   const [showSecondLine, setShowSecondLine] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSecondLine(true);
-    }, 1000);
+    const timer1 = setTimeout(() => {
+      setShowFirstLine(true);
+      setTimeout(() => setShowSecondLine(true), 1000);
+    }, 200);
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timer1);
   }, []);
 
   const handleEarlyAccess = () => {
@@ -37,7 +40,7 @@ const HeroSection = () => {
             </h1>
             
             <div className="space-y-2 mt-6 mb-8">
-              <p className="transition-opacity duration-500 text-lg md:text-xl text-australis-navy opacity-100">
+              <p className={`transition-opacity duration-500 text-lg md:text-xl text-australis-navy ${showFirstLine ? 'opacity-100' : 'opacity-0'}`}>
                 Focus on what works.
               </p>
               <p className={`transition-opacity duration-500 text-lg md:text-xl text-australis-navy ${showSecondLine ? 'opacity-100' : 'opacity-0'}`}>

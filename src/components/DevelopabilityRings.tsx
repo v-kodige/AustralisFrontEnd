@@ -8,20 +8,20 @@ const DevelopabilityRings = () => {
     triggerOnce: true,
     threshold: 0.2,
   });
-  
+
   const [showLegends, setShowLegends] = useState(false);
   const [expandCard, setExpandCard] = useState(false);
-  
+
   useEffect(() => {
     if (inView) {
       setIsVisible(true);
-      
+
       if (score < 88) {
         animationRef.current = setTimeout(() => {
           setScore((prev) => Math.min(prev + 1, 88));
         }, 20);
       }
-      
+
       return () => {
         if (animationRef.current) {
           clearTimeout(animationRef.current);
@@ -29,22 +29,21 @@ const DevelopabilityRings = () => {
       };
     }
   }, [inView, score]);
-  
-  // Set up the animation sequence
+
   useEffect(() => {
     if (score >= 88) {
       setTimeout(() => {
         setExpandCard(true);
-        
+
         setTimeout(() => {
           setShowLegends(true);
-        }, 500); // Delay showing legends after card expansion
-      }, 300); // Small delay after score reaches 88
+        }, 500);
+      }, 300);
     }
   }, [score]);
 
   const [isVisible, setIsVisible] = useState(false);
-  const animationRef = useRef(null);
+  const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const legends = [
     { name: "Landscape", color: "bg-australis-aqua", score: 82 },
@@ -59,61 +58,76 @@ const DevelopabilityRings = () => {
   };
 
   return (
-    <div ref={ref} className="flex flex-col items-center">
-      <div className="relative w-48 h-48">
-        <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-          {legends.map((legend, index) => {
-            const radius = 40 - (index * 8);
-            const strokeDasharray = calculateStrokeDasharray(
-              (score / 100) * legend.score,
-              radius
-            );
-            
-            return (
-              <circle
-                key={legend.name}
-                cx="50"
-                cy="50"
-                r={radius}
-                fill="none"
-                stroke={`var(--${legend.color.split('-')[2]})`}
-                strokeWidth="6"
-                strokeDasharray={strokeDasharray}
-                strokeLinecap="round"
-                className="transition-all duration-1000"
-              />
-            );
-          })}
-          <text
-            x="50"
-            y="50"
-            className="text-2xl font-bold"
-            textAnchor="middle"
-            dy=".3em"
-            transform="rotate(90 50 50)"
-          >
-            {score}
-          </text>
-        </svg>
+    <div ref={ref} className="flex flex-col items-center w-full">
+      <div className="relative w-full max-w-lg min-h-[420px] bg-white/60 backdrop-blur-lg border border-white/30 rounded-3xl shadow-lg flex flex-row items-center px-6 py-8 mb-6 transition-shadow hover:shadow-xl">
+        {/* Score number on the left */}
+        <div className="flex flex-col items-center justify-center min-w-[80px]">
+          <span className="text-5xl font-extrabold text-australis-navy drop-shadow-sm">{score}</span>
+          <span className="text-xs text-gray-500 mt-2">Score</span>
+        </div>
+        {/* Rings in the center */}
+        <div className="relative w-56 h-56 flex items-center justify-center mx-6">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+            {legends.map((legend, index) => {
+              const radius = 40 - (index * 8);
+              const strokeDasharray = calculateStrokeDasharray(
+                (score / 100) * legend.score,
+                radius
+              );
+
+              // Get color variable value or fallback
+              let colorHex = "#3bf5b7";
+              if (legend.color === "bg-australis-aqua") colorHex = "#3bf5b7";
+              if (legend.color === "bg-australis-indigo") colorHex = "#6062ff";
+              if (legend.color === "bg-australis-navy") colorHex = "#3a3d5d";
+              if (legend.color === "bg-australis-blue") colorHex = "#1E3A8A";
+
+              return (
+                <circle
+                  key={legend.name}
+                  cx="50"
+                  cy="50"
+                  r={radius}
+                  fill="none"
+                  stroke={colorHex}
+                  strokeWidth="6"
+                  strokeDasharray={strokeDasharray}
+                  strokeLinecap="round"
+                  className="transition-all duration-1000"
+                  style={{ filter: "drop-shadow(0 1px 6px rgba(0,0,0,0.04))" }}
+                />
+              );
+            })}
+          </svg>
+        </div>
+        {/* Empty space for flex balance */}
+        <div className="flex-1"></div>
       </div>
       
       <div 
-        className={`mt-8 w-full space-y-3 transition-all duration-500 ease-in-out overflow-hidden ${
-          expandCard ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
+        className={`mt-3 w-full max-w-lg space-y-3 transition-all duration-700 ease-in-out overflow-hidden ${
+          expandCard ? 'max-h-96 opacity-100 py-6' : 'max-h-0 opacity-0 py-0'
         }`}
+        style={{
+          background: 'rgba(255,255,255,0.55)',
+          borderRadius: '1.5rem',
+          boxShadow: '0 5px 32px rgba(0,0,0,0.05)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255,255,255,0.25)'
+        }}
       >
         {legends.map((legend) => (
           <div 
             key={legend.name} 
-            className={`flex items-center justify-between transition-opacity duration-300 p-3 rounded-lg hover:bg-white/50 ${
+            className={`flex items-center justify-between gap-4 transition-opacity duration-500 px-6 py-3 rounded-lg hover:bg-australis-aqua/20 ${
               showLegends ? 'opacity-100' : 'opacity-0'
             }`}
           >
             <div className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${legend.color}`}></div>
-              <span className="text-sm text-gray-600">{legend.name}</span>
+              <div className={`w-4 h-4 rounded-full ${legend.color} border border-white/80`}></div>
+              <span className="text-base text-australis-navy">{legend.name}</span>
             </div>
-            <span className="font-medium">{legend.score}%</span>
+            <span className="font-semibold text-lg">{legend.score}%</span>
           </div>
         ))}
       </div>
