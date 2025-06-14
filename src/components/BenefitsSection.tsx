@@ -1,4 +1,3 @@
-
 import { Clock, Shield, Zap } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 
@@ -28,44 +27,37 @@ const BenefitsSection = () => {
 
   return (
     <section id="benefits" className="py-24 bg-background relative overflow-hidden">
-      {/* Background tech elements */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-secondary rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute top-1/2 left-3/4 w-1 h-1 bg-primary rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
-      </div>
-      
+      {/* Remove techy background spots for ultra clean look */}
       <div className="container-custom relative">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-foreground leading-tight">
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-[#002060] leading-tight">
             Australis will reduce the time taken for 
             <span className="block text-gradient relative">
               early-stage site assessments by 95%
               <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 h-2 w-48 bg-gradient-to-r from-primary to-secondary rounded-full blur-sm"></div>
             </span>
           </h2>
-          
-          <div className="max-w-4xl mx-auto mt-8 p-6 bg-muted rounded-xl border border-primary/20">
-            <p className="text-lg font-medium text-gradient text-center">
-              We have developed a unique innovation combining Geospatial Analytics and Agentic AI
+          <div className="max-w-4xl mx-auto mt-8 p-6 bg-background rounded-xl border border-primary/20">
+            <p className="text-lg font-medium text-[#002060] text-center">
+              We have developed a unique innovation combining <span className="text-gradient">Geospatial Analytics</span> and <span className="text-gradient">Agentic AI</span>
             </p>
           </div>
         </div>
-        
         <div ref={ref} className={`grid grid-cols-1 md:grid-cols-3 gap-10 mt-16 ${inView ? 'animate-fade-in-up' : 'opacity-0'}`}>
           {benefits.map((benefit, index) => (
             <div 
               key={index} 
-              className="group flex flex-col items-center text-center p-8 rounded-xl bg-muted border border-border hover:border-primary/30 hover:glow-aqua transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-2"
+              className="group flex flex-col items-center text-center p-8 rounded-xl bg-card border border-border hover:border-primary/30 hover:glow-aqua transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-2"
               style={{animationDelay: `${index * 0.2}s`}}
             >
               <div className="p-4 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full shadow-sm mb-6 border border-primary/20 group-hover:glow-aqua transition-all duration-300">
+                {/* force icon color to accent, large */}
                 {benefit.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-foreground">
+              <h3 className="text-xl font-semibold mb-4 text-[#002060]">
                 {benefit.title}
               </h3>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-[#3a3d5d] leading-relaxed">
                 {benefit.description}
               </p>
             </div>
