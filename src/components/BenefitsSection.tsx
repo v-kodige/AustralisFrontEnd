@@ -45,8 +45,8 @@ const BenefitsSection = () => {
             </span>
           </h2>
           
-          <div className="max-w-4xl mx-auto mt-8 p-6 bg-muted-foreground rounded-xl border border-primary/20">
-            <p className="text-lg font-medium text-background text-center">
+          <div className="max-w-4xl mx-auto mt-8 p-6 bg-muted rounded-xl border border-primary/20">
+            <p className="text-lg font-medium text-gradient text-center">
               We have developed a unique innovation combining Geospatial Analytics and Agentic AI
             </p>
           </div>
