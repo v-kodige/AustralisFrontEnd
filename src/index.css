@@ -5,29 +5,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 
+COLOR REFERENCE - Light Theme Palette:
+- Background: #ebfef8 (very light mint)
+- Card Background: #f0f0f4 (light grey)
+- Headlines/Text: #002060 (very dark blue)
+- Secondary Text: #3a3d5d (slate blue)
+- Primary Accent: #3bf5b7 (turquoise)
+- Secondary Accent: #6062ff (electric blue)
+- Footer Background: #3a3d5d (dark slate blue)
+*/
+
 @layer base {
   :root {
-    --background: 235 254 248; /* #ebfef8 */
-    --foreground: 0 32 96; /* #002060 */
+    --background: 235 254 248; /* #ebfef8 - very light mint */
+    --foreground: 0 32 96; /* #002060 - very dark blue */
 
-    --card: 240 240 244; /* #f0f0f4 */
-    --card-foreground: 58 61 93; /* #3a3d5d */
+    --card: 240 240 244; /* #f0f0f4 - light grey */
+    --card-foreground: 58 61 93; /* #3a3d5d - slate blue */
 
-    --primary: 59 245 183;     /* #3bf5b7: turquoise accent */
-    --primary-foreground: 0 32 96; /* #002060: deep blue headline/text */
+    --primary: 59 245 183; /* #3bf5b7 - turquoise */
+    --primary-foreground: 0 32 96; /* #002060 - very dark blue */
 
-    --secondary: 96 98 255;    /* #6062ff: bright electric blue accent */
-    --secondary-foreground: 235 254 248; /* #ebfef8 */
+    --secondary: 96 98 255; /* #6062ff - electric blue */
+    --secondary-foreground: 235 254 248; /* #ebfef8 - very light mint */
 
-    --muted: 240 240 244;      /* #f0f0f4 */
-    --muted-foreground: 58 61 93; /* #3a3d5d */
+    --muted: 240 240 244; /* #f0f0f4 - light grey */
+    --muted-foreground: 58 61 93; /* #3a3d5d - slate blue */
 
-    --accent: 240 240 244;
-    --accent-foreground: 0 32 96; /* #002060 */
+    --accent: 240 240 244; /* #f0f0f4 - light grey */
+    --accent-foreground: 0 32 96; /* #002060 - very dark blue */
 
-    --border: 226 232 240;     /* #e2e8f0 */
-    --input: 226 232 240;      /* #e2e8f0 */
-    --ring: 59 245 183;
+    --border: 226 232 240; /* #e2e8f0 - light border */
+    --input: 226 232 240; /* #e2e8f0 - light input bg */
+    --ring: 59 245 183; /* #3bf5b7 - turquoise */
 
     --radius: 0.5rem;
   }
@@ -40,12 +51,16 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Poppins', sans-serif;
+    background-color: #ebfef8;
+    color: #002060;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight text-foreground;
+    @apply font-semibold tracking-tight;
+    color: #002060;
   }
   section {
-    @apply py-16 md:py-24 bg-background;
+    @apply py-16 md:py-24;
+    background-color: #ebfef8;
   }
   .container-custom {
     @apply container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
@@ -54,7 +69,10 @@
 
 @layer utilities {
   .text-gradient {
-    @apply bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent;
+    background: linear-gradient(to right, #6062ff, #3bf5b7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
   .glow-aqua {
     box-shadow: 0 0 12px 2px #3bf5b780;
@@ -62,6 +80,28 @@
   .glow-electric {
     box-shadow: 0 0 12px 2px #6062ff88;
   }
+  
+  /* Explicit color utilities */
+  .bg-light-mint { background-color: #ebfef8; }
+  .bg-light-grey { background-color: #f0f0f4; }
+  .bg-dark-blue { background-color: #002060; }
+  .bg-slate-blue { background-color: #3a3d5d; }
+  .bg-turquoise { background-color: #3bf5b7; }
+  .bg-electric-blue { background-color: #6062ff; }
+  
+  .text-light-mint { color: #ebfef8; }
+  .text-light-grey { color: #f0f0f4; }
+  .text-dark-blue { color: #002060; }
+  .text-slate-blue { color: #3a3d5d; }
+  .text-turquoise { color: #3bf5b7; }
+  .text-electric-blue { color: #6062ff; }
+  
+  .border-light-mint { border-color: #ebfef8; }
+  .border-light-grey { border-color: #f0f0f4; }
+  .border-dark-blue { border-color: #002060; }
+  .border-slate-blue { border-color: #3a3d5d; }
+  .border-turquoise { border-color: #3bf5b7; }
+  .border-electric-blue { border-color: #6062ff; }
 }
 
 /* Advanced animations for high-tech feel */
@@ -83,7 +123,7 @@
 
 @keyframes blink-caret {
   from, to { border-color: transparent; }
-  50% { border-color: rgb(59, 245, 183); }
+  50% { border-color: #3bf5b7; }
 }
 
 @keyframes pulseGlow {
@@ -109,7 +149,7 @@
 
 .typewriter-text {
   overflow: hidden;
-  border-right: 2px solid rgb(59, 245, 183);
+  border-right: 2px solid #3bf5b7;
   white-space: nowrap;
   animation: 
     typewriter 3s steps(60) 1s forwards,
