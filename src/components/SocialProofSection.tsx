@@ -46,7 +46,7 @@ const SocialProofSection = () => {
                       <img 
                         src={partner.logo} 
                         alt={partner.name} 
-                        className="max-h-16 max-w-full object-contain dark:invert" 
+                        className="max-h-16 max-w-full object-contain" 
                       />
                     )}
                   </div>

@@ -1,3 +1,4 @@
+
 import { ReactNode } from 'react';
 import { TabsContent } from "@/components/ui/tabs";
 import DevelopabilityRings from '../DevelopabilityRings';
@@ -26,17 +27,17 @@ const FeatureTab = ({ feature, activeTab }: FeatureTabProps) => {
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         <div className={`p-8 rounded-xl transition-all duration-300 border shadow-lg ${isActive ? 'glow-aqua border-primary/40 bg-card' : 'border-border bg-card'}`}>
-          <h3 className="text-2xl font-bold mb-4 text-[#002060]">
+          <h3 className="text-2xl font-bold mb-4 text-card-foreground">
             {feature.title}
           </h3>
-          <p className="text-[#3a3d5d] mb-6 leading-relaxed">
+          <p className="text-muted-foreground mb-6 leading-relaxed">
             {feature.description}
           </p>
           <ul className="space-y-3">
             {feature.highlights.map((highlight, idx) => (
               <li key={idx} className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary to-secondary"></div>
-                <span className="text-[#3a3d5d]">{highlight}</span>
+                <span className="text-muted-foreground">{highlight}</span>
               </li>
             ))}
           </ul>
@@ -49,7 +50,7 @@ const FeatureTab = ({ feature, activeTab }: FeatureTabProps) => {
             </div>
           ) : (
             <div className={`${feature.image} h-64 md:h-80 p-8 relative`}>
-              <div className="h-full w-full flex items-center justify-center text-[#3a3d5d]">
+              <div className="h-full w-full flex items-center justify-center text-muted-foreground">
                 <div className="text-center">
                   <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
                     <div className="w-8 h-8 bg-white/20 rounded animate-pulse"></div>

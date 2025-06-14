@@ -1,3 +1,4 @@
+
 import { Clock, Shield, Zap } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 
@@ -30,15 +31,15 @@ const BenefitsSection = () => {
       {/* Remove techy background spots for ultra clean look */}
       <div className="container-custom relative">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-[#002060] leading-tight">
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-foreground leading-tight">
             Australis will reduce the time taken for 
             <span className="block text-gradient relative">
               early-stage site assessments by 95%
               <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 h-2 w-48 bg-gradient-to-r from-primary to-secondary rounded-full blur-sm"></div>
             </span>
           </h2>
-          <div className="max-w-4xl mx-auto mt-8 p-6 bg-background rounded-xl border border-primary/20">
-            <p className="text-lg font-medium text-[#002060] text-center">
+          <div className="max-w-4xl mx-auto mt-8 p-6 bg-card rounded-xl border border-primary/20">
+            <p className="text-lg font-medium text-card-foreground text-center">
               We have developed a unique innovation combining <span className="text-gradient">Geospatial Analytics</span> and <span className="text-gradient">Agentic AI</span>
             </p>
           </div>
@@ -54,10 +55,10 @@ const BenefitsSection = () => {
                 {/* force icon color to accent, large */}
                 {benefit.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-[#002060]">
+              <h3 className="text-xl font-semibold mb-4 text-card-foreground">
                 {benefit.title}
               </h3>
-              <p className="text-[#3a3d5d] leading-relaxed">
+              <p className="text-muted-foreground leading-relaxed">
                 {benefit.description}
               </p>
             </div>

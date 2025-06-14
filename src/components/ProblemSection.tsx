@@ -1,3 +1,4 @@
+
 import { useInView } from 'react-intersection-observer';
 
 const ProblemSection = () => {
@@ -25,7 +26,7 @@ const ProblemSection = () => {
     <section className="py-16 bg-background" id="problem">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <p className="text-lg text-[#3a3d5d] mb-6 max-w-4xl mx-auto">
+          <p className="text-lg text-muted-foreground mb-6 max-w-4xl mx-auto">
             In less than 4 years, the global CO₂ budget will be exhausted and Earth will be 1.5°C warmer. 
             The UK needs to deploy 70GW of solar by 2035 — but deployment rates are only at 25% of what's needed. 
             Developers still rely on outdated tools, complex GIS workflows, and slow, manual processes to assess sites.
@@ -46,10 +47,10 @@ const ProblemSection = () => {
               style={{animationDelay: `${index * 0.2}s`}}
             >
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-secondary to-primary"></div>
-              <div className="text-4xl font-bold mb-4 font-mono text-[#002060]">
+              <div className="text-4xl font-bold mb-4 font-mono text-card-foreground">
                 {stat.highlight}
               </div>
-              <p className="text-[#3a3d5d] leading-relaxed">
+              <p className="text-muted-foreground leading-relaxed">
                 {stat.description}
               </p>
             </div>

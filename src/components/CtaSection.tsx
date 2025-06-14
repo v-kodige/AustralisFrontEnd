@@ -8,17 +8,17 @@ const CtaSection = () => {
       <div className="container-custom relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="p-8">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#002060]">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
               Ready to accelerate your renewable energy pipeline?
             </h2>
-            <p className="text-lg md:text-xl opacity-90 mb-8 text-[#3a3d5d]">
+            <p className="text-lg md:text-xl opacity-90 mb-8 text-muted-foreground">
               Join the developers using Australis to make smarter site decisions, faster.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-primary text-primary hover:bg-primary hover:text-[#ebfef8] transition-all duration-300 hover:glow-aqua"
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:glow-aqua"
               >
                 Book a Demo
               </Button>
@@ -30,7 +30,7 @@ const CtaSection = () => {
               </Button>
             </div>
             <div className="mt-10 pt-6 border-t border-border">
-              <p className="text-[#3a3d5d] text-sm">
+              <p className="text-muted-foreground text-sm">
                 Join the waitlist of top UK developers assessing 500+ sites for 2025 deployments.
               </p>
             </div>

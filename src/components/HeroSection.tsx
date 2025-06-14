@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PlayCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -21,7 +22,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="pt-32 pb-20 bg-[##ebfef8] relative overflow-hidden">
+    <section className="pt-32 pb-20 bg-background relative overflow-hidden">
       {/* Subtle geometric tech pattern in very light blue, very low opacity */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
         <svg className="w-full h-full" viewBox="0 0 500 200" fill="none">
@@ -32,7 +33,7 @@ const HeroSection = () => {
       <div className="container-custom relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="animate-fade-in-up">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-[#002060]">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
               Find the best solar sites.<br />
               <span className="text-gradient relative">
                 In minutes, not months.
@@ -40,12 +41,12 @@ const HeroSection = () => {
               </span>
             </h1>
             
-            <p className="text-lg md:text-xl text-[#3a3d5d] mb-6 leading-relaxed">
+            <p className="text-lg md:text-xl text-muted-foreground mb-6 leading-relaxed">
               Australis is an AI-powered platform that accelerates clean energy development by helping you discover, assess and prioritise high-potential solar sites across the UK — faster, smarter, and with less risk.
             </p>
 
             <div className={`mb-8 ${showTypewriter ? 'block' : 'hidden'}`}>
-              <p className="text-lg font-medium text-[#002060] typewriter-text">
+              <p className="text-lg font-medium text-foreground typewriter-text">
                 Australis empowers you to cut through the complexity and <span className="font-bold text-secondary">focus your efforts on what works best</span>.
               </p>
             </div>
@@ -53,7 +54,7 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="bg-primary text-[#ebfef8] font-bold hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 glow-aqua shadow"
+                className="bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 glow-aqua shadow"
                 onClick={handleEarlyAccess}
               >
                 Request Early Access
