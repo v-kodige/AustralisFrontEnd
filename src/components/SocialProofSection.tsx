@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
@@ -34,7 +35,7 @@ const SocialProofSection = () => {
           Partners
         </h2>
 
-        <div className="glass-card p-8 rounded-xl backdrop-blur-sm">
+        <div className="bg-card p-8 rounded-xl border border-border shadow-sm">
           <Carousel ref={emblaRef} className="w-full">
             <CarouselContent className="flex justify-center">
               {partners.map((partner, index) => (
