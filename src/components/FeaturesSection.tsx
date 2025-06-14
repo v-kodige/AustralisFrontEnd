@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import FeatureSectionTitle from './features/FeatureSectionTitle';
@@ -19,7 +18,7 @@ const FeaturesSection = () => {
   }, [inView]);
 
   return (
-    <section id="features" className="py-24 bg-australis-darkBlue" ref={ref}>
+    <section id="features" className="py-24 bg-background" ref={ref}>
       <div className="container-custom">
         <FeatureSectionTitle isVisible={isVisible} />
         <FeatureTabs />
@@ -29,4 +28,3 @@ const FeaturesSection = () => {
 };
 
 export default FeaturesSection;
-

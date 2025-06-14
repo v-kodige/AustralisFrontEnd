@@ -1,4 +1,3 @@
-
 import { ReactNode } from 'react';
 import { TabsContent } from "@/components/ui/tabs";
 import DevelopabilityRings from '../DevelopabilityRings';
@@ -26,17 +25,17 @@ const FeatureTab = ({ feature, activeTab }: FeatureTabProps) => {
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         <div className={`glass-card p-8 rounded-xl transition-all duration-300 ${isActive ? 'shadow-glow-aqua' : 'shadow-lg'}`}>
-          <h3 className="text-2xl font-bold mb-4 text-white">
+          <h3 className="text-2xl font-bold mb-4 text-card-foreground">
             {feature.title}
           </h3>
-          <p className="text-australis-lightGray mb-6">
+          <p className="text-muted-foreground mb-6">
             {feature.description}
           </p>
           <ul className="space-y-3">
             {feature.highlights.map((highlight, idx) => (
               <li key={idx} className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-australis-aqua"></div>
-                <span className="text-australis-lightGray">{highlight}</span>
+                <div className="w-2 h-2 rounded-full bg-primary"></div>
+                <span className="text-muted-foreground">{highlight}</span>
               </li>
             ))}
           </ul>
@@ -49,7 +48,7 @@ const FeatureTab = ({ feature, activeTab }: FeatureTabProps) => {
             </div>
           ) : (
             <div className={`${feature.image} h-64 md:h-80 p-8`}>
-              <div className="h-full w-full flex items-center justify-center text-australis-lightGray">
+              <div className="h-full w-full flex items-center justify-center text-muted-foreground">
                 Feature visualization
               </div>
             </div>
@@ -61,4 +60,3 @@ const FeatureTab = ({ feature, activeTab }: FeatureTabProps) => {
 };
 
 export default FeatureTab;
-

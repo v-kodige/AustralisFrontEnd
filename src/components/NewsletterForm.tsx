@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,14 +29,14 @@ const NewsletterForm = () => {
 
   return (
     <div className="bg-transparent rounded-xl p-6 md:p-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Stay updated</h3>
-      <p className="text-white/80 mb-6">
+      <h3 className="text-xl font-semibold mb-4 text-card-foreground">Stay updated</h3>
+      <p className="text-muted-foreground mb-6">
         Get early access and product updates by joining our waitlist.
       </p>
       
       {isSubscribed ? (
-        <div className="flex items-center gap-3 text-white">
-          <div className="bg-australis-aqua rounded-full p-1 text-australis-navy">
+        <div className="flex items-center gap-3 text-card-foreground">
+          <div className="bg-primary rounded-full p-1 text-primary-foreground">
             <Check className="h-4 w-4" />
           </div>
           <span>You're on the waitlist!</span>
@@ -51,12 +50,12 @@ const NewsletterForm = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-australis-navy/50 border-white/30 text-white placeholder:text-white/60 focus:ring-australis-aqua"
+              className="bg-input border-border text-foreground placeholder:text-muted-foreground focus:ring-ring"
             />
           </div>
           <Button 
             type="submit" 
-            className="w-full bg-australis-aqua text-australis-navy font-semibold hover:bg-australis-aqua/90 transition-all duration-300 hover:shadow-glow-aqua"
+            className="w-full bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all duration-300 hover:shadow-glow-aqua"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Subscribing...' : 'Join Waitlist'}
@@ -68,4 +67,3 @@ const NewsletterForm = () => {
 };
 
 export default NewsletterForm;
-

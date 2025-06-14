@@ -6,32 +6,32 @@
 
 @layer base {
   :root {
-    --background: 224 100% 9%; /* #002060 */
-    --foreground: 147 88% 95%; /* #ebfef8 */
+    --background: 240 8% 95%; /* lightGray */
+    --foreground: 224 100% 19%; /* darkBlue */
 
-    --card: 236 21% 30%; /* #3a3d5d */
-    --card-foreground: 147 88% 95%;
+    --card: 0 0% 100%; /* white */
+    --card-foreground: 224 100% 19%;
 
-    --popover: 224 100% 9%;
-    --popover-foreground: 147 88% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 100% 19%;
 
-    --primary: 162 90% 60%; /* #3bf5b7 */
+    --primary: 162 90% 60%; /* aqua */
     --primary-foreground: 224 100% 9%;
 
-    --secondary: 239 100% 69%; /* #6062ff */
+    --secondary: 239 100% 69%; /* indigo */
     --secondary-foreground: 147 88% 95%;
 
-    --muted: 236 21% 30%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 240 8% 95%;
+    --muted-foreground: 240 4% 46%;
 
-    --accent: 162 90% 60%;
-    --accent-foreground: 224 100% 9%;
+    --accent: 240 8% 95%;
+    --accent-foreground: 224 100% 19%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 236 21% 30%;
-    --input: 236 21% 30%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
     --ring: 162 90% 60%;
 
     --radius: 0.5rem;
@@ -45,6 +45,36 @@
     --offWhite: #ebfef8;
     --lightGray: #f0f0f4;
   }
+
+  .dark {
+    --background: 232 20% 29%; /* navy */
+    --foreground: 147 88% 95%; /* offWhite */
+
+    --card: 224 100% 9%; /* darkBlue */
+    --card-foreground: 147 88% 95%;
+
+    --popover: 224 100% 9%;
+    --popover-foreground: 147 88% 95%;
+
+    --primary: 162 90% 60%; /* aqua */
+    --primary-foreground: 224 100% 9%;
+
+    --secondary: 239 100% 69%; /* indigo */
+    --secondary-foreground: 147 88% 95%;
+
+    --muted: 224 100% 9%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 162 90% 60%;
+    --accent-foreground: 224 100% 9%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 224 100% 9%;
+    --input: 224 100% 9%;
+    --ring: 162 90% 60%;
+  }
 }
 
 @layer base {
@@ -57,7 +87,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight text-australis-offWhite;
+    @apply font-semibold tracking-tight text-foreground;
   }
   
   section {
@@ -79,7 +109,7 @@
   }
   
   .glass-card {
-    @apply bg-australis-navy/30 backdrop-blur-md border border-white/10 shadow-lg rounded-xl;
+    @apply backdrop-blur-md border rounded-xl shadow-lg bg-white/30 dark:bg-australis-navy/30 border-black/10 dark:border-white/10;
   }
 }
 

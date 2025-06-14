@@ -13,7 +13,7 @@ import ExpertPanel from '@/components/ExpertPanel';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-australis-darkBlue">
+    <div className="min-h-screen bg-background">
       <Header />
       <main>
         <HeroSection />
@@ -32,4 +32,3 @@ const Index = () => {
 };
 
 export default Index;
-

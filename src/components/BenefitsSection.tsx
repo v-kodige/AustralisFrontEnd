@@ -1,4 +1,3 @@
-
 import { Clock, Shield, Zap } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 
@@ -27,16 +26,16 @@ const BenefitsSection = () => {
   ];
 
   return (
-    <section id="benefits" className="py-24 bg-australis-darkBlue relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-transparent"></div>
+    <section id="benefits" className="py-24 bg-background relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-black/5 to-transparent dark:from-black/10"></div>
       <div className="container-custom relative">
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-australis-navy">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-foreground">
             <span className="bg-gradient-to-r from-australis-indigo to-australis-aqua bg-clip-text text-transparent">
               Australis will reduce the time taken for early-stage site assessments by 95%
             </span>
           </h2>
-          <p className="text-australis-lightGray mt-4 mb-6 max-w-2xl mx-auto">
+          <p className="text-muted-foreground mt-4 mb-6 max-w-2xl mx-auto">
             We have developed a unique innovation combining Geospatial Analytics and Agentic AI to transform renewable energy development.
           </p>
           <div className="h-1 w-40 mx-auto bg-gradient-to-r from-australis-indigo to-australis-aqua rounded-full"></div>
@@ -46,15 +45,15 @@ const BenefitsSection = () => {
           {benefits.map((benefit, index) => (
             <div 
               key={index} 
-              className="flex flex-col items-center text-center p-6 rounded-xl backdrop-blur-sm bg-australis-navy/30 border border-white/10 hover:border-australis-aqua/20 hover:bg-australis-navy/50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-2"
+              className="flex flex-col items-center text-center p-6 rounded-xl bg-card/50 border hover:border-primary/20 hover:bg-card/80 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-2"
             >
-              <div className="p-4 bg-gradient-to-br from-australis-navy/80 to-australis-navy/40 backdrop-blur-md rounded-full shadow-sm mb-6 border border-white/10">
+              <div className="p-4 bg-background/80 backdrop-blur-md rounded-full shadow-sm mb-6 border">
                 {benefit.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-white">
+              <h3 className="text-xl font-semibold mb-3 text-foreground">
                 {benefit.title}
               </h3>
-              <p className="text-australis-lightGray">
+              <p className="text-muted-foreground">
                 {benefit.description}
               </p>
             </div>
@@ -66,4 +65,3 @@ const BenefitsSection = () => {
 };
 
 export default BenefitsSection;
-
