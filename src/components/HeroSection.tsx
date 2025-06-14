@@ -22,7 +22,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="pt-32 pb-20 bg-background relative overflow-hidden">
+    <section className="pt-32 pb-20 relative overflow-hidden" style={{ backgroundColor: '#ebfef8' }}>
       {/* Subtle geometric tech pattern in very light blue, very low opacity */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
         <svg className="w-full h-full" viewBox="0 0 500 200" fill="none">
@@ -33,7 +33,7 @@ const HeroSection = () => {
       <div className="container-custom relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="animate-fade-in-up">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6" style={{ color: '#002060' }}>
               Find the best solar sites.<br />
               <span className="text-gradient relative">
                 In minutes, not months.
@@ -41,13 +41,13 @@ const HeroSection = () => {
               </span>
             </h1>
             
-            <p className="text-lg md:text-xl text-muted-foreground mb-6 leading-relaxed">
+            <p className="text-lg md:text-xl mb-6 leading-relaxed" style={{ color: '#3a3d5d' }}>
               Australis is an AI-powered platform that accelerates clean energy development by helping you discover, assess and prioritise high-potential solar sites across the UK — faster, smarter, and with less risk.
             </p>
 
             <div className={`mb-8 ${showTypewriter ? 'block' : 'hidden'}`}>
-              <p className="text-lg font-medium text-foreground typewriter-text">
-                Australis empowers you to cut through the complexity and <span className="font-bold text-secondary">focus your efforts on what works best</span>.
+              <p className="text-lg font-medium typewriter-text" style={{ color: '#002060' }}>
+                Australis empowers you to cut through the complexity and <span className="font-bold" style={{ color: '#6062ff' }}>focus your efforts on what works best</span>.
               </p>
             </div>
             

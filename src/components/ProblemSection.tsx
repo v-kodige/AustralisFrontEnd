@@ -23,10 +23,10 @@ const ProblemSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-background" id="problem">
+    <section className="py-16" id="problem" style={{ backgroundColor: '#ebfef8' }}>
       <div className="container-custom">
         <div className="text-center mb-12">
-          <p className="text-lg text-muted-foreground mb-6 max-w-4xl mx-auto">
+          <p className="text-lg mb-6 max-w-4xl mx-auto" style={{ color: '#3a3d5d' }}>
             In less than 4 years, the global CO₂ budget will be exhausted and Earth will be 1.5°C warmer. 
             The UK needs to deploy 70GW of solar by 2035 — but deployment rates are only at 25% of what's needed. 
             Developers still rely on outdated tools, complex GIS workflows, and slow, manual processes to assess sites.
@@ -43,14 +43,18 @@ const ProblemSection = () => {
           {stats.map((stat, index) => (
             <div 
               key={index} 
-              className="bg-card p-8 rounded-xl border border-border transition-all duration-300 hover:glow-aqua hover:-translate-y-2 relative overflow-hidden shadow-lg"
-              style={{animationDelay: `${index * 0.2}s`}}
+              className="p-8 rounded-xl border transition-all duration-300 hover:glow-aqua hover:-translate-y-2 relative overflow-hidden shadow-lg"
+              style={{
+                backgroundColor: '#f0f0f4',
+                borderColor: 'rgba(58, 61, 93, 0.2)',
+                animationDelay: `${index * 0.2}s`
+              }}
             >
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-secondary to-primary"></div>
-              <div className="text-4xl font-bold mb-4 font-mono text-card-foreground">
+              <div className="text-4xl font-bold mb-4 font-mono" style={{ color: '#3a3d5d' }}>
                 {stat.highlight}
               </div>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="leading-relaxed" style={{ color: '#3a3d5d' }}>
                 {stat.description}
               </p>
             </div>
