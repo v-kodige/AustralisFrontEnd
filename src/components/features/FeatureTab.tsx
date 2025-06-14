@@ -17,44 +17,48 @@ interface FeatureTabProps {
 }
 
 const FeatureTab = ({ feature, activeTab }: FeatureTabProps) => {
+  const isActive = activeTab === feature.id;
   return (
     <TabsContent 
       key={feature.id} 
       value={feature.id}
-      className={`${activeTab === feature.id ? 'animate-fade-in' : 'opacity-0'}`}
+      className={`${isActive ? 'animate-fade-in-blur' : 'opacity-0'}`}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-        <div className="glass-card p-8 rounded-xl">
-          <h3 className="text-2xl font-bold mb-4 text-australis-navy">
+        <div className={`glass-card p-8 rounded-xl transition-all duration-300 ${isActive ? 'shadow-glow-aqua' : 'shadow-lg'}`}>
+          <h3 className="text-2xl font-bold mb-4 text-white">
             {feature.title}
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-australis-lightGray mb-6">
             {feature.description}
           </p>
           <ul className="space-y-3">
             {feature.highlights.map((highlight, idx) => (
               <li key={idx} className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-australis-aqua"></div>
-                <span>{highlight}</span>
+                <span className="text-australis-lightGray">{highlight}</span>
               </li>
             ))}
           </ul>
         </div>
         
-        {feature.id === 'scoring' ? (
-          <div className="glass-card p-8 rounded-xl">
-            <DevelopabilityRings />
-          </div>
-        ) : (
-          <div className={`${feature.image} glass-card rounded-xl h-64 md:h-80 p-8`}>
-            <div className="h-full w-full flex items-center justify-center text-australis-navy">
-              Feature visualization
+        <div className={`glass-card rounded-xl transition-all duration-300 ${isActive ? 'shadow-glow-indigo' : 'shadow-lg'}`}>
+          {feature.id === 'scoring' ? (
+            <div className="p-8">
+              <DevelopabilityRings />
             </div>
-          </div>
-        )}
+          ) : (
+            <div className={`${feature.image} h-64 md:h-80 p-8`}>
+              <div className="h-full w-full flex items-center justify-center text-australis-lightGray">
+                Feature visualization
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </TabsContent>
   );
 };
 
 export default FeatureTab;
+

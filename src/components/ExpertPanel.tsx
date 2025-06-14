@@ -18,17 +18,17 @@ const ExpertPanel = () => {
   };
 
   return (
-    <section id="expert-panel" className="py-24 bg-australis-lightGray relative overflow-hidden">
-      <div className="absolute -top-20 -right-20 w-96 h-96 bg-australis-aqua/20 rounded-full blur-3xl animate-pulse-slow"></div>
-      <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-australis-indigo/20 rounded-full blur-3xl animate-pulse-slow"></div>
+    <section id="expert-panel" className="py-24 bg-australis-darkBlue relative overflow-hidden">
+      <div className="absolute -top-20 -right-20 w-96 h-96 bg-australis-aqua/10 rounded-full blur-3xl animate-pulse-slow"></div>
+      <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-australis-indigo/10 rounded-full blur-3xl animate-pulse-slow"></div>
       
       <div className="container-custom relative z-10">
         <div className="max-w-4xl mx-auto text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-australis-navy">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
             Join Our Expert Panel
           </h2>
           <div className="h-1 w-40 mx-auto bg-gradient-to-r from-australis-indigo to-australis-aqua rounded-full mb-6"></div>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-lg text-gray-300 mb-8">
             Help shape the future of renewable energy site selection. We're assembling a panel of industry leaders to collaborate on developing Australis alongside their specific needs and requirements.
           </p>
         </div>
@@ -53,13 +53,13 @@ const ExpertPanel = () => {
           ].map((benefit, index) => (
             <div 
               key={index}
-              className="p-6 rounded-xl backdrop-blur-sm bg-white/40 border border-white/30 hover:border-australis-aqua/20 hover:bg-white/60 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1"
+              className="p-6 rounded-xl backdrop-blur-sm bg-australis-navy/30 border border-white/10 hover:border-australis-aqua/20 hover:bg-australis-navy/50 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-2"
             >
-              <div className="p-4 bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-md rounded-full shadow-sm mb-4 inline-block">
+              <div className="p-4 bg-gradient-to-br from-australis-navy/80 to-australis-navy/40 backdrop-blur-md rounded-full shadow-sm mb-4 inline-block border border-white/10">
                 {benefit.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-australis-navy">{benefit.title}</h3>
-              <p className="text-gray-600">{benefit.description}</p>
+              <h3 className="text-xl font-semibold mb-2 text-white">{benefit.title}</h3>
+              <p className="text-gray-300">{benefit.description}</p>
             </div>
           ))}
         </div>
@@ -71,10 +71,10 @@ const ExpertPanel = () => {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-australis-aqua/50"
+              className="flex-1 px-4 py-2 rounded-lg border border-australis-navy bg-australis-navy/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-australis-aqua/50"
               required
             />
-            <Button type="submit" className="bg-australis-indigo hover:bg-australis-indigo/90">
+            <Button type="submit" className="bg-australis-indigo hover:bg-australis-indigo/90 text-white hover:shadow-glow-indigo transition-all">
               Join Panel
             </Button>
           </div>
@@ -85,3 +85,4 @@ const ExpertPanel = () => {
 };
 
 export default ExpertPanel;
+

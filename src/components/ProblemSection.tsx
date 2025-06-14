@@ -1,3 +1,4 @@
+
 import { useInView } from 'react-intersection-observer';
 const ProblemSection = () => {
   const {
@@ -17,22 +18,22 @@ const ProblemSection = () => {
     highlight: "2/3",
     description: "From 2018-2023, 2/3 of UK renewable energy planning applications failed to achieve consent."
   }];
-  return <section className="py-16 bg-australis-lightGray" id="problem">
+  return <section className="py-16 bg-australis-darkBlue" id="problem">
       <div className="container-custom">
         <div className="flex flex-col items-center justify-center gap-2 mb-10 bg-transparent">
-          <h2 className="text-2xl font-bold text-transparent text-center">Focus on what works. Skip what doesn't.</h2>
-          <p className="max-w-3xl mt-6 text-lg text-center font-bold text-australis-navy my-[23px] mx-0 md:text-3xl">Australis cuts through the noise to surface the sites that matter. 
+          <h2 className="text-2xl font-bold text-transparent text-center bg-gradient-to-r from-australis-indigo to-australis-aqua bg-clip-text">Focus on what works. Skip what doesn't.</h2>
+          <p className="max-w-3xl mt-6 text-lg text-center font-bold text-australis-offWhite my-[23px] mx-0 md:text-3xl">Australis cuts through the noise to surface the sites that matter. 
 
 
 We've found:</p>
         </div>
         
-        <div ref={sectionRef} className={`grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 ${inView ? 'animate-fade-in' : 'opacity-0'}`}>
-          {stats.map((stat, index) => <div key={index} className="glass-card bg-white/30 backdrop-blur-sm p-8 rounded-xl shadow-sm border border-white/20 hover:shadow-md transition-shadow transform">
-              <div className="text-3xl font-bold text-australis-indigo mb-4">
+        <div ref={sectionRef} className={`grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 ${inView ? 'animate-fade-in-blur' : 'opacity-0'}`}>
+          {stats.map((stat, index) => <div key={index} className="glass-card p-8 transition-all duration-300 hover:border-australis-aqua/50 hover:-translate-y-2">
+              <div className="text-3xl font-bold text-australis-aqua mb-4">
                 {stat.highlight}
               </div>
-              <p className="text-gray-600">
+              <p className="text-australis-lightGray">
                 {stat.description}
               </p>
             </div>)}
@@ -41,3 +42,4 @@ We've found:</p>
     </section>;
 };
 export default ProblemSection;
+

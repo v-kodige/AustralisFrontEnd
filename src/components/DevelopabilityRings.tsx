@@ -13,22 +13,24 @@ const DevelopabilityRings = () => {
   const [expandCard, setExpandCard] = useState(false);
 
   useEffect(() => {
+    let animationFrameId: number;
     if (inView) {
-      setIsVisible(true);
-
-      if (score < 88) {
-        animationRef.current = setTimeout(() => {
-          setScore((prev) => Math.min(prev + 1, 88));
-        }, 20);
-      }
-
-      return () => {
-        if (animationRef.current) {
-          clearTimeout(animationRef.current);
+      let start: number | null = null;
+      const animateScore = (timestamp: number) => {
+        if (!start) start = timestamp;
+        const progress = timestamp - start;
+        const duration = 1500; // Animate over 1.5 seconds
+        const nextScore = Math.min(Math.floor((progress / duration) * 88), 88);
+        setScore(nextScore);
+        if (progress < duration) {
+          animationFrameId = requestAnimationFrame(animateScore);
         }
       };
+      animationFrameId = requestAnimationFrame(animateScore);
     }
-  }, [inView, score]);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [inView]);
+
 
   useEffect(() => {
     if (score >= 88) {
@@ -59,11 +61,11 @@ const DevelopabilityRings = () => {
 
   return (
     <div ref={ref} className="flex flex-col items-center w-full">
-      <div className="relative w-full max-w-lg min-h-[420px] bg-white/60 backdrop-blur-lg border border-white/30 rounded-3xl shadow-lg flex flex-row items-center px-6 py-8 mb-6 transition-shadow hover:shadow-xl">
+      <div className="relative w-full max-w-lg min-h-[420px] bg-australis-navy/30 backdrop-blur-lg border border-white/20 rounded-3xl shadow-lg flex flex-row items-center px-6 py-8 mb-6 transition-shadow hover:shadow-xl">
         {/* Score number on the left */}
         <div className="flex flex-col items-center justify-center min-w-[80px]">
-          <span className="text-5xl font-extrabold text-australis-navy drop-shadow-sm">{score}</span>
-          <span className="text-xs text-gray-500 mt-2">Score</span>
+          <span className="text-5xl font-extrabold text-white drop-shadow-sm">{score}</span>
+          <span className="text-xs text-gray-400 mt-2">Score</span>
         </div>
         {/* Rings in the center */}
         <div className="relative w-56 h-56 flex items-center justify-center mx-6">
@@ -109,11 +111,11 @@ const DevelopabilityRings = () => {
           expandCard ? 'max-h-96 opacity-100 py-6' : 'max-h-0 opacity-0 py-0'
         }`}
         style={{
-          background: 'rgba(255,255,255,0.55)',
+          background: 'rgba(58, 61, 93, 0.3)', // australis-navy/30
           borderRadius: '1.5rem',
-          boxShadow: '0 5px 32px rgba(0,0,0,0.05)',
+          boxShadow: '0 5px 32px rgba(0,0,0,0.1)',
           backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255,255,255,0.25)'
+          border: '1px solid rgba(255,255,255,0.1)'
         }}
       >
         {legends.map((legend) => (
@@ -125,9 +127,9 @@ const DevelopabilityRings = () => {
           >
             <div className="flex items-center gap-2">
               <div className={`w-4 h-4 rounded-full ${legend.color} border border-white/80`}></div>
-              <span className="text-base text-australis-navy">{legend.name}</span>
+              <span className="text-base text-white">{legend.name}</span>
             </div>
-            <span className="font-semibold text-lg">{legend.score}%</span>
+            <span className="font-semibold text-lg text-white">{legend.score}%</span>
           </div>
         ))}
       </div>
@@ -136,3 +138,4 @@ const DevelopabilityRings = () => {
 };
 
 export default DevelopabilityRings;
+

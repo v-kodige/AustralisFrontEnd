@@ -1,3 +1,4 @@
+
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import ProblemSection from '@/components/ProblemSection';
@@ -12,7 +13,7 @@ import ExpertPanel from '@/components/ExpertPanel';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-australis-darkBlue">
       <Header />
       <main>
         <HeroSection />
@@ -31,3 +32,4 @@ const Index = () => {
 };
 
 export default Index;
+

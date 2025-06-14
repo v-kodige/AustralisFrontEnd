@@ -24,15 +24,16 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="pt-32 pb-20 bg-gradient-to-br from-australis-offWhite to-australis-lightGray relative overflow-hidden">
+    <section className="pt-32 pb-20 bg-gradient-to-br from-australis-darkBlue via-australis-navy to-australis-darkBlue relative overflow-hidden">
       {/* Aurora-style light effects */}
-      <div className="absolute -top-20 -right-20 w-96 h-96 bg-australis-aqua/20 rounded-full blur-3xl animate-pulse-slow"></div>
-      <div className="absolute -bottom-20 -left-20 w-96 h-96 rounded-full blur-3xl animate-pulse-slow bg-australis-indigo/[0.17]"></div>
+      <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-australis-indigo/20 rounded-full blur-3xl animate-pulse-slow"></div>
+      <div className="absolute top-1/2 left-1/4 w-[400px] h-[400px] bg-australis-aqua/10 rounded-full blur-3xl animate-pulse-slow animation-delay-3000"></div>
+      <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full blur-3xl animate-pulse-slow bg-australis-indigo/10"></div>
       
-      <div className="container-custom">
+      <div className="container-custom relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="animate-fade-in">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-australis-navy">
+          <div className="animate-fade-in-blur">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">
               Find the best renewable energy sites.<br />
               <span className="bg-gradient-to-r from-australis-indigo to-australis-aqua bg-clip-text text-transparent">
                 In minutes, not months.
@@ -40,10 +41,10 @@ const HeroSection = () => {
             </h1>
             
             <div className="space-y-2 mt-6 mb-8">
-              <p className={`transition-opacity duration-500 text-lg md:text-xl text-australis-navy ${showFirstLine ? 'opacity-100' : 'opacity-0'}`}>
+              <p className={`transition-opacity duration-1000 text-lg md:text-xl text-australis-lightGray ${showFirstLine ? 'opacity-100' : 'opacity-0'}`}>
                 Focus on what works.
               </p>
-              <p className={`transition-opacity duration-500 text-lg md:text-xl text-australis-navy ${showSecondLine ? 'opacity-100' : 'opacity-0'}`}>
+              <p className={`transition-opacity duration-1000 text-lg md:text-xl text-australis-lightGray ${showSecondLine ? 'opacity-100' : 'opacity-0'}`}>
                 Skip what doesn't.
               </p>
             </div>
@@ -51,22 +52,22 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="bg-australis-indigo hover:bg-australis-indigo/90"
+                className="bg-australis-aqua text-australis-navy font-bold hover:bg-australis-aqua/90 transition-all duration-300 transform hover:scale-105 hover:shadow-glow-aqua"
                 onClick={handleEarlyAccess}
               >
                 Request Early Access
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button variant="outline" size="lg" className="border-australis-indigo text-australis-indigo hover:bg-australis-indigo/10">
+              <Button variant="outline" size="lg" className="border-australis-indigo text-australis-lightGray hover:bg-australis-indigo/20 hover:text-white hover:border-australis-indigo transition-all">
                 How It Works
                 <PlayCircle className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </div>
-          <div className="relative animate-fade-in">
-            <div className="aspect-square md:aspect-[4/3] bg-gradient-to-br from-australis-navy/20 via-australis-indigo/20 to-australis-aqua/30 rounded-xl shadow-lg overflow-hidden backdrop-blur-sm border border-white/20">
+          <div className="relative animate-fade-in-blur animation-delay-300">
+            <div className="aspect-square md:aspect-[4/3] bg-australis-navy/20 rounded-xl shadow-lg overflow-hidden backdrop-blur-sm border border-white/10">
               <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-center text-australis-navy italic">
+                <p className="text-center text-australis-lightGray italic">
                   Interactive map visualization
                 </p>
               </div>
@@ -81,3 +82,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+

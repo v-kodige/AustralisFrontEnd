@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Check } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState('');
@@ -29,15 +29,15 @@ const NewsletterForm = () => {
   };
 
   return (
-    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 md:p-8">
-      <h3 className="text-xl font-semibold mb-4">Stay updated</h3>
+    <div className="bg-transparent rounded-xl p-6 md:p-8">
+      <h3 className="text-xl font-semibold mb-4 text-white">Stay updated</h3>
       <p className="text-white/80 mb-6">
         Get early access and product updates by joining our waitlist.
       </p>
       
       {isSubscribed ? (
         <div className="flex items-center gap-3 text-white">
-          <div className="bg-australis-teal rounded-full p-1">
+          <div className="bg-australis-aqua rounded-full p-1 text-australis-navy">
             <Check className="h-4 w-4" />
           </div>
           <span>You're on the waitlist!</span>
@@ -51,12 +51,12 @@ const NewsletterForm = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-white/20 border-white/30 text-white placeholder:text-white/60"
+              className="bg-australis-navy/50 border-white/30 text-white placeholder:text-white/60 focus:ring-australis-aqua"
             />
           </div>
           <Button 
             type="submit" 
-            className="w-full bg-white text-australis-blue hover:bg-white/90"
+            className="w-full bg-australis-aqua text-australis-navy font-semibold hover:bg-australis-aqua/90 transition-all duration-300 hover:shadow-glow-aqua"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Subscribing...' : 'Join Waitlist'}
@@ -68,3 +68,4 @@ const NewsletterForm = () => {
 };
 
 export default NewsletterForm;
+

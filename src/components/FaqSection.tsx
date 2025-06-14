@@ -31,22 +31,22 @@ const FaqSection = () => {
   ];
 
   return (
-    <section id="faq" className="py-24 bg-white">
+    <section id="faq" className="py-24 bg-australis-darkBlue">
       <div className="container-custom max-w-4xl">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
-          <p className="text-lg text-gray-600">
-            Have other questions? Contact us at <a href="mailto:hello@australis.energy" className="text-australis-blue hover:underline">hello@australis.energy</a>
+          <h2 className="text-3xl font-bold mb-4 text-white">Frequently Asked Questions</h2>
+          <p className="text-lg text-gray-300">
+            Have other questions? Contact us at <a href="mailto:hello@australis.energy" className="text-australis-aqua hover:underline">hello@australis.energy</a>
           </p>
         </div>
         
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
-            <AccordionItem key={index} value={`item-${index}`}>
-              <AccordionTrigger className="text-lg font-medium">
+            <AccordionItem key={index} value={`item-${index}`} className="border-b-australis-navy">
+              <AccordionTrigger className="text-lg font-medium text-left text-white hover:text-australis-aqua">
                 {faq.question}
               </AccordionTrigger>
-              <AccordionContent className="text-gray-600">
+              <AccordionContent className="text-gray-300">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>
@@ -58,3 +58,4 @@ const FaqSection = () => {
 };
 
 export default FaqSection;
+

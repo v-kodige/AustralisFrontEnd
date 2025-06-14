@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -6,33 +7,33 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 224 100% 9%; /* #002060 */
+    --foreground: 147 88% 95%; /* #ebfef8 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 236 21% 30%; /* #3a3d5d */
+    --card-foreground: 147 88% 95%; /* #ebfef8 */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 224 100% 9%;
+    --popover-foreground: 147 88% 95%;
 
-    --primary: 201 96% 32%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 162 90% 60%; /* #3bf5b7 */
+    --primary-foreground: 224 100% 9%;
 
-    --secondary: 160 84% 39%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 239 100% 69%; /* #6062ff */
+    --secondary-foreground: 147 88% 95%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 236 21% 30%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 188 95% 28%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 162 90% 60%;
+    --accent-foreground: 224 100% 9%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 236 21% 30%;
+    --input: 236 21% 30%;
+    --ring: 162 90% 60%;
 
     --radius: 0.5rem;
 
@@ -41,6 +42,9 @@
     --indigo: #6062ff;
     --navy: #3a3d5d;
     --blue: #1E3A8A;
+    --darkBlue: #002060;
+    --offWhite: #ebfef8;
+    --lightGray: #f0f0f4;
   }
 }
 
@@ -54,7 +58,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+    @apply font-semibold tracking-tight text-offWhite;
   }
   
   section {
@@ -72,11 +76,11 @@
   }
   
   .text-gradient {
-    @apply bg-gradient-to-r from-australis-blue to-australis-teal bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-australis-indigo to-australis-aqua bg-clip-text text-transparent;
   }
   
   .glass-card {
-    @apply bg-white/50 backdrop-blur-sm border border-white/20 shadow-sm;
+    @apply bg-australis-navy/30 backdrop-blur-md border border-white/10 shadow-lg rounded-xl;
   }
 }
 
@@ -97,5 +101,4 @@
 .parallax-fast {
   transform: translateZ(0);
 }
-
 
