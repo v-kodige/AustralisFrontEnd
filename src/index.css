@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -11,7 +10,7 @@
     --foreground: 147 88% 95%; /* #ebfef8 */
 
     --card: 236 21% 30%; /* #3a3d5d */
-    --card-foreground: 147 88% 95%; /* #ebfef8 */
+    --card-foreground: 147 88% 95%;
 
     --popover: 224 100% 9%;
     --popover-foreground: 147 88% 95%;
@@ -58,7 +57,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight text-offWhite;
+    @apply font-semibold tracking-tight text-australis-offWhite;
   }
   
   section {
@@ -101,4 +100,3 @@
 .parallax-fast {
   transform: translateZ(0);
 }
-
