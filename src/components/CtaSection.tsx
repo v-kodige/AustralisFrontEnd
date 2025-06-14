@@ -42,7 +42,7 @@ const CtaSection = () => {
             </div>
           </div>
           
-          <div className="glass-card p-2 md:p-4">
+          <div className="bg-muted border rounded-xl shadow-lg p-2 md:p-4">
             <NewsletterForm />
           </div>
         </div>

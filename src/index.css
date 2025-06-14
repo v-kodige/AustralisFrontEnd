@@ -71,10 +71,6 @@
     @apply bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent;
   }
   
-  .glass-card {
-    @apply backdrop-blur-md border rounded-xl shadow-lg bg-white/90 border-border;
-  }
-  
   .glow-aqua {
     box-shadow: 0 0 20px rgba(59, 245, 183, 0.3), 0 0 40px rgba(59, 245, 183, 0.1);
   }

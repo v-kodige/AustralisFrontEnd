@@ -44,11 +44,11 @@ const ProblemSection = () => {
           {stats.map((stat, index) => (
             <div 
               key={index} 
-              className="glass-card p-8 transition-all duration-300 hover:glow-aqua hover:-translate-y-2 relative overflow-hidden"
+              className="bg-muted p-8 rounded-xl border border-border transition-all duration-300 hover:glow-aqua hover:-translate-y-2 relative overflow-hidden shadow-lg"
               style={{animationDelay: `${index * 0.2}s`}}
             >
               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary to-secondary"></div>
-              <div className="text-4xl font-bold text-primary mb-4 font-mono">
+              <div className="text-4xl font-bold text-foreground mb-4 font-mono">
                 {stat.highlight}
               </div>
               <p className="text-muted-foreground leading-relaxed">

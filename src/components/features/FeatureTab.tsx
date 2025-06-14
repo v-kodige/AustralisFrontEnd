@@ -26,7 +26,7 @@ const FeatureTab = ({ feature, activeTab }: FeatureTabProps) => {
       className={`transition-all duration-500 ${isActive ? 'animate-fade-in-up' : 'opacity-0'}`}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-        <div className={`glass-card p-8 rounded-xl transition-all duration-300 ${isActive ? 'glow-aqua border-primary/30' : 'border-border'}`}>
+        <div className={`p-8 rounded-xl transition-all duration-300 border shadow-lg ${isActive ? 'glow-aqua border-primary/30' : 'border-border'} bg-muted`}>
           <h3 className="text-2xl font-bold mb-4 text-foreground">
             {feature.title}
           </h3>
@@ -43,7 +43,7 @@ const FeatureTab = ({ feature, activeTab }: FeatureTabProps) => {
           </ul>
         </div>
         
-        <div className={`glass-card rounded-xl transition-all duration-300 ${isActive ? 'glow-electric border-secondary/30' : 'border-border'} overflow-hidden`}>
+        <div className={`rounded-xl transition-all duration-300 border shadow-lg ${isActive ? 'glow-electric border-secondary/30' : 'border-border'} overflow-hidden bg-muted`}>
           {feature.id === 'scoring' ? (
             <div className="p-8">
               <DevelopabilityRings />

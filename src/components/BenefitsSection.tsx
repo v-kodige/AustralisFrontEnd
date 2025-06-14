@@ -45,8 +45,8 @@ const BenefitsSection = () => {
             </span>
           </h2>
           
-          <div className="max-w-4xl mx-auto mt-8 p-6 bg-gradient-to-r from-muted-foreground/10 to-muted-foreground/5 rounded-xl border border-primary/20">
-            <p className="text-lg font-medium text-gradient">
+          <div className="max-w-4xl mx-auto mt-8 p-6 bg-muted-foreground rounded-xl border border-primary/20">
+            <p className="text-lg font-medium text-background text-center">
               We have developed a unique innovation combining Geospatial Analytics and Agentic AI
             </p>
           </div>
@@ -56,7 +56,7 @@ const BenefitsSection = () => {
           {benefits.map((benefit, index) => (
             <div 
               key={index} 
-              className="group flex flex-col items-center text-center p-8 rounded-xl bg-card border border-border hover:border-primary/30 hover:glow-aqua transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-2"
+              className="group flex flex-col items-center text-center p-8 rounded-xl bg-muted border border-border hover:border-primary/30 hover:glow-aqua transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-2"
               style={{animationDelay: `${index * 0.2}s`}}
             >
               <div className="p-4 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full shadow-sm mb-6 border border-primary/20 group-hover:glow-aqua transition-all duration-300">
