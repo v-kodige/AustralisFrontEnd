@@ -2,11 +2,12 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
-import { ThemeToggle } from './ThemeToggle';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  return <header className="fixed top-0 left-0 right-0 z-50 bg-background/60 backdrop-blur-lg border-b border-border">
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-lg border-b border-border">
       <div className="container-custom flex items-center justify-between h-16">
         <div className="flex items-center gap-2">
           <img alt="AE Logo" className="h-8 w-auto" src="/lovable-uploads/edc919d7-a5bd-4ead-bba9-be9e35909623.png" />
@@ -23,28 +24,35 @@ const Header = () => {
           <a href="#features" className="text-sm text-muted-foreground hover:text-primary transition-colors">
             Features
           </a>
-          <a href="#blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-            Blog
+          <a href="#demo" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            Demo
           </a>
           <a href="#faq" className="text-sm text-muted-foreground hover:text-primary transition-colors">
             FAQ
           </a>
-          <ThemeToggle />
-          <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:shadow-glow-aqua">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:glow-aqua"
+          >
             Book a Demo
           </Button>
         </nav>
         
         {/* Mobile Menu Button */}
         <div className="md:hidden">
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-muted-foreground hover:text-primary">
+          <button 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+            className="p-2 text-muted-foreground hover:text-primary"
+          >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
       
       {/* Mobile Menu */}
-      {mobileMenuOpen && <div className="md:hidden bg-background/80 backdrop-blur-md border-b border-border">
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-background/95 backdrop-blur-md border-b border-border">
           <div className="container-custom py-4 space-y-4">
             <a href="#benefits" className="block text-muted-foreground hover:text-primary">
               Benefits
@@ -52,21 +60,24 @@ const Header = () => {
             <a href="#features" className="block text-muted-foreground hover:text-primary">
               Features
             </a>
-            <a href="#blog" className="block text-muted-foreground hover:text-primary">
-              Blog
+            <a href="#demo" className="block text-muted-foreground hover:text-primary">
+              Demo
             </a>
             <a href="#faq" className="block text-muted-foreground hover:text-primary">
               FAQ
             </a>
-            <div className='flex justify-center'>
-              <ThemeToggle />
-            </div>
-            <Button variant="outline" size="sm" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            >
               Book a Demo
             </Button>
           </div>
-        </div>}
-    </header>;
+        </div>
+      )}
+    </header>
+  );
 };
 
 export default Header;
