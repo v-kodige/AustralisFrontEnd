@@ -41,87 +41,86 @@ const PricingCard = ({
   children,
   detailedFeatures = [],
 }: PricingCardProps) => {
+  // INDIVIDUAL expanded state per card (hidden by default)
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <Accordion type="single" collapsible className="w-full" value={expanded ? "details" : undefined}>
-      <AccordionItem value="details">
-        <div
-          className={
-            `relative flex flex-col justify-between h-full p-8 rounded-3xl border border-white/30 bg-white/30 ` +
-            `shadow-2xl shadow-australis-navy/5 backdrop-blur-xl transition-all duration-300 ` +
-            (expanded ? "scale-105 ring-2 ring-australis-aqua/40 z-10" : "") +
-            (recommended ? " ring-2 ring-[#3bf5b7]/50 scale-105 z-10" : "")
-          }
-        >
-          <div className={`absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl z-0 bg-gradient-to-br ${accent} opacity-30`}></div>
-          <div className="relative z-10 flex flex-col h-full">
-            <div className="flex flex-col h-full">
-              {recommended && (
-                <div className="absolute top-6 right-6 px-3 py-1 text-xs font-semibold bg-[#3bf5b7] text-[#3a3d5d] rounded-full shadow">
-                  MOST POPULAR
-                </div>
-              )}
-              <h3 className="text-2xl font-bold mb-2 text-australis-navy">{name}</h3>
-              <div className="flex items-baseline gap-2 mb-1">
-                <span className={`text-4xl font-extrabold ${name === "Enterprise" ? "text-black" : name === "Developer" ? "text-australis-indigo" : "text-australis-navy"}`}>{price}</span>
-                <span className="text-base text-australis-navy/70">{name !== "Enterprise" ? "/month (ann.)" : ""}</span>
-              </div>
-              <p className="text-gray-700 mb-4">{description}</p>
-              <ul className="mb-6 text-base list-none space-y-2">
-                {features.map((f, i) => (
-                  <li key={i} className="flex items-start gap-2 text-australis-navy">
-                    <span className="inline-block w-2 h-2 rounded-full bg-gradient-to-tr from-australis-indigo to-australis-aqua shadow mt-2" />
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              {children}
-            </div>
-            <div className="flex w-full justify-center mt-4">
-              <Button
-                size="lg"
-                className={buttonClass + " w-64 text-base font-semibold py-3"}
-                onClick={onContact}
-              >
-                {ctaText}
-              </Button>
-            </div>
-            {/* Accordion Trigger */}
-            {detailedFeatures.length > 0 && (
-              <AccordionTrigger
-                className="group flex justify-center mt-6 cursor-pointer bg-transparent border-none ring-0 outline-none px-0 hover:underline focus:outline-none"
-                onClick={() => setExpanded((v) => !v)}
-              >
-                <span className="font-semibold text-australis-indigo">
-                  {expanded ? "Hide Details" : "See Details"}
-                </span>
-                <ChevronDown
-                  className={`ml-2 inline-block transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
-                  size={18}
-                />
-              </AccordionTrigger>
-            )}
+    <div
+      className={
+        `relative flex flex-col justify-between h-full p-8 rounded-3xl border border-white/30 bg-white/30 ` +
+        `shadow-2xl shadow-australis-navy/5 backdrop-blur-xl transition-all duration-300 ` +
+        (expanded ? "scale-105 ring-2 ring-australis-aqua/40 z-10" : "") +
+        (recommended ? " ring-2 ring-[#3bf5b7]/50 scale-105 z-10" : "")
+      }
+    >
+      <div className={`absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl z-0 bg-gradient-to-br ${accent} opacity-30`}></div>
+      <div className="relative z-10 flex flex-col h-full">
+        {recommended && (
+          <div className="absolute top-6 right-6 px-3 py-1 text-xs font-semibold bg-[#3bf5b7] text-[#3a3d5d] rounded-full shadow">
+            MOST POPULAR
           </div>
-          {/* Expandable Features */}
-          <AccordionContent className="w-full px-1" forceMount>
-            <div className="py-3">
-              <div className="space-y-3">
-                {detailedFeatures.map((group, idx) => (
-                  <div key={idx}>
-                    <div className="font-semibold text-australis-navy/90 pb-1">{group.title}</div>
-                    <ul className="pl-4 list-disc text-australis-navy/80 text-sm space-y-1">
-                      {group.items.map((item, i) => <li key={i}>{item}</li>)}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </AccordionContent>
+        )}
+        <h3 className="text-2xl font-bold mb-2 text-australis-navy">{name}</h3>
+        <div className="flex items-baseline gap-2 mb-1">
+          <span className={`text-4xl font-extrabold ${name === "Enterprise" ? "text-black" : name === "Developer" ? "text-australis-indigo" : "text-australis-navy"}`}>{price}</span>
+          <span className="text-base text-australis-navy/70">{name !== "Enterprise" ? "/month (ann.)" : ""}</span>
         </div>
-      </AccordionItem>
-    </Accordion>
+        <p className="text-gray-700 mb-4">{description}</p>
+        {/* Uniform bullet points */}
+        <ul className="mb-6 text-base list-disc list-inside text-australis-navy space-y-2 pl-2">
+          {features.map((f, i) => (
+            <li key={i} className="">{f}</li>
+          ))}
+        </ul>
+        {children}
+        {/* "Choose"/CTA button always at the bottom */}
+        <div className="flex w-full justify-center mt-auto pt-2">
+          <Button
+            size="lg"
+            className={(buttonClass || "") + " w-64 text-base font-semibold py-3"}
+            onClick={onContact}
+          >
+            {ctaText}
+          </Button>
+        </div>
+        {/* Accordion Trigger and Content */}
+        {detailedFeatures.length > 0 && (
+          <>
+            <button
+              type="button"
+              className="group flex items-center justify-center mt-6 cursor-pointer bg-transparent border-none ring-0 outline-none px-0 hover:underline focus:outline-none font-semibold text-australis-indigo transition-colors"
+              onClick={() => setExpanded((v) => !v)}
+              aria-expanded={expanded}
+            >
+              <span>{expanded ? "Hide Details" : "See Details"}</span>
+              <ChevronDown
+                className={`ml-2 inline-block transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
+                size={18}
+              />
+            </button>
+            {/* Expandable Features */}
+            {expanded && (
+              <div className="w-full px-1">
+                <div className="py-3">
+                  <div className="space-y-3">
+                    {detailedFeatures.map((group, idx) => (
+                      <div key={idx}>
+                        <div className="font-semibold text-australis-navy/90 pb-1">{group.title}</div>
+                        <ul className="pl-5 list-disc text-australis-navy/80 text-sm space-y-1">
+                          {group.items.map((item, i) => <li key={i}>{item}</li>)}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 
 export default PricingCard;
+
