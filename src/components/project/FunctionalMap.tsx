@@ -2,8 +2,6 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface FunctionalMapProps {
@@ -32,40 +30,26 @@ const FunctionalMap = ({
 }: FunctionalMapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const [mapboxToken, setMapboxToken] = useState('');
-  const [isTokenSet, setIsTokenSet] = useState(false);
-  const [showTokenInput, setShowTokenInput] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
   const [analysisStep, setAnalysisStep] = useState(0);
+  const [debugInfo, setDebugInfo] = useState<string>('');
+
+  // Use your Mapbox token directly
+  const MAPBOX_TOKEN = 'pk.eyJ1IjoidmtvZGlnZSIsImEiOiJjbWJ5NXpiOWwwajJnMmtzZXZobXp5YWxoIn0.pCYf3pokFHP394eZvLpmOQ';
 
   useEffect(() => {
-    checkAndInitializeMap();
+    initializeMap();
   }, []);
 
-  const checkAndInitializeMap = async () => {
-    const storedToken = localStorage.getItem('mapbox_token');
-    if (storedToken) {
-      console.log('Found stored token, initializing map...');
-      setMapboxToken(storedToken);
-      setIsTokenSet(true);
-      await initializeMap(storedToken);
-    } else {
-      setShowTokenInput(true);
-    }
-  };
-
-  const initializeMap = async (token: string) => {
+  const initializeMap = async () => {
     if (!mapContainer.current || mapRef.current) return;
 
     try {
-      console.log('Initializing Mapbox map...');
-      mapboxgl.accessToken = token;
-
-      // Test token validity first
-      const testResponse = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/london.json?access_token=${token}`);
-      if (!testResponse.ok) {
-        throw new Error('Invalid Mapbox token');
-      }
+      console.log('Initializing map with boundary data:', boundaryData);
+      console.log('Constraint layers:', constraintLayers);
+      
+      setDebugInfo('Initializing map...');
+      mapboxgl.accessToken = MAPBOX_TOKEN;
 
       const map = new mapboxgl.Map({
         container: mapContainer.current,
@@ -79,9 +63,13 @@ const FunctionalMap = ({
       map.on('load', () => {
         console.log('Map loaded successfully');
         setMapError(null);
+        setDebugInfo('Map loaded, checking boundary data...');
         
         if (boundaryData) {
+          console.log('Starting analysis with boundary data:', boundaryData);
           startAnalysisVisualization(map);
+        } else {
+          setDebugInfo('No boundary data found - please upload a KML file');
         }
 
         if (onMapReady) {
@@ -99,40 +87,73 @@ const FunctionalMap = ({
     } catch (error) {
       console.error('Error initializing map:', error);
       setMapError(error instanceof Error ? error.message : 'Failed to initialize map');
-      setIsTokenSet(false);
-      setShowTokenInput(true);
     }
   };
 
   const startAnalysisVisualization = async (map: mapboxgl.Map) => {
-    if (!boundaryData || !boundaryData.features) return;
+    if (!boundaryData) {
+      setDebugInfo('No boundary data to analyze');
+      return;
+    }
 
-    console.log('Starting analysis visualization...');
+    console.log('Starting analysis visualization with data:', boundaryData);
     
     // Step 1: Show project boundary
     setAnalysisStep(1);
+    setDebugInfo('Step 1: Displaying project boundary...');
     await addProjectBoundary(map);
     await delay(1500);
 
     // Step 2: Show 5km buffer
     setAnalysisStep(2);
+    setDebugInfo('Step 2: Creating 5km analysis buffer...');
     await add5kmBuffer(map);
     await delay(2000);
 
     // Step 3: Show constraints within buffer
     setAnalysisStep(3);
-    if (autoShowConstraints) {
+    setDebugInfo('Step 3: Loading constraints...');
+    if (autoShowConstraints && constraintLayers.length > 0) {
       await addConstraintsWithinBuffer(map);
+    } else {
+      setDebugInfo(`No constraints to display (${constraintLayers.length} layers available)`);
     }
     
     setAnalysisStep(4); // Analysis complete
+    setDebugInfo('Analysis complete!');
   };
 
   const addProjectBoundary = async (map: mapboxgl.Map) => {
     try {
+      console.log('Adding project boundary, data structure:', boundaryData);
+
+      // Handle different possible data structures
+      let geoJsonData = boundaryData;
+      
+      // If it's already a FeatureCollection, use it directly
+      if (boundaryData.type === 'FeatureCollection') {
+        geoJsonData = boundaryData;
+      }
+      // If it has features property, use it
+      else if (boundaryData.features) {
+        geoJsonData = {
+          type: 'FeatureCollection',
+          features: boundaryData.features
+        };
+      }
+      // If it's a single feature, wrap it
+      else if (boundaryData.type === 'Feature') {
+        geoJsonData = {
+          type: 'FeatureCollection',
+          features: [boundaryData]
+        };
+      }
+
+      console.log('Processed boundary data for map:', geoJsonData);
+
       map.addSource('project-boundary', {
         type: 'geojson',
-        data: boundaryData
+        data: geoJsonData
       });
 
       map.addLayer({
@@ -157,35 +178,59 @@ const FunctionalMap = ({
 
       // Fit map to boundary
       const bounds = new mapboxgl.LngLatBounds();
-      boundaryData.features.forEach((feature: any) => {
-        if (feature.geometry.type === 'Polygon') {
-          feature.geometry.coordinates[0].forEach((coord: number[]) => {
-            bounds.extend(coord as [number, number]);
-          });
-        }
-      });
+      let hasCoordinates = false;
 
-      if (!bounds.isEmpty()) {
+      if (geoJsonData.features && geoJsonData.features.length > 0) {
+        geoJsonData.features.forEach((feature: any) => {
+          if (feature.geometry) {
+            if (feature.geometry.type === 'Polygon' && feature.geometry.coordinates) {
+              feature.geometry.coordinates[0].forEach((coord: number[]) => {
+                bounds.extend(coord as [number, number]);
+                hasCoordinates = true;
+              });
+            } else if (feature.geometry.type === 'Point' && feature.geometry.coordinates) {
+              bounds.extend(feature.geometry.coordinates as [number, number]);
+              hasCoordinates = true;
+            }
+          }
+        });
+      }
+
+      if (hasCoordinates && !bounds.isEmpty()) {
         map.fitBounds(bounds, { padding: 100 });
+        console.log('Fitted map to boundary bounds');
+      } else {
+        console.warn('No valid coordinates found in boundary data');
+        setDebugInfo('Warning: No valid coordinates found in boundary data');
       }
 
     } catch (error) {
       console.error('Error adding boundary:', error);
+      setDebugInfo(`Error adding boundary: ${error}`);
     }
   };
 
   const add5kmBuffer = async (map: mapboxgl.Map) => {
     try {
-      // Create a 5km buffer around the boundary
-      // For visualization, we'll create a larger polygon
+      // Get bounds from the project boundary
       const bounds = new mapboxgl.LngLatBounds();
-      boundaryData.features.forEach((feature: any) => {
-        if (feature.geometry.type === 'Polygon') {
-          feature.geometry.coordinates[0].forEach((coord: number[]) => {
-            bounds.extend(coord as [number, number]);
-          });
-        }
-      });
+      let hasCoordinates = false;
+
+      if (boundaryData.features && boundaryData.features.length > 0) {
+        boundaryData.features.forEach((feature: any) => {
+          if (feature.geometry && feature.geometry.type === 'Polygon') {
+            feature.geometry.coordinates[0].forEach((coord: number[]) => {
+              bounds.extend(coord as [number, number]);
+              hasCoordinates = true;
+            });
+          }
+        });
+      }
+
+      if (!hasCoordinates) {
+        console.warn('Cannot create buffer - no valid boundary coordinates');
+        return;
+      }
 
       const center = bounds.getCenter();
       const bufferDistance = 0.045; // Approximate 5km in degrees
@@ -204,7 +249,7 @@ const FunctionalMap = ({
               [center.lng - bufferDistance, center.lat - bufferDistance]
             ]]
           },
-          properties: {}
+          properties: { name: '5km Analysis Buffer' }
         }]
       };
 
@@ -234,34 +279,60 @@ const FunctionalMap = ({
         }
       });
 
+      console.log('Added 5km buffer around boundary');
+
     } catch (error) {
       console.error('Error adding buffer:', error);
+      setDebugInfo(`Error adding buffer: ${error}`);
     }
   };
 
   const addConstraintsWithinBuffer = async (map: mapboxgl.Map) => {
-    if (!constraintLayers.length) return;
+    if (!constraintLayers.length) {
+      console.log('No constraint layers to display');
+      return;
+    }
+
+    console.log('Adding constraint layers:', constraintLayers);
 
     for (const layer of constraintLayers) {
-      if (!layer.features.length) continue;
+      if (!layer.features.length) {
+        console.log(`Skipping empty layer: ${layer.name}`);
+        continue;
+      }
 
       try {
         const sourceId = `constraint-${layer.id}`;
         
+        // Create sample UK-based coordinates for demonstration
         const geoJsonData = {
           type: 'FeatureCollection',
-          features: layer.features.map((feature, index) => ({
-            type: 'Feature',
-            geometry: feature.geom || {
-              type: 'Point',
-              coordinates: [-2.4 + (Math.random() - 0.5) * 2, 53.4 + (Math.random() - 0.5) * 2]
-            },
-            properties: {
-              name: feature.name || `${layer.name} ${index + 1}`,
-              type: layer.type,
-              color: layer.color
-            }
-          }))
+          features: layer.features.map((feature, index) => {
+            // Generate random coordinates within UK bounds for demo
+            const ukBounds = {
+              north: 60.8,
+              south: 49.9,
+              west: -8.2,
+              east: 1.8
+            };
+            
+            const lng = ukBounds.west + Math.random() * (ukBounds.east - ukBounds.west);
+            const lat = ukBounds.south + Math.random() * (ukBounds.north - ukBounds.south);
+            
+            return {
+              type: 'Feature',
+              geometry: feature.geom || {
+                type: 'Point',
+                coordinates: [lng, lat]
+              },
+              properties: {
+                name: feature.name || `${layer.name} ${index + 1}`,
+                type: layer.type,
+                color: layer.color,
+                description: `${layer.name} constraint`
+              }
+            };
+          })
         };
 
         map.addSource(sourceId, {
@@ -269,30 +340,17 @@ const FunctionalMap = ({
           data: geoJsonData as any
         });
 
-        // Add points for point geometries
+        // Add points for all features
         map.addLayer({
           id: `${sourceId}-points`,
           type: 'circle',
           source: sourceId,
-          filter: ['==', ['geometry-type'], 'Point'],
           paint: {
             'circle-color': layer.color,
             'circle-radius': 8,
             'circle-stroke-color': '#ffffff',
             'circle-stroke-width': 2,
             'circle-opacity': 0.8
-          }
-        });
-
-        // Add fills for polygon geometries
-        map.addLayer({
-          id: `${sourceId}-fill`,
-          type: 'fill',
-          source: sourceId,
-          filter: ['==', ['geometry-type'], 'Polygon'],
-          paint: {
-            'fill-color': layer.color,
-            'fill-opacity': 0.3
           }
         });
 
@@ -306,13 +364,16 @@ const FunctionalMap = ({
                 <div class="p-2">
                   <h3 class="font-bold">${feature.properties?.name}</h3>
                   <p class="text-sm text-gray-600">${layer.name}</p>
+                  <p class="text-xs text-gray-500">${feature.properties?.description}</p>
                 </div>
               `)
               .addTo(map);
           }
         });
 
+        console.log(`Added constraint layer: ${layer.name} (${layer.features.length} features)`);
         await delay(300); // Stagger the appearance of constraints
+        
       } catch (error) {
         console.error(`Error adding constraint layer ${layer.id}:`, error);
       }
@@ -321,31 +382,10 @@ const FunctionalMap = ({
 
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const handleTokenSubmit = async () => {
-    if (mapboxToken.trim()) {
-      localStorage.setItem('mapbox_token', mapboxToken);
-      setIsTokenSet(true);
-      setShowTokenInput(false);
-      setMapError(null);
-      await initializeMap(mapboxToken);
-    }
-  };
-
-  const resetToken = () => {
-    localStorage.removeItem('mapbox_token');
-    setMapboxToken('');
-    setIsTokenSet(false);
-    setShowTokenInput(true);
-    setMapError(null);
-    if (mapRef.current) {
-      mapRef.current.remove();
-      mapRef.current = null;
-    }
-  };
-
   // Re-run analysis when boundary or constraints change
   useEffect(() => {
-    if (mapRef.current && isTokenSet && boundaryData) {
+    if (mapRef.current && boundaryData) {
+      console.log('Boundary or constraints changed, restarting analysis...');
       // Clear existing layers
       const map = mapRef.current;
       try {
@@ -355,45 +395,31 @@ const FunctionalMap = ({
         ['project-boundary', 'analysis-buffer'].forEach(sourceId => {
           if (map.getSource(sourceId)) map.removeSource(sourceId);
         });
+        
+        // Remove constraint layers
+        constraintLayers.forEach(layer => {
+          const sourceId = `constraint-${layer.id}`;
+          if (map.getLayer(`${sourceId}-points`)) map.removeLayer(`${sourceId}-points`);
+          if (map.getSource(sourceId)) map.removeSource(sourceId);
+        });
       } catch (e) {
-        // Layers might not exist
+        console.log('Some layers might not exist during cleanup');
       }
       
       startAnalysisVisualization(map);
     }
-  }, [boundaryData, constraintLayers, isTokenSet]);
-
-  if (showTokenInput) {
-    return (
-      <Card className="w-full h-full flex items-center justify-center">
-        <CardContent className="text-center space-y-4 p-6">
-          <CardTitle>Mapbox Token Required</CardTitle>
-          <p className="text-sm text-gray-600">
-            Get your free token at: <a href="https://mapbox.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">mapbox.com</a>
-          </p>
-          {mapError && (
-            <p className="text-sm text-red-600">{mapError}</p>
-          )}
-          <div className="flex gap-2 max-w-md">
-            <Input
-              type="text"
-              placeholder="pk.eyJ1IjoieW91cnVzZXJuYW1lIi..."
-              value={mapboxToken}
-              onChange={(e) => setMapboxToken(e.target.value)}
-              className="flex-1"
-            />
-            <Button onClick={handleTokenSubmit} disabled={!mapboxToken.trim()}>
-              Set Token
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  }, [boundaryData, constraintLayers]);
 
   return (
     <div className="w-full h-full relative">
       <div ref={mapContainer} className="w-full h-full rounded-lg" />
+      
+      {/* Debug Info */}
+      {debugInfo && (
+        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg z-10 text-xs">
+          {debugInfo}
+        </div>
+      )}
       
       {/* Analysis Progress Indicator */}
       {analysisStep > 0 && analysisStep < 4 && (
@@ -414,25 +440,11 @@ const FunctionalMap = ({
           </div>
         </div>
       )}
-
-      {isTokenSet && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={resetToken}
-          className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm z-10"
-        >
-          Change Token
-        </Button>
-      )}
       
       {mapError && (
         <div className="absolute inset-0 flex items-center justify-center bg-red-50 rounded-lg">
           <div className="text-center">
             <p className="text-red-600 mb-2">{mapError}</p>
-            <Button onClick={resetToken} variant="outline">
-              Reset Token
-            </Button>
           </div>
         </div>
       )}
