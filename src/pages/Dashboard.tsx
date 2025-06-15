@@ -2,13 +2,29 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import OnboardingForm from "@/components/OnboardingForm";
+import ProjectCard from "@/components/ProjectCard";
+import DashboardHeader from "@/components/DashboardHeader";
+import { Plus } from "lucide-react";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showCreateProject, setShowCreateProject] = useState(false);
+  const [projectName, setProjectName] = useState("");
+  const [projects, setProjects] = useState([
+    {
+      id: 1,
+      name: "Test Project",
+      date: "4 February, 2025",
+      score: "undefined",
+      status: "Latest Report Score",
+      image: "/lovable-uploads/818f82d1-bcb5-4fcd-a7d8-63a8d0f778cf.png"
+    }
+  ]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,11 +56,28 @@ const Dashboard = () => {
     });
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    toast({ title: "Logged out", description: "You have been signed out." });
-    navigate("/auth");
+  const handleCreateProject = () => {
+    if (projectName.trim()) {
+      const newProject = {
+        id: projects.length + 1,
+        name: projectName,
+        date: new Date().toLocaleDateString('en-GB', { 
+          day: 'numeric', 
+          month: 'long', 
+          year: 'numeric' 
+        }),
+        score: "undefined",
+        status: "Latest Report Score",
+        image: "/lovable-uploads/818f82d1-bcb5-4fcd-a7d8-63a8d0f778cf.png"
+      };
+      setProjects([...projects, newProject]);
+      setProjectName("");
+      setShowCreateProject(false);
+      toast({
+        title: "Project Created",
+        description: `${projectName} has been created successfully.`,
+      });
+    }
   };
 
   if (!user) {
@@ -62,18 +95,63 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] bg-gradient-to-br from-white via-blue-50 to-blue-100">
-      <div className="bg-white rounded-2xl shadow-xl p-10 max-w-lg w-full border flex flex-col items-center">
-        <h1 className="text-2xl md:text-3xl font-extrabold mb-3 text-primary text-center">
-          👋 Welcome, {user.email}!
-        </h1>
-        <p className="mb-8 text-gray-700 text-center">
-          This is your dashboard. You are signed in and can now access personalized features.
-        </p>
-        <Button className="w-full" onClick={handleLogout} variant="outline">
-          Logout
-        </Button>
+    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100">
+      <DashboardHeader user={user} />
+      
+      <div className="container-custom py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">Dashboard</h1>
+          
+          <div className="flex items-center gap-4 mb-8">
+            {showCreateProject ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="Project Name"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  className="w-64"
+                  onKeyPress={(e) => e.key === 'Enter' && handleCreateProject()}
+                />
+                <Button onClick={handleCreateProject} className="bg-primary">
+                  Create Project
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowCreateProject(false);
+                    setProjectName("");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <Button 
+                onClick={() => setShowCreateProject(true)}
+                className="bg-primary flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Create Project
+              </Button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {projects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        </div>
       </div>
+
+      <footer className="bg-primary text-white py-12 mt-16">
+        <div className="container-custom text-center">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Newsletter</h3>
+          </div>
+          <p className="text-sm opacity-80">© 2025 Australis Energy. All Rights Reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 };
