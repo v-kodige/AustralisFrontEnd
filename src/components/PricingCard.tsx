@@ -47,12 +47,15 @@ const PricingCard = ({
     >
       <div className={`absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl z-0 bg-gradient-to-br ${accent} opacity-30`}></div>
       <div className="relative z-10 flex flex-col h-full">
-        {recommended && (
-          <div className="absolute top-6 right-6 px-3 py-1 text-xs font-semibold bg-[#3bf5b7] text-[#3a3d5d] rounded-full shadow">
-            MOST POPULAR
-          </div>
-        )}
-        <h3 className="text-2xl font-bold mb-2 text-australis-navy">{name}</h3>
+        {/* Title & MOST POPULAR inline */}
+        <div className="flex items-center mb-2 gap-2">
+          <h3 className="text-2xl font-bold text-australis-navy">{name}</h3>
+          {recommended && (
+            <div className="px-3 py-1 text-xs font-semibold bg-[#3bf5b7] text-[#3a3d5d] rounded-full shadow ml-1">
+              MOST POPULAR
+            </div>
+          )}
+        </div>
         <p className="text-gray-700 mb-4">{description}</p>
         {/* Uniform bullet points */}
         <ul className="mb-6 text-base list-disc list-inside text-australis-navy space-y-2 pl-4">
