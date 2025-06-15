@@ -1,35 +1,33 @@
 
 import EngineBenefitCard from './benefits/EngineBenefitCard';
 
+// Make sure each card uses ONLY the allowed iconAccent literal values:
 const benefitCards = [
   {
-    iconAccent: "australis-indigo",
-    title: "Smarter Site Selection",
-    subtitle: "Instantly discover locations with the highest chance of success.",
+    iconAccent: "australis-indigo" as const,
+    title: "Find the Best Locations, Instantly",
+    subtitle: "Pinpoint truly viable sites in less time.",
     bullets: [
-      "Analyses millions of datapoints to match land to your project needs",
-      "Filters out problematic sites based on regulatory and physical constraints",
-      "Ranks sites by true developability, saving months of manual review"
+      "Surface land that meets your exact technical, grid, and policy needs",
+      "See sustainability, planning, and connection obstacles before you commit"
     ]
   },
   {
-    iconAccent: "australis-aqua",
-    title: "Clear, Actionable Feasibility",
-    subtitle: "Know what’s possible before investing in surveys or designs.",
+    iconAccent: "australis-aqua" as const,
+    title: "Maximise Feasibility Early",
+    subtitle: "Know what you can build—without expensive custom studies.",
     bullets: [
-      "Estimates buildability, power capacity, and technical limits for your project",
-      "Highlights risks—grid, financial, consent—before you spend",
-      "Ensures you see potential and pitfalls at a glance"
+      "Estimate buildability and power yield based on site realities",
+      "Reveal project risks pre-investment, avoiding costly surprises"
     ]
   },
   {
-    iconAccent: "australis-indigo",
-    title: "Automatic Compliance & Evidence",
-    subtitle: "Stay ahead of changing rules and prove due diligence.",
+    iconAccent: "australis-indigo" as const,
+    title: "Stay Secure with Built-In Compliance",
+    subtitle: "Remove regulatory guesswork from your workflow.",
     bullets: [
-      "Checks your site against evolving planning and environmental regulations",
-      "Surfaces compliance issues with tailored recommendations",
-      "Generates reports ready for consultation, approval, or investment"
+      "Check rules and constraints with up-to-date AI analysis",
+      "Export ready-made evidence for consultation or investors"
     ]
   }
 ];
@@ -67,4 +65,3 @@ const BenefitsSection = () => {
 };
 
 export default BenefitsSection;
-
