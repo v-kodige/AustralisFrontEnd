@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PlayCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -52,6 +51,7 @@ const HeroSection = () => {
                 </p>
               </div>
               
+              {/* Early access only, book demo removed */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   size="lg" 
@@ -73,8 +73,8 @@ const HeroSection = () => {
             </div>
           </div>
           
+          {/* Layered floating accent elements */}
           <div className="relative animate-fade-in">
-            {/* Layered floating accent elements */}
             <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-australis-aqua/20 to-australis-aqua/5 rounded-full blur-2xl shadow-lg"></div>
             <div className="absolute -top-6 -left-6 w-32 h-32 bg-gradient-to-tr from-australis-indigo/20 to-australis-indigo/5 rounded-full blur-2xl shadow-lg"></div>
             <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-white/30 rounded-full blur-lg"></div>

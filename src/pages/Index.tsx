@@ -10,21 +10,42 @@ import CtaSection from '@/components/CtaSection';
 import FaqSection from '@/components/FaqSection';
 import Footer from '@/components/Footer';
 import ExpertPanel from '@/components/ExpertPanel';
+import Auth from './Auth';
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
 const Index = () => {
+  const { user, loading } = useSupabaseAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="spinner-border animate-spin h-8 w-8 border-4 border-australis-indigo rounded-full border-r-transparent"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
       <main>
-        <HeroSection />
-        <ProblemSection />
-        <BenefitsSection />
-        <FeaturesSection />
-        <SocialProofSection />
-        <DemoSection />
-        <ExpertPanel />
-        <CtaSection />
-        <FaqSection />
+        {!user && (
+          <div className="pt-4 pb-8">
+            <Auth />
+          </div>
+        )}
+        {user && (
+          <>
+            <HeroSection />
+            <ProblemSection />
+            <BenefitsSection />
+            <FeaturesSection />
+            <SocialProofSection />
+            <DemoSection />
+            <ExpertPanel />
+            <CtaSection />
+            <FaqSection />
+          </>
+        )}
       </main>
       <Footer />
     </div>

@@ -26,11 +26,11 @@ const DemoSection = () => {
             </Button>
             <p className="text-australis-gray">Product demonstration video</p>
           </div>
-          
           <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/20 to-transparent"></div>
         </div>
         
-        <div className="flex justify-center mt-10">
+        {/* REMOVED Book a Live Demo button */}
+        {/* <div className="flex justify-center mt-10">
           <Button 
             variant="default" 
             size="lg"
@@ -38,7 +38,7 @@ const DemoSection = () => {
           >
             Book a Live Demo
           </Button>
-        </div>
+        </div> */}
       </div>
     </section>
   );

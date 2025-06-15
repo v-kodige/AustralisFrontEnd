@@ -50,20 +50,8 @@ const Header = () => {
           {user ? (
             <UserMenu />
           ) : (
-            <Link to="/auth">
-              <Button
-                size="sm"
-                className="flex items-center gap-2 bg-australis-indigo text-white border border-australis-indigo transition-colors hover:bg-white hover:text-australis-indigo"
-                style={{ boxShadow: "0 1px 4px 0 rgba(60,98,255,.10)" }}
-              >
-                <LogIn size={16} />
-                Login
-              </Button>
-            </Link>
+            null
           )}
-          <Button variant="default" size="sm">
-            Book a Demo
-          </Button>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -96,20 +84,8 @@ const Header = () => {
             {user ? (
               <UserMenu />
             ) : (
-              <Link to="/auth">
-                <Button
-                  size="sm"
-                  className="w-full flex items-center justify-center gap-2 bg-australis-indigo text-white border border-australis-indigo transition-colors hover:bg-white hover:text-australis-indigo"
-                  style={{ boxShadow: "0 1px 4px 0 rgba(60,98,255,.10)" }}
-                >
-                  <LogIn size={16} />
-                  Login
-                </Button>
-              </Link>
+              null
             )}
-            <Button variant="default" size="sm" className="w-full">
-              Book a Demo
-            </Button>
           </div>
         </div>
       )}

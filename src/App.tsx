@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Pricing from "./pages/Pricing";
-import Auth from "./pages/Auth";
 import { useSupabaseAuth } from "./hooks/useSupabaseAuth";
 import UserMenu from "@/components/UserMenu";
 
@@ -30,8 +29,8 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/auth" element={user ? <Index /> : <Auth />} />
-            <Route path="/" element={!user ? <Auth /> : <Index />} />
+            {/* Route all to index, handle auth there */}
+            <Route path="/" element={<Index />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
