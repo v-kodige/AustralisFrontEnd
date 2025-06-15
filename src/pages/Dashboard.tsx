@@ -8,12 +8,12 @@ import OnboardingForm from "@/components/OnboardingForm";
 import ProjectCard from "@/components/ProjectCard";
 import DashboardHeader from "@/components/DashboardHeader";
 import { Plus, Search, Filter, FolderOpen } from "lucide-react";
+import ProjectCreationForm from "@/components/ProjectCreationForm";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showCreateProject, setShowCreateProject] = useState(false);
-  const [projectName, setProjectName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [projects, setProjects] = useState([
     {
@@ -62,33 +62,43 @@ const Dashboard = () => {
     });
   };
 
-  const handleCreateProject = () => {
-    if (projectName.trim()) {
-      const newProject = {
-        id: projects.length + 1,
-        name: projectName,
-        date: new Date().toLocaleDateString('en-GB', { 
-          day: 'numeric', 
-          month: 'long', 
-          year: 'numeric' 
-        }),
-        score: "undefined",
-        status: "Development Score",
-        image: "/lovable-uploads/818f82d1-bcb5-4fcd-a7d8-63a8d0f778cf.png"
-      };
-      setProjects([...projects, newProject]);
-      setProjectName("");
-      setShowCreateProject(false);
-      toast({
-        title: "Project Created",
-        description: `${projectName} has been created successfully.`,
-      });
-    }
+  const handleCreateProject = (projectData: any) => {
+    const newProject = {
+      id: projects.length + 1,
+      name: projectData.name,
+      date: new Date().toLocaleDateString('en-GB', { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+      }),
+      score: "undefined",
+      status: "Development Score",
+      image: "/lovable-uploads/818f82d1-bcb5-4fcd-a7d8-63a8d0f778cf.png",
+      description: projectData.description,
+      location: projectData.location,
+      teamMembers: projectData.teamMembers
+    };
+    setProjects([...projects, newProject]);
+    setShowCreateProject(false);
+    toast({
+      title: "Project Created",
+      description: `${projectData.name} has been created successfully.`,
+    });
   };
 
   const filteredProjects = projects.filter(project =>
     project.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getUserDisplayName = () => {
+    if (user?.user_metadata?.first_name) {
+      return user.user_metadata.first_name;
+    }
+    if (user?.user_metadata?.nickname) {
+      return user.user_metadata.nickname;
+    }
+    return user?.email?.split('@')[0] || 'there';
+  };
 
   if (!user) {
     return (
@@ -111,7 +121,7 @@ const Dashboard = () => {
         <div className="mb-12">
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-australis-navy mb-3">
-              Welcome back, {user.email?.split('@')[0]}
+              Welcome back, {getUserDisplayName()}
             </h1>
             <p className="text-australis-gray text-lg">
               Manage your renewable energy projects and track development scores
@@ -133,41 +143,13 @@ const Dashboard = () => {
                 <Filter className="w-4 h-4" />
                 Filter
               </Button>
-              {showCreateProject ? (
-                <div className="flex items-center gap-2">
-                  <Input
-                    placeholder="Project Name"
-                    value={projectName}
-                    onChange={(e) => setProjectName(e.target.value)}
-                    className="w-48 border-australis-blue/20 focus:border-australis-blue"
-                    onKeyPress={(e) => e.key === 'Enter' && handleCreateProject()}
-                  />
-                  <Button 
-                    onClick={handleCreateProject} 
-                    className="bg-gradient-to-r from-australis-blue to-australis-teal hover:from-australis-blue/90 hover:to-australis-teal/90 text-white shadow-lg"
-                  >
-                    Create
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      setShowCreateProject(false);
-                      setProjectName("");
-                    }}
-                    className="border-australis-gray/20"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              ) : (
-                <Button 
-                  onClick={() => setShowCreateProject(true)}
-                  className="bg-gradient-to-r from-australis-blue to-australis-teal hover:from-australis-blue/90 hover:to-australis-teal/90 text-white shadow-lg flex items-center gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  New Project
-                </Button>
-              )}
+              <Button 
+                onClick={() => setShowCreateProject(true)}
+                className="bg-gradient-to-r from-australis-blue to-australis-teal hover:from-australis-blue/90 hover:to-australis-teal/90 text-white shadow-lg flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                New Project
+              </Button>
             </div>
           </div>
 
@@ -200,6 +182,13 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      {showCreateProject && (
+        <ProjectCreationForm
+          onClose={() => setShowCreateProject(false)}
+          onSubmit={handleCreateProject}
+        />
+      )}
 
       <footer className="bg-gradient-to-r from-australis-navy to-australis-darkBlue text-white py-12 mt-16">
         <div className="container-custom text-center">
