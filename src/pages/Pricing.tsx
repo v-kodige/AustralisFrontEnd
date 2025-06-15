@@ -1,3 +1,4 @@
+
 import PricingCard from "@/components/PricingCard";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -6,57 +7,141 @@ const tiers = [
   {
     name: "Scout",
     price: "£249",
-    description: "For freelancers, consultants, and small teams doing initial site screening.",
+    description:
+      "For freelancers, consultants, and small teams doing initial site screening. Billed annually.",
     accent: "from-australis-aqua to-australis-indigo",
     features: [
-      "1 User Seat",
-      "10 Assessment Credits / month",
-      "Design Engine (Full Access)",
+      "Includes 1 User Seat",
+      "Includes 10 Assessment Credits / month",
+      "Full access to the Design Engine",
       "Basic Regulatory Insights (National Policy)",
       "Standard Grid Proximity Analysis",
       "Standard Email Support (48hr response)",
-      "Top-up credit packs available for purchase."
+      "Option to purchase top-up credit packs"
+    ],
+    detailedFeatures: [
+      {
+        title: "Core Platform Access",
+        items: [
+          "Access all key site assessment tools",
+          "Fast onboarding for small teams",
+        ],
+      },
+      {
+        title: "Credits & Scaling",
+        items: [
+          "10 renewable site assessment credits per month",
+          "Top up anytime as needed"
+        ]
+      },
+      {
+        title: "Support",
+        items: [
+          "Standard email support (48hr response time)",
+          "Knowledge base access"
+        ]
+      }
     ],
     ctaText: "Get Started with Scout",
-    buttonClass: "bg-white text-australis-navy border border-australis-navy hover:bg-australis-navy hover:text-white transition-colors",
+    buttonClass:
+      "bg-white text-australis-navy border border-australis-navy hover:bg-australis-navy hover:text-white transition-colors",
   },
   {
     name: "Developer",
     price: "£999",
-    description: "For growing solar developers and IPPs managing an active and complex pipeline.",
+    description:
+      "For growing solar developers and IPPs managing an active and complex pipeline. Billed annually.",
     accent: "from-australis-indigo to-australis-aqua",
     features: [
-      "5 User Seats",
-      "50 Assessment Credits / month",
-      "Everything in Scout, plus:",
-      "Full Regulatory Compliance Engine (Agentic AI) for local plan analysis",
-      "Full Grid Insights Engine for connection feasibility",
+      "Includes 5 User Seats",
+      "Includes 50 Assessment Credits / month",
+      "All features of Scout, plus:",
+      "Agentic AI Regulatory Compliance Engine (local plan analysis)",
+      "Full Grid Insights for connection feasibility",
       "Customisable Developability Index Scoring",
       "Advanced Reporting & Data Exports",
       "Priority Support (Chat & Email, <24hr response)",
-      "Top-up credit packs available for purchase."
+      "Option to purchase top-up credit packs"
+    ],
+    detailedFeatures: [
+      {
+        title: "All Scout Features",
+        items: [
+          "Everything in the Scout plan",
+        ],
+      },
+      {
+        title: "Advanced Analysis",
+        items: [
+          "Agentic AI-driven regulatory checks for local plans",
+          "Comprehensive grid feasibility insights with high fidelity",
+          "Customisable scoring for site developability",
+        ],
+      },
+      {
+        title: "Collaboration & Exports",
+        items: [
+          "5 team members with simultaneous access",
+          "Generate detailed reports and structured data exports"
+        ]
+      },
+      {
+        title: "Support & Scaling",
+        items: [
+          "Priority chat/email support (<24hr response)",
+          "Top up credits any time"
+        ]
+      }
     ],
     recommended: true,
     ctaText: "Choose Developer",
-    buttonClass: "bg-australis-indigo text-white hover:bg-white hover:text-australis-indigo border border-australis-indigo transition-colors",
+    buttonClass:
+      "bg-australis-indigo text-white hover:bg-white hover:text-australis-indigo border border-australis-indigo transition-colors",
   },
   {
     name: "Enterprise",
     price: "Custom Pricing",
-    description: "A tailored solution for large developers, funds, and organisations requiring scale and integration.",
+    description:
+      "A tailored solution for large developers, funds, and organisations requiring scale and integration.",
     accent: "from-australis-indigo to-australis-navy",
     features: [
       "Custom User Seats",
-      "Custom / Pooled Annual Credit Allowance",
-      "Everything in Developer, plus:",
-      "Negotiable API Access for integration into your systems",
-      "Single Sign-On (SSO) for enhanced security",
-      "Portfolio-Wide Analytics",
+      "Custom/Pooled Annual Credits",
+      "All Developer features, plus:",
+      "Negotiate API Access for system integration",
+      "Single Sign-On (SSO) & Security Enhancements",
+      "Portfolio-Wide Analytics Dashboard",
       "Dedicated Account Manager & Onboarding",
       "Guaranteed Support SLA"
     ],
+    detailedFeatures: [
+      {
+        title: "Scale & Integration",
+        items: [
+          "Flexible user seat arrangements to fit your teams",
+          "Pooled or custom annual credit allocation"
+        ]
+      },
+      {
+        title: "Advanced Features",
+        items: [
+          "All Developer plan features",
+          "Real-time API access and integration options",
+          "Portfolio analytics for large asset bases"
+        ]
+      },
+      {
+        title: "Security & Support",
+        items: [
+          "Single Sign-On (SSO), enhanced security options",
+          "Dedicated account manager and tailored onboarding",
+          "Guaranteed SLA for enterprise support"
+        ]
+      }
+    ],
     ctaText: "Contact Sales",
-    buttonClass: "bg-black text-white hover:bg-white hover:text-black border border-black transition-colors",
+    buttonClass:
+      "bg-black text-white hover:bg-white hover:text-black border border-black transition-colors",
   }
 ];
 
@@ -93,14 +178,16 @@ const Pricing = () => {
             </p>
           </div>
         </div>
+        {/* Pricing cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-8">
-          {tiers.map((tier, idx) => (
+          {tiers.map((tier) => (
             <PricingCard
               key={tier.name}
               name={tier.name}
               price={tier.price}
               description={tier.description}
               features={tier.features}
+              detailedFeatures={tier.detailedFeatures}
               accent={tier.accent}
               recommended={tier.recommended}
               onContact={tier.name === "Enterprise" ? handleContact : undefined}
@@ -109,13 +196,15 @@ const Pricing = () => {
             />
           ))}
         </div>
-        <div className="mt-20 flex justify-center">
+        {/* UK-wide and Country Pack info (moved to bottom) */}
+        <div className="mt-14 flex justify-center">
           <div className="bg-white/50 border border-white/20 rounded-3xl shadow-md backdrop-blur-2xl px-8 py-6 max-w-2xl w-full text-center">
             <p className="text-lg text-australis-navy/80">
               All plans are for UK-wide analysis. Future country-specific access will be available via <span className="font-semibold">&quot;Country Packs&quot;</span>.
             </p>
           </div>
         </div>
+        {/* Usage info and contact */}
         <div className="text-center mt-10 text-australis-navy/60 max-w-xl mx-auto">
           For detailed usage info, integrations, or to discuss custom enterprise solutions,{" "}
           <button
