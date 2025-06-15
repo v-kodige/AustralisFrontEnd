@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { createAccurateBuffer, calculateBounds } from '@/utils/geometryUtils';
 
 interface FunctionalMapProps {
   boundaryData: any;
@@ -87,6 +88,76 @@ const FunctionalMap = ({
     }
   };
 
+  const add5kmBuffer = async (map: mapboxgl.Map, boundaryGeoJson: any) => {
+    if (!boundaryGeoJson) return;
+
+    try {
+      console.log('=== CREATING ACCURATE 5KM BUFFER ===');
+      console.log('Input boundary data:', boundaryGeoJson);
+
+      // Use Turf.js to create accurate 5km buffer
+      const bufferGeometry = createAccurateBuffer(boundaryGeoJson, {
+        radius: 5,
+        units: 'kilometers',
+        steps: 64
+      });
+
+      if (!bufferGeometry) {
+        console.error('Failed to create buffer geometry');
+        setDebugInfo('Error: Could not create accurate buffer');
+        return;
+      }
+
+      console.log('Accurate buffer created:', bufferGeometry);
+
+      // Remove existing buffer if present
+      if (map.getSource('analysis-buffer')) {
+        if (map.getLayer('buffer-fill')) map.removeLayer('buffer-fill');
+        if (map.getLayer('buffer-stroke')) map.removeLayer('buffer-stroke');
+        map.removeSource('analysis-buffer');
+      }
+
+      map.addSource('analysis-buffer', {
+        type: 'geojson',
+        data: bufferGeometry as any
+      });
+
+      map.addLayer({
+        id: 'buffer-fill',
+        type: 'fill',
+        source: 'analysis-buffer',
+        paint: {
+          'fill-color': '#0066cc',
+          'fill-opacity': 0.1
+        }
+      });
+
+      map.addLayer({
+        id: 'buffer-stroke',
+        type: 'line',
+        source: 'analysis-buffer',
+        paint: {
+          'line-color': '#0066cc',
+          'line-width': 2,
+          'line-dasharray': [5, 5]
+        }
+      });
+
+      console.log('✅ Added accurate 5km buffer around boundary');
+
+      // Calculate bounds of the buffer for constraint analysis
+      const bufferBounds = calculateBounds(bufferGeometry);
+      if (bufferBounds) {
+        console.log('Buffer bounds calculated:', bufferBounds);
+        return bufferGeometry;
+      }
+
+    } catch (error) {
+      console.error('❌ Error adding accurate buffer:', error);
+      setDebugInfo(`Error adding buffer: ${error}`);
+    }
+  };
+
   const startAnalysisVisualization = async (map: mapboxgl.Map) => {
     console.log('=== GIS TROUBLESHOOTING: MAP VISUALIZATION START ===');
     console.log('1. Boundary data input to map:', boundaryData);
@@ -114,19 +185,19 @@ const FunctionalMap = ({
     
     await delay(1500);
 
-    // Step 2: Show 5km buffer
+    // Step 2: Show accurate 5km buffer
     setAnalysisStep(2);
-    setDebugInfo('Step 2: Creating 5km analysis buffer...');
-    await add5kmBuffer(map, boundingBox);
+    setDebugInfo('Step 2: Creating accurate 5km analysis buffer...');
+    const bufferGeometry = await add5kmBuffer(map, boundaryData);
     await delay(2000);
 
-    // Step 3: Fetch and show real constraints
+    // Step 3: Fetch and show real constraints within the accurate buffer
     setAnalysisStep(3);
-    setDebugInfo('Step 3: Fetching real planning constraints...');
-    await fetchAndDisplayRealConstraints(map, boundingBox);
+    setDebugInfo('Step 3: Fetching real planning constraints within buffer...');
+    await fetchAndDisplayRealConstraints(map, bufferGeometry || boundaryData);
     
     setAnalysisStep(4);
-    setDebugInfo('Analysis complete!');
+    setDebugInfo('Analysis complete with accurate geometric buffer!');
   };
 
   const addProjectBoundary = async (map: mapboxgl.Map) => {
@@ -277,70 +348,11 @@ const FunctionalMap = ({
     }
   };
 
-  const add5kmBuffer = async (map: mapboxgl.Map, bounds: mapboxgl.LngLatBounds | null) => {
-    if (!bounds) return;
+  const fetchAndDisplayRealConstraints = async (map: mapboxgl.Map, boundaryGeoJson: any) => {
+    if (!boundaryGeoJson) return;
 
     try {
-      const center = bounds.getCenter();
-      const bufferDistance = 0.045;
-
-      const bufferPolygon = {
-        type: 'FeatureCollection',
-        features: [{
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [[
-              [center.lng - bufferDistance, center.lat - bufferDistance],
-              [center.lng + bufferDistance, center.lat - bufferDistance],
-              [center.lng + bufferDistance, center.lat + bufferDistance],
-              [center.lng - bufferDistance, center.lat + bufferDistance],
-              [center.lng - bufferDistance, center.lat - bufferDistance]
-            ]]
-          },
-          properties: { name: '5km Analysis Buffer' }
-        }]
-      };
-
-      map.addSource('analysis-buffer', {
-        type: 'geojson',
-        data: bufferPolygon as any
-      });
-
-      map.addLayer({
-        id: 'buffer-fill',
-        type: 'fill',
-        source: 'analysis-buffer',
-        paint: {
-          'fill-color': '#0066cc',
-          'fill-opacity': 0.1
-        }
-      });
-
-      map.addLayer({
-        id: 'buffer-stroke',
-        type: 'line',
-        source: 'analysis-buffer',
-        paint: {
-          'line-color': '#0066cc',
-          'line-width': 2,
-          'line-dasharray': [5, 5]
-        }
-      });
-
-      console.log('✅ Added 5km buffer around boundary');
-
-    } catch (error) {
-      console.error('❌ Error adding buffer:', error);
-      setDebugInfo(`Error adding buffer: ${error}`);
-    }
-  };
-
-  const fetchAndDisplayRealConstraints = async (map: mapboxgl.Map, bounds: mapboxgl.LngLatBounds | null) => {
-    if (!bounds) return;
-
-    try {
-      const center = bounds.getCenter();
+      const center = boundaryGeoJson ? calculateBounds(boundaryGeoJson).getCenter() : null;
       const constraints = await fetchRealConstraintData(center.lat, center.lng);
       
       console.log('Fetched real constraints:', constraints);
@@ -354,7 +366,7 @@ const FunctionalMap = ({
     } catch (error) {
       console.error('Error fetching real constraints:', error);
       setDebugInfo('Using demo constraint data due to API limitations');
-      await addDemoConstraints(map, bounds);
+      await addDemoConstraints(map, boundaryGeoJson);
     }
   };
 
@@ -492,8 +504,8 @@ const FunctionalMap = ({
     }
   };
 
-  const addDemoConstraints = async (map: mapboxgl.Map, bounds: mapboxgl.LngLatBounds) => {
-    const center = bounds.getCenter();
+  const addDemoConstraints = async (map: mapboxgl.Map, boundaryGeoJson: any) => {
+    const center = boundaryGeoJson ? calculateBounds(boundaryGeoJson).getCenter() : null;
     const demoConstraints = [
       {
         id: 'demo_sssi',
@@ -615,8 +627,8 @@ const FunctionalMap = ({
             <div className="animate-spin w-5 h-5 border-2 border-australis-blue/20 rounded-full border-t-australis-blue"></div>
             <div className="text-sm">
               {analysisStep === 1 && "Displaying project boundary..."}
-              {analysisStep === 2 && "Creating 5km analysis buffer..."}
-              {analysisStep === 3 && "Fetching real planning constraints..."}
+              {analysisStep === 2 && "Creating accurate 5km geometric buffer..."}
+              {analysisStep === 3 && "Fetching constraints within buffer geometry..."}
             </div>
           </div>
           <div className="mt-2 bg-gray-200 rounded-full h-1">

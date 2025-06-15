@@ -12,6 +12,7 @@ import DevelopabilityScore from './DevelopabilityScore';
 import PDFReportGenerator from './PDFReportGenerator';
 import ConstraintChatInterface from './ConstraintChatInterface';
 import { UK_SOLAR_CONSTRAINTS } from './ConstraintCategories';
+import REPDIntegration from './REPDIntegration';
 
 interface ConsolidatedProjectViewProps {
   projectId: string;
@@ -35,6 +36,7 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
   const [showChat, setShowChat] = useState(false);
   const [projectData, setProjectData] = useState<any>(null);
   const [analysisData, setAnalysisData] = useState<any>(null);
+  const [projectLocation, setProjectLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   const constraintColors = {
     sssi: '#ff0000',
@@ -137,6 +139,31 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
             }
           } else {
             console.log('8. ❌ No valid features array found in geometry_data');
+          }
+          
+          // Extract project location for REPD analysis
+          if (geometryData && geometryData.features && geometryData.features.length > 0) {
+            const feature = geometryData.features[0];
+            if (feature.geometry && feature.geometry.coordinates) {
+              let centerLat, centerLng;
+              
+              if (feature.geometry.type === 'Point') {
+                centerLng = feature.geometry.coordinates[0];
+                centerLat = feature.geometry.coordinates[1];
+              } else if (feature.geometry.type === 'Polygon') {
+                // Calculate centroid of polygon
+                const coords = feature.geometry.coordinates[0];
+                const sumLat = coords.reduce((sum: number, coord: number[]) => sum + coord[1], 0);
+                const sumLng = coords.reduce((sum: number, coord: number[]) => sum + coord[0], 0);
+                centerLat = sumLat / coords.length;
+                centerLng = sumLng / coords.length;
+              }
+              
+              if (centerLat && centerLng) {
+                setProjectLocation({ lat: centerLat, lng: centerLng });
+                console.log('Project location set for REPD analysis:', { lat: centerLat, lng: centerLng });
+              }
+            }
           }
           
           setBoundaryData(geometryData);
@@ -320,6 +347,14 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
         </Card>
       )}
 
+      {/* REPD Analysis - New Section */}
+      {projectLocation && (
+        <REPDIntegration 
+          projectLocation={projectLocation}
+          searchRadiusKm={10}
+        />
+      )}
+
       {/* Main Map - Full Width when File Uploaded */}
       <div className={hasUploadedFile && !showFileUpload ? "w-full" : "grid grid-cols-1 lg:grid-cols-4 gap-6"}>
         {/* Map */}
@@ -330,7 +365,7 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
                 Interactive Analysis Map
                 {hasUploadedFile && (
                   <Badge variant="secondary" className="text-xs">
-                    5km Buffer Analysis Active
+                    Accurate 5km Geometric Buffer Analysis
                   </Badge>
                 )}
               </CardTitle>
