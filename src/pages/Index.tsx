@@ -10,7 +10,6 @@ import CtaSection from '@/components/CtaSection';
 import FaqSection from '@/components/FaqSection';
 import Footer from '@/components/Footer';
 import ExpertPanel from '@/components/ExpertPanel';
-import LoginSection from '@/components/LoginSection';
 
 const Index = () => {
   return (
@@ -18,7 +17,6 @@ const Index = () => {
       <Header />
       <main>
         <HeroSection />
-        <LoginSection />
         <ProblemSection />
         <BenefitsSection />
         <FeaturesSection />
