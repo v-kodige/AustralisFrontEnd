@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import OnboardingForm from "@/components/OnboardingForm";
 import ProjectCard from "@/components/ProjectCard";
 import DashboardHeader from "@/components/DashboardHeader";
-import { Plus, Search, Filter } from "lucide-react";
+import { Plus, Search, Filter, FolderOpen } from "lucide-react";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
