@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -64,6 +63,7 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
   const loadProjectData = async () => {
     try {
       setLoading(true);
+      console.log('Loading project data for project ID:', projectId);
       
       // Load project details
       const { data: project, error: projectError } = await supabase
@@ -73,6 +73,7 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
         .single();
 
       if (projectError) throw projectError;
+      console.log('Loaded project:', project);
       setProjectData(project);
 
       // Check if file exists
@@ -83,14 +84,22 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
         .eq('processed', true);
 
       if (fileError) throw fileError;
+      console.log('Found project files:', files);
 
       if (files && files.length > 0) {
         const file = files[0];
+        console.log('Processing file:', file);
+        
         if (file.geometry_data) {
+          console.log('Geometry data found:', JSON.stringify(file.geometry_data, null, 2));
           setBoundaryData(file.geometry_data);
           setHasUploadedFile(true);
           setShowFileUpload(false);
+        } else {
+          console.log('No geometry_data found in file');
         }
+      } else {
+        console.log('No processed files found for project');
       }
 
       // Load analysis data
@@ -158,9 +167,13 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
   };
 
   const handleFileUploaded = () => {
+    console.log('File uploaded, reloading project data...');
     setHasUploadedFile(true);
     setShowFileUpload(false);
-    loadProjectData();
+    // Add a small delay to ensure the file is processed
+    setTimeout(() => {
+      loadProjectData();
+    }, 1000);
   };
 
   const groupedLayers = constraintLayers.reduce((acc, layer) => {

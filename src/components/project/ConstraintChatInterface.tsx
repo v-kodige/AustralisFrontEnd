@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -239,22 +238,22 @@ What specific aspect would you like to explore? You can ask about:
           Chat with Australis AI
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col p-0">
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <CardContent className="flex-1 flex flex-col p-0 min-h-0">
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`flex gap-2 max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+              <div className={`flex gap-2 max-w-[85%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                   message.type === 'user' ? 'bg-australis-blue text-white' : 'bg-gray-100 text-gray-600'
                 }`}>
                   {message.type === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                 </div>
-                <div className={`p-3 rounded-lg ${
+                <div className={`p-3 rounded-lg break-words overflow-wrap-anywhere ${
                   message.type === 'user' 
                     ? 'bg-australis-blue text-white' 
                     : 'bg-gray-100 text-gray-800'
                 }`}>
-                  <div className="whitespace-pre-line text-sm">{message.content}</div>
+                  <div className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</div>
                   <div className="text-xs opacity-70 mt-1">
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
@@ -265,7 +264,7 @@ What specific aspect would you like to explore? You can ask about:
           
           {isTyping && (
             <div className="flex justify-start">
-              <div className="flex gap-2 max-w-[80%]">
+              <div className="flex gap-2 max-w-[85%]">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 text-gray-600">
                   <Bot className="w-4 h-4" />
                 </div>
@@ -282,20 +281,21 @@ What specific aspect would you like to explore? You can ask about:
           <div ref={messagesEndRef} />
         </div>
         
-        <div className="p-4 border-t">
+        <div className="p-4 border-t flex-shrink-0">
           <div className="flex gap-2">
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask about constraints, planning, or site suitability..."
-              className="flex-1"
+              className="flex-1 min-w-0"
               disabled={isTyping}
             />
             <Button 
               onClick={handleSendMessage} 
               disabled={!inputValue.trim() || isTyping}
               size="icon"
+              className="flex-shrink-0"
             >
               <Send className="w-4 h-4" />
             </Button>

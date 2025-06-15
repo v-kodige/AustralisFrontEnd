@@ -88,17 +88,27 @@ const FunctionalMap = ({
   };
 
   const startAnalysisVisualization = async (map: mapboxgl.Map) => {
+    console.log('Starting analysis with boundary data:', boundaryData);
+    
     if (!boundaryData) {
       setDebugInfo('No boundary data to analyze');
+      console.log('No boundary data provided to startAnalysisVisualization');
       return;
     }
 
-    console.log('Starting analysis with boundary data structure:', boundaryData);
+    console.log('Boundary data type:', typeof boundaryData);
+    console.log('Boundary data structure:', JSON.stringify(boundaryData, null, 2));
     
     // Step 1: Show project boundary
     setAnalysisStep(1);
     setDebugInfo('Step 1: Displaying project boundary...');
     const boundingBox = await addProjectBoundary(map);
+    
+    if (!boundingBox) {
+      setDebugInfo('Error: Could not create boundary from KML data');
+      return;
+    }
+    
     await delay(1500);
 
     // Step 2: Show 5km buffer
@@ -118,7 +128,13 @@ const FunctionalMap = ({
 
   const addProjectBoundary = async (map: mapboxgl.Map) => {
     try {
-      console.log('Processing boundary data:', boundaryData);
+      console.log('addProjectBoundary called with data:', boundaryData);
+
+      if (!boundaryData) {
+        console.error('No boundary data provided to addProjectBoundary');
+        setDebugInfo('Error: No boundary data provided');
+        return null;
+      }
 
       let geoJsonData = null;
       let bounds = new mapboxgl.LngLatBounds();
@@ -126,16 +142,19 @@ const FunctionalMap = ({
       // Handle different data structures more robustly
       if (boundaryData.type === 'FeatureCollection') {
         geoJsonData = boundaryData;
+        console.log('Using FeatureCollection format');
       } else if (boundaryData.features && Array.isArray(boundaryData.features)) {
         geoJsonData = {
           type: 'FeatureCollection',
           features: boundaryData.features
         };
+        console.log('Converting to FeatureCollection format');
       } else if (boundaryData.type === 'Feature') {
         geoJsonData = {
           type: 'FeatureCollection',
           features: [boundaryData]
         };
+        console.log('Converting single Feature to FeatureCollection');
       } else {
         console.error('Unrecognized boundary data structure:', boundaryData);
         setDebugInfo('Error: Unrecognized boundary data format');
@@ -146,17 +165,25 @@ const FunctionalMap = ({
 
       // Validate and extract coordinates
       if (geoJsonData.features && geoJsonData.features.length > 0) {
-        geoJsonData.features.forEach((feature: any) => {
+        console.log(`Processing ${geoJsonData.features.length} features`);
+        
+        geoJsonData.features.forEach((feature: any, index: number) => {
+          console.log(`Processing feature ${index}:`, feature);
+          
           if (feature.geometry) {
-            console.log('Feature geometry:', feature.geometry);
+            console.log('Feature geometry type:', feature.geometry.type);
+            console.log('Feature coordinates:', feature.geometry.coordinates);
             
             // Handle different geometry types
             switch (feature.geometry.type) {
               case 'Polygon':
                 if (feature.geometry.coordinates && feature.geometry.coordinates[0]) {
-                  feature.geometry.coordinates[0].forEach((coord: number[]) => {
+                  feature.geometry.coordinates[0].forEach((coord: number[], coordIndex: number) => {
                     if (coord.length >= 2 && !isNaN(coord[0]) && !isNaN(coord[1])) {
                       bounds.extend([coord[0], coord[1]]);
+                      console.log(`Added coordinate ${coordIndex}: [${coord[0]}, ${coord[1]}]`);
+                    } else {
+                      console.warn(`Invalid coordinate at ${coordIndex}:`, coord);
                     }
                   });
                 }
@@ -164,18 +191,24 @@ const FunctionalMap = ({
               case 'Point':
                 if (feature.geometry.coordinates && feature.geometry.coordinates.length >= 2) {
                   bounds.extend([feature.geometry.coordinates[0], feature.geometry.coordinates[1]]);
+                  console.log('Added point coordinate:', feature.geometry.coordinates);
                 }
                 break;
               case 'LineString':
                 if (feature.geometry.coordinates) {
-                  feature.geometry.coordinates.forEach((coord: number[]) => {
+                  feature.geometry.coordinates.forEach((coord: number[], coordIndex: number) => {
                     if (coord.length >= 2 && !isNaN(coord[0]) && !isNaN(coord[1])) {
                       bounds.extend([coord[0], coord[1]]);
+                      console.log(`Added line coordinate ${coordIndex}: [${coord[0]}, ${coord[1]}]`);
                     }
                   });
                 }
                 break;
+              default:
+                console.warn('Unsupported geometry type:', feature.geometry.type);
             }
+          } else {
+            console.warn('Feature missing geometry:', feature);
           }
         });
       }
@@ -185,6 +218,8 @@ const FunctionalMap = ({
         setDebugInfo('Error: No valid coordinates found in KML file');
         return null;
       }
+
+      console.log('Bounds calculated:', bounds.getNorthEast(), bounds.getSouthWest());
 
       // Add source and layers
       map.addSource('project-boundary', {
@@ -509,20 +544,28 @@ const FunctionalMap = ({
 
   // Re-run analysis when boundary changes
   useEffect(() => {
+    console.log('Boundary data changed, current data:', boundaryData);
+    
     if (mapRef.current && boundaryData) {
-      console.log('Boundary data changed, restarting analysis...');
+      console.log('Map exists and boundary data provided, restarting analysis...');
       // Clear existing layers
       const map = mapRef.current;
       try {
         // Remove previous layers
         const layersToRemove = ['boundary-fill', 'boundary-stroke', 'buffer-fill', 'buffer-stroke'];
         layersToRemove.forEach(layerId => {
-          if (map.getLayer(layerId)) map.removeLayer(layerId);
+          if (map.getLayer(layerId)) {
+            console.log('Removing layer:', layerId);
+            map.removeLayer(layerId);
+          }
         });
 
         const sourcesToRemove = ['project-boundary', 'analysis-buffer'];
         sourcesToRemove.forEach(sourceId => {
-          if (map.getSource(sourceId)) map.removeSource(sourceId);
+          if (map.getSource(sourceId)) {
+            console.log('Removing source:', sourceId);
+            map.removeSource(sourceId);
+          }
         });
 
         // Remove constraint layers
@@ -539,6 +582,11 @@ const FunctionalMap = ({
       }
       
       startAnalysisVisualization(map);
+    } else {
+      console.log('Map not ready or no boundary data:', {
+        mapExists: !!mapRef.current,
+        boundaryData: !!boundaryData
+      });
     }
   }, [boundaryData]);
 
