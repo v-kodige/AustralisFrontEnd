@@ -27,7 +27,7 @@ const DevelopabilityScore = ({ projectId }: DevelopabilityScoreProps) => {
       .eq('project_id', projectId)
       .order('generated_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (data && !error) {
       setScore(data.developability_score);
@@ -51,12 +51,21 @@ const DevelopabilityScore = ({ projectId }: DevelopabilityScoreProps) => {
 
       if (error) throw error;
 
+      // Get project boundary for analysis
+      const { data: projectFiles } = await supabase
+        .from('project_files')
+        .select('geom, geometry_data')
+        .eq('project_id', projectId)
+        .eq('processed', true)
+        .limit(1)
+        .maybeSingle();
+
       // Simulate report progress
       const interval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 100) {
             clearInterval(interval);
-            completeReport();
+            completeReport(projectFiles);
             return 100;
           }
           return prev + Math.random() * 15;
@@ -74,28 +83,50 @@ const DevelopabilityScore = ({ projectId }: DevelopabilityScoreProps) => {
     }
   };
 
-  const completeReport = async () => {
-    // Generate a mock developability score
-    const mockScore = Math.floor(Math.random() * 30) + 70; // Score between 70-100
+  const completeReport = async (projectFiles: any) => {
+    let constraintAnalysis = generateMockConstraintData();
+    let developabilityScore = Math.floor(Math.random() * 30) + 70;
+
+    // If we have spatial data, try to run the spatial analysis
+    if (projectFiles?.geom) {
+      try {
+        const { data: spatialAnalysis, error } = await supabase
+          .rpc('analyze_project_constraints', { 
+            project_boundary: projectFiles.geom,
+            buffer_distance_meters: 5000 
+          });
+
+        if (!error && spatialAnalysis) {
+          constraintAnalysis = spatialAnalysis;
+          
+          // Calculate overall score from constraint analysis
+          const scores = Object.values(spatialAnalysis).map((constraint: any) => constraint.score || 0);
+          developabilityScore = Math.round(scores.reduce((sum: number, score: number) => sum + score, 0) / scores.length);
+        }
+      } catch (error) {
+        console.error('Error running spatial analysis:', error);
+        // Fall back to mock data if spatial analysis fails
+      }
+    }
 
     const { error } = await supabase
       .from('project_reports')
       .update({
-        developability_score: mockScore,
+        developability_score: developabilityScore,
         report_status: 'completed',
         completed_at: new Date().toISOString(),
-        constraint_analysis: generateMockConstraintData()
+        constraint_analysis: constraintAnalysis
       })
       .eq('project_id', projectId)
       .eq('report_status', 'running');
 
     if (!error) {
-      setScore(mockScore);
+      setScore(developabilityScore);
       setReportStatus('completed');
       setIsRunning(false);
       toast({
         title: "Report completed",
-        description: `Developability score: ${mockScore}%`
+        description: `Developability score: ${developabilityScore}%`
       });
     }
   };
