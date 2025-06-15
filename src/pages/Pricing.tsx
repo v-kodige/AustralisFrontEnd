@@ -88,6 +88,9 @@ const Pricing = () => {
         <div className="text-center mb-12">
           <div className="inline-block px-7 py-4 bg-white/50 border border-white/20 rounded-3xl shadow-xl backdrop-blur-2xl">
             <h1 className="text-3xl md:text-5xl font-extrabold text-australis-navy mb-2">Find the Plan That's Right for You</h1>
+            <p className="text-lg max-w-2xl mx-auto text-australis-navy/70">
+              Predictable, powerful plans that scale with your project pipeline.
+            </p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-8">
@@ -106,7 +109,14 @@ const Pricing = () => {
             />
           ))}
         </div>
-        <div className="text-center mt-16 text-australis-navy/60 max-w-xl mx-auto">
+        <div className="mt-20 flex justify-center">
+          <div className="bg-white/50 border border-white/20 rounded-3xl shadow-md backdrop-blur-2xl px-8 py-6 max-w-2xl w-full text-center">
+            <p className="text-lg text-australis-navy/80">
+              All plans are for UK-wide analysis. Future country-specific access will be available via <span className="font-semibold">&quot;Country Packs&quot;</span>.
+            </p>
+          </div>
+        </div>
+        <div className="text-center mt-10 text-australis-navy/60 max-w-xl mx-auto">
           For detailed usage info, integrations, or to discuss custom enterprise solutions,{" "}
           <button
             className="inline underline text-australis-indigo hover:text-australis-aqua font-medium transition-colors"
@@ -115,13 +125,6 @@ const Pricing = () => {
             contact our team
           </button>
           .
-        </div>
-        <div className="mt-20 flex justify-center">
-          <div className="bg-white/50 border border-white/20 rounded-3xl shadow-md backdrop-blur-2xl px-8 py-6 max-w-2xl w-full text-center">
-            <p className="text-lg text-australis-navy/80">
-              Predictable, powerful plans that scale with your project pipeline. All plans are for UK-wide analysis. Future country-specific access will be available via <span className="font-semibold">&quot;Country Packs&quot;</span>.
-            </p>
-          </div>
         </div>
       </div>
     </section>
