@@ -1,6 +1,8 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,6 +29,9 @@ const Header = () => {
           <a href="#faq" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
             FAQ
           </a>
+          <Link to="/pricing" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
+            Pricing
+          </Link>
           <Button variant="default" size="sm">
             Book a Demo
           </Button>
@@ -55,6 +60,9 @@ const Header = () => {
             <a href="#faq" className="block text-gray-600 hover:text-australis-blue">
               FAQ
             </a>
+            <Link to="/pricing" className="block text-gray-600 hover:text-australis-blue">
+              Pricing
+            </Link>
             <Button variant="default" size="sm" className="w-full">
               Book a Demo
             </Button>
