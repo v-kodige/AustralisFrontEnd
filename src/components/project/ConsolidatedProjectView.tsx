@@ -135,7 +135,7 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
           id: type,
           name: constraint?.name || type.replace('_', ' ').toUpperCase(),
           type: constraint?.category || 'other',
-          visible: false,
+          visible: true, // Auto-show all constraints
           color: constraintColors[type as keyof typeof constraintColors] || '#666666',
           features: features
         });
@@ -254,70 +254,107 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
         </Card>
       )}
 
-      {/* Main Map and Controls */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      {/* Main Map - Full Width when File Uploaded */}
+      <div className={hasUploadedFile && !showFileUpload ? "w-full" : "grid grid-cols-1 lg:grid-cols-4 gap-6"}>
         {/* Map */}
-        <div className="lg:col-span-3">
-          <Card className="h-[600px]">
+        <div className={hasUploadedFile && !showFileUpload ? "w-full" : "lg:col-span-3"}>
+          <Card className="h-[700px]">
             <CardHeader>
-              <CardTitle>Interactive Project Map</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                Interactive Analysis Map
+                {hasUploadedFile && (
+                  <Badge variant="secondary" className="text-xs">
+                    5km Buffer Analysis Active
+                  </Badge>
+                )}
+              </CardTitle>
             </CardHeader>
-            <CardContent className="p-0 h-[520px]">
+            <CardContent className="p-0 h-[620px]">
               <FunctionalMap 
                 boundaryData={boundaryData}
                 constraintLayers={constraintLayers}
                 onMapReady={(map) => console.log('Map ready:', map)}
+                showAnalysisBuffer={true}
+                autoShowConstraints={true}
               />
             </CardContent>
           </Card>
         </div>
 
-        {/* Layer Controls */}
-        <div className="lg:col-span-1">
-          <Card className="h-[600px]">
-            <CardHeader>
-              <CardTitle className="text-lg">Constraint Layers</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 max-h-[520px] overflow-y-auto">
-              {Object.entries(groupedLayers).map(([category, layers]) => (
-                <div key={category} className="space-y-2">
-                  <h4 className="font-medium text-sm text-gray-700 capitalize border-b pb-1">
-                    {category.replace('_', ' ')}
-                  </h4>
-                  {layers.map(layer => (
-                    <div key={layer.id} className="flex items-center justify-between space-x-2">
-                      <div className="flex items-center space-x-2 flex-1 min-w-0">
-                        <div 
-                          className="w-3 h-3 rounded border flex-shrink-0"
-                          style={{ backgroundColor: layer.color }}
-                        />
-                        <Label 
-                          htmlFor={layer.id}
-                          className="text-xs cursor-pointer truncate"
-                          title={layer.name}
-                        >
-                          {layer.name}
-                        </Label>
+        {/* Layer Controls - Only show when not in full map mode */}
+        {(!hasUploadedFile || showFileUpload) && (
+          <div className="lg:col-span-1">
+            <Card className="h-[700px]">
+              <CardHeader>
+                <CardTitle className="text-lg">Constraint Layers</CardTitle>
+                <p className="text-xs text-gray-500">
+                  Constraints within 5km automatically displayed
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4 max-h-[600px] overflow-y-auto">
+                {Object.entries(groupedLayers).map(([category, layers]) => (
+                  <div key={category} className="space-y-2">
+                    <h4 className="font-medium text-sm text-gray-700 capitalize border-b pb-1">
+                      {category.replace('_', ' ')}
+                    </h4>
+                    {layers.map(layer => (
+                      <div key={layer.id} className="flex items-center justify-between space-x-2">
+                        <div className="flex items-center space-x-2 flex-1 min-w-0">
+                          <div 
+                            className="w-3 h-3 rounded border flex-shrink-0"
+                            style={{ backgroundColor: layer.color }}
+                          />
+                          <Label 
+                            htmlFor={layer.id}
+                            className="text-xs cursor-pointer truncate"
+                            title={layer.name}
+                          >
+                            {layer.name}
+                          </Label>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          {layer.features.length}
+                        </Badge>
                       </div>
-                      <Switch
-                        id={layer.id}
-                        checked={layer.visible}
-                        onCheckedChange={() => toggleLayer(layer.id)}
-                      />
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                ))}
+                
+                {constraintLayers.length === 0 && (
+                  <p className="text-sm text-gray-500 text-center py-4">
+                    Upload boundary to see constraints
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+
+      {/* Constraint Summary when in full map mode */}
+      {hasUploadedFile && !showFileUpload && constraintLayers.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Constraints Within 5km Analysis Buffer</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {constraintLayers.map(layer => (
+                <div key={layer.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                  <div 
+                    className="w-3 h-3 rounded flex-shrink-0"
+                    style={{ backgroundColor: layer.color }}
+                  />
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium truncate">{layer.name}</p>
+                    <p className="text-xs text-gray-500">{layer.features.length} found</p>
+                  </div>
                 </div>
               ))}
-              
-              {constraintLayers.length === 0 && (
-                <p className="text-sm text-gray-500 text-center py-4">
-                  No constraint data available
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

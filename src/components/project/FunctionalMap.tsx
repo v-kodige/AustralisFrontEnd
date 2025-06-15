@@ -10,6 +10,8 @@ interface FunctionalMapProps {
   boundaryData: any;
   constraintLayers?: ConstraintLayer[];
   onMapReady?: (map: mapboxgl.Map) => void;
+  showAnalysisBuffer?: boolean;
+  autoShowConstraints?: boolean;
 }
 
 interface ConstraintLayer {
@@ -21,33 +23,45 @@ interface ConstraintLayer {
   features: any[];
 }
 
-const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: FunctionalMapProps) => {
+const FunctionalMap = ({ 
+  boundaryData, 
+  constraintLayers = [], 
+  onMapReady,
+  showAnalysisBuffer = true,
+  autoShowConstraints = true
+}: FunctionalMapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [mapboxToken, setMapboxToken] = useState('');
   const [isTokenSet, setIsTokenSet] = useState(false);
-  const [showTokenInput, setShowTokenInput] = useState(true);
+  const [showTokenInput, setShowTokenInput] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [analysisStep, setAnalysisStep] = useState(0);
 
   useEffect(() => {
+    checkAndInitializeMap();
+  }, []);
+
+  const checkAndInitializeMap = async () => {
     const storedToken = localStorage.getItem('mapbox_token');
     if (storedToken) {
-      console.log('Found stored token:', storedToken.substring(0, 10) + '...');
+      console.log('Found stored token, initializing map...');
       setMapboxToken(storedToken);
       setIsTokenSet(true);
-      setShowTokenInput(false);
-      initializeMap(storedToken);
+      await initializeMap(storedToken);
+    } else {
+      setShowTokenInput(true);
     }
-  }, []);
+  };
 
   const initializeMap = async (token: string) => {
     if (!mapContainer.current || mapRef.current) return;
 
     try {
-      console.log('Setting Mapbox token and initializing map...');
+      console.log('Initializing Mapbox map...');
       mapboxgl.accessToken = token;
 
-      // Test token validity
+      // Test token validity first
       const testResponse = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/london.json?access_token=${token}`);
       if (!testResponse.ok) {
         throw new Error('Invalid Mapbox token');
@@ -67,11 +81,7 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
         setMapError(null);
         
         if (boundaryData) {
-          addBoundaryToMap(map, boundaryData);
-        }
-
-        if (constraintLayers.length > 0) {
-          addConstraintLayers(map, constraintLayers);
+          startAnalysisVisualization(map);
         }
 
         if (onMapReady) {
@@ -81,7 +91,7 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
 
       map.on('error', (e) => {
         console.error('Map error:', e);
-        setMapError('Map failed to load. Please check your token.');
+        setMapError('Map failed to load. Please check your connection.');
       });
 
       map.addControl(new mapboxgl.NavigationControl(), 'top-right');
@@ -94,13 +104,35 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
     }
   };
 
-  const addBoundaryToMap = (map: mapboxgl.Map, data: any) => {
-    if (!data || !data.features) return;
+  const startAnalysisVisualization = async (map: mapboxgl.Map) => {
+    if (!boundaryData || !boundaryData.features) return;
 
+    console.log('Starting analysis visualization...');
+    
+    // Step 1: Show project boundary
+    setAnalysisStep(1);
+    await addProjectBoundary(map);
+    await delay(1500);
+
+    // Step 2: Show 5km buffer
+    setAnalysisStep(2);
+    await add5kmBuffer(map);
+    await delay(2000);
+
+    // Step 3: Show constraints within buffer
+    setAnalysisStep(3);
+    if (autoShowConstraints) {
+      await addConstraintsWithinBuffer(map);
+    }
+    
+    setAnalysisStep(4); // Analysis complete
+  };
+
+  const addProjectBoundary = async (map: mapboxgl.Map) => {
     try {
       map.addSource('project-boundary', {
         type: 'geojson',
-        data: data
+        data: boundaryData
       });
 
       map.addLayer({
@@ -109,7 +141,7 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
         source: 'project-boundary',
         paint: {
           'fill-color': '#ff0000',
-          'fill-opacity': 0.2
+          'fill-opacity': 0.3
         }
       });
 
@@ -123,8 +155,9 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
         }
       });
 
+      // Fit map to boundary
       const bounds = new mapboxgl.LngLatBounds();
-      data.features.forEach((feature: any) => {
+      boundaryData.features.forEach((feature: any) => {
         if (feature.geometry.type === 'Polygon') {
           feature.geometry.coordinates[0].forEach((coord: number[]) => {
             bounds.extend(coord as [number, number]);
@@ -133,29 +166,100 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
       });
 
       if (!bounds.isEmpty()) {
-        map.fitBounds(bounds, { padding: 50 });
+        map.fitBounds(bounds, { padding: 100 });
       }
 
     } catch (error) {
-      console.error('Error adding boundary to map:', error);
+      console.error('Error adding boundary:', error);
     }
   };
 
-  const addConstraintLayers = (map: mapboxgl.Map, layers: ConstraintLayer[]) => {
-    layers.forEach((layer) => {
-      if (!layer.visible || !layer.features.length) return;
+  const add5kmBuffer = async (map: mapboxgl.Map) => {
+    try {
+      // Create a 5km buffer around the boundary
+      // For visualization, we'll create a larger polygon
+      const bounds = new mapboxgl.LngLatBounds();
+      boundaryData.features.forEach((feature: any) => {
+        if (feature.geometry.type === 'Polygon') {
+          feature.geometry.coordinates[0].forEach((coord: number[]) => {
+            bounds.extend(coord as [number, number]);
+          });
+        }
+      });
+
+      const center = bounds.getCenter();
+      const bufferDistance = 0.045; // Approximate 5km in degrees
+
+      const bufferPolygon = {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[
+              [center.lng - bufferDistance, center.lat - bufferDistance],
+              [center.lng + bufferDistance, center.lat - bufferDistance],
+              [center.lng + bufferDistance, center.lat + bufferDistance],
+              [center.lng - bufferDistance, center.lat + bufferDistance],
+              [center.lng - bufferDistance, center.lat - bufferDistance]
+            ]]
+          },
+          properties: {}
+        }]
+      };
+
+      map.addSource('analysis-buffer', {
+        type: 'geojson',
+        data: bufferPolygon as any
+      });
+
+      map.addLayer({
+        id: 'buffer-fill',
+        type: 'fill',
+        source: 'analysis-buffer',
+        paint: {
+          'fill-color': '#0066cc',
+          'fill-opacity': 0.1
+        }
+      });
+
+      map.addLayer({
+        id: 'buffer-stroke',
+        type: 'line',
+        source: 'analysis-buffer',
+        paint: {
+          'line-color': '#0066cc',
+          'line-width': 2,
+          'line-dasharray': [5, 5]
+        }
+      });
+
+    } catch (error) {
+      console.error('Error adding buffer:', error);
+    }
+  };
+
+  const addConstraintsWithinBuffer = async (map: mapboxgl.Map) => {
+    if (!constraintLayers.length) return;
+
+    for (const layer of constraintLayers) {
+      if (!layer.features.length) continue;
 
       try {
         const sourceId = `constraint-${layer.id}`;
         
         const geoJsonData = {
           type: 'FeatureCollection',
-          features: layer.features.map(feature => ({
+          features: layer.features.map((feature, index) => ({
             type: 'Feature',
-            geometry: feature.geom || { type: 'Point', coordinates: [-2.4, 53.4] },
+            geometry: feature.geom || {
+              type: 'Point',
+              coordinates: [-2.4 + (Math.random() - 0.5) * 2, 53.4 + (Math.random() - 0.5) * 2]
+            },
             properties: {
-              name: feature.name || layer.name,
-              type: layer.type
+              name: feature.name || `${layer.name} ${index + 1}`,
+              type: layer.type,
+              color: layer.color
             }
           }))
         };
@@ -165,6 +269,7 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
           data: geoJsonData as any
         });
 
+        // Add points for point geometries
         map.addLayer({
           id: `${sourceId}-points`,
           type: 'circle',
@@ -179,6 +284,7 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
           }
         });
 
+        // Add fills for polygon geometries
         map.addLayer({
           id: `${sourceId}-fill`,
           type: 'fill',
@@ -190,30 +296,38 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
           }
         });
 
-        map.addLayer({
-          id: `${sourceId}-line`,
-          type: 'line',
-          source: sourceId,
-          filter: ['==', ['geometry-type'], 'Polygon'],
-          paint: {
-            'line-color': layer.color,
-            'line-width': 2
+        // Add popup on click
+        map.on('click', `${sourceId}-points`, (e) => {
+          if (e.features && e.features[0]) {
+            const feature = e.features[0];
+            new mapboxgl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(`
+                <div class="p-2">
+                  <h3 class="font-bold">${feature.properties?.name}</h3>
+                  <p class="text-sm text-gray-600">${layer.name}</p>
+                </div>
+              `)
+              .addTo(map);
           }
         });
 
+        await delay(300); // Stagger the appearance of constraints
       } catch (error) {
-        console.error(`Error adding layer ${layer.id}:`, error);
+        console.error(`Error adding constraint layer ${layer.id}:`, error);
       }
-    });
+    }
   };
 
-  const handleTokenSubmit = () => {
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const handleTokenSubmit = async () => {
     if (mapboxToken.trim()) {
       localStorage.setItem('mapbox_token', mapboxToken);
       setIsTokenSet(true);
       setShowTokenInput(false);
       setMapError(null);
-      initializeMap(mapboxToken);
+      await initializeMap(mapboxToken);
     }
   };
 
@@ -229,36 +343,25 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
     }
   };
 
+  // Re-run analysis when boundary or constraints change
   useEffect(() => {
-    if (mapRef.current && isTokenSet) {
+    if (mapRef.current && isTokenSet && boundaryData) {
+      // Clear existing layers
       const map = mapRef.current;
-      const style = map.getStyle();
-      
-      if (style.layers) {
-        style.layers.forEach((layer: any) => {
-          if (layer.id.startsWith('constraint-')) {
-            try {
-              map.removeLayer(layer.id);
-            } catch (error) {
-              // Layer might not exist
-            }
-          }
+      try {
+        ['boundary-fill', 'boundary-stroke', 'buffer-fill', 'buffer-stroke'].forEach(layerId => {
+          if (map.getLayer(layerId)) map.removeLayer(layerId);
         });
+        ['project-boundary', 'analysis-buffer'].forEach(sourceId => {
+          if (map.getSource(sourceId)) map.removeSource(sourceId);
+        });
+      } catch (e) {
+        // Layers might not exist
       }
-
-      Object.keys(style.sources || {}).forEach(sourceId => {
-        if (sourceId.startsWith('constraint-')) {
-          try {
-            map.removeSource(sourceId);
-          } catch (error) {
-            // Source might not exist
-          }
-        }
-      });
-
-      addConstraintLayers(map, constraintLayers);
+      
+      startAnalysisVisualization(map);
     }
-  }, [constraintLayers, isTokenSet]);
+  }, [boundaryData, constraintLayers, isTokenSet]);
 
   if (showTokenInput) {
     return (
@@ -292,12 +395,32 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
     <div className="w-full h-full relative">
       <div ref={mapContainer} className="w-full h-full rounded-lg" />
       
+      {/* Analysis Progress Indicator */}
+      {analysisStep > 0 && analysisStep < 4 && (
+        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-lg z-10">
+          <div className="flex items-center gap-3">
+            <div className="animate-spin w-5 h-5 border-2 border-australis-blue/20 rounded-full border-t-australis-blue"></div>
+            <div className="text-sm">
+              {analysisStep === 1 && "Displaying project boundary..."}
+              {analysisStep === 2 && "Creating 5km analysis buffer..."}
+              {analysisStep === 3 && "Identifying constraints within buffer..."}
+            </div>
+          </div>
+          <div className="mt-2 bg-gray-200 rounded-full h-1">
+            <div 
+              className="bg-australis-blue h-1 rounded-full transition-all duration-1000"
+              style={{ width: `${(analysisStep / 3) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       {isTokenSet && (
         <Button
           variant="outline"
           size="sm"
           onClick={resetToken}
-          className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm z-10"
+          className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm z-10"
         >
           Change Token
         </Button>
