@@ -63,7 +63,8 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
   const loadProjectData = async () => {
     try {
       setLoading(true);
-      console.log('Loading project data for project ID:', projectId);
+      console.log('=== LOADING PROJECT DATA DEBUG START ===');
+      console.log('Project ID:', projectId);
       
       // Load project details
       const { data: project, error: projectError } = await supabase
@@ -88,18 +89,33 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
 
       if (files && files.length > 0) {
         const file = files[0];
-        console.log('Processing file:', file);
+        console.log('Processing file:', file.file_name);
+        console.log('File ID:', file.id);
+        console.log('File uploaded at:', file.created_at);
+        console.log('File geometry_data exists:', !!file.geometry_data);
         
         if (file.geometry_data) {
-          console.log('Geometry data found:', JSON.stringify(file.geometry_data, null, 2));
+          console.log('=== GEOMETRY DATA ANALYSIS ===');
+          console.log('Geometry data type:', typeof file.geometry_data);
+          console.log('Geometry data content:', JSON.stringify(file.geometry_data, null, 2));
+          
+          // Check for coordinate bounds
+          if (file.geometry_data.features && file.geometry_data.features.length > 0) {
+            const feature = file.geometry_data.features[0];
+            console.log('First feature geometry type:', feature.geometry?.type);
+            console.log('First feature coordinates:', feature.geometry?.coordinates);
+            console.log('Feature properties:', feature.properties);
+          }
+          
           setBoundaryData(file.geometry_data);
           setHasUploadedFile(true);
           setShowFileUpload(false);
+          console.log('✓ Boundary data set successfully');
         } else {
-          console.log('No geometry_data found in file');
+          console.log('✗ No geometry_data found in file');
         }
       } else {
-        console.log('No processed files found for project');
+        console.log('✗ No processed files found for project');
       }
 
       // Load analysis data
@@ -114,9 +130,13 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
 
       if (reports && reports.length > 0) {
         setAnalysisData(reports[0].constraint_analysis);
+        console.log('Loaded analysis data:', reports[0].constraint_analysis);
+      } else {
+        console.log('No analysis data found');
       }
 
       await loadConstraintLayers();
+      console.log('=== LOADING PROJECT DATA DEBUG END ===');
 
     } catch (error) {
       console.error('Error loading project data:', error);
@@ -167,11 +187,13 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
   };
 
   const handleFileUploaded = () => {
+    console.log('=== FILE UPLOADED CALLBACK ===');
     console.log('File uploaded, reloading project data...');
     setHasUploadedFile(true);
     setShowFileUpload(false);
     // Add a small delay to ensure the file is processed
     setTimeout(() => {
+      console.log('Reloading project data after file upload...');
       loadProjectData();
     }, 1000);
   };

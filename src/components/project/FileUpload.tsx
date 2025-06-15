@@ -39,49 +39,74 @@ const FileUpload = ({ projectId, onFileUploaded }: FileUploadProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      console.log('=== FILE UPLOAD DEBUG START ===');
+      console.log('Uploading file:', file.name);
+      console.log('File size:', file.size);
+      console.log('File type:', file.type);
+      console.log('Project ID:', projectId);
+
       // Parse the file to extract geometry
+      console.log('Starting geometry parsing...');
       const geometryData = await parseGeometryFile(file);
+      
+      console.log('Geometry parsing result:', geometryData ? 'SUCCESS' : 'FAILED');
+      if (geometryData) {
+        console.log('Parsed geometry structure:', JSON.stringify(geometryData, null, 2));
+      }
       
       if (!geometryData) {
         throw new Error('Failed to parse geometry from file');
       }
 
-      console.log('Parsed geometry data:', geometryData);
-
       const fileName = `${user.id}/${projectId}/${Date.now()}_${file.name}`;
+      console.log('Storage file name:', fileName);
       
       // Upload file to storage
+      console.log('Uploading to Supabase storage...');
       const { error: uploadError } = await supabase.storage
         .from('project-files')
         .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        throw uploadError;
+      }
+      console.log('Storage upload successful');
 
       // Store file information and geometry in database
+      console.log('Inserting file record into database...');
+      const insertData = {
+        project_id: projectId,
+        file_name: file.name,
+        file_type: fileExtension.substring(1),
+        file_path: fileName,
+        file_size: file.size,
+        geometry_data: geometryData as any,
+        processed: true,
+      };
+      console.log('Database insert data:', JSON.stringify(insertData, null, 2));
+
       const { data: insertedFile, error: dbError } = await supabase
         .from('project_files')
-        .insert({
-          project_id: projectId,
-          file_name: file.name,
-          file_type: fileExtension.substring(1),
-          file_path: fileName,
-          file_size: file.size,
-          geometry_data: geometryData as any,
-          processed: true,
-        })
+        .insert(insertData)
         .select()
         .single();
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        console.error('Database insert error:', dbError);
+        throw dbError;
+      }
+      console.log('Database insert successful:', insertedFile);
 
       // Convert first feature geometry to PostGIS format and update
       if (geometryData.features && geometryData.features.length > 0) {
         const feature = geometryData.features[0];
+        console.log('Converting to PostGIS format...');
         const wktGeometry = convertGeoJSONToWKT(feature.geometry);
         
         if (wktGeometry) {
           try {
-            // Use SQL query to update geometry column with proper PostGIS conversion
+            console.log('Updating PostGIS geometry column...');
             const { error: updateError } = await supabase
               .from('project_files')
               .update({ 
@@ -99,6 +124,8 @@ const FileUpload = ({ projectId, onFileUploaded }: FileUploadProps) => {
           }
         }
       }
+
+      console.log('=== FILE UPLOAD DEBUG END ===');
 
       toast({
         title: "File uploaded successfully",
