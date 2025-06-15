@@ -34,6 +34,8 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
   const [hasUploadedFile, setHasUploadedFile] = useState(false);
   const [showFileUpload, setShowFileUpload] = useState(true);
   const [showChat, setShowChat] = useState(false);
+  const [projectData, setProjectData] = useState<any>(null);
+  const [analysisData, setAnalysisData] = useState<any>(null);
 
   const constraintColors = {
     sssi: '#ff0000',
@@ -63,6 +65,16 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
     try {
       setLoading(true);
       
+      // Load project details
+      const { data: project, error: projectError } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', projectId)
+        .single();
+
+      if (projectError) throw projectError;
+      setProjectData(project);
+
       // Check if file exists
       const { data: files, error: fileError } = await supabase
         .from('project_files')
@@ -79,6 +91,20 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
           setHasUploadedFile(true);
           setShowFileUpload(false);
         }
+      }
+
+      // Load analysis data
+      const { data: reports, error: reportsError } = await supabase
+        .from('project_reports')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('generated_at', { ascending: false })
+        .limit(1);
+
+      if (reportsError) throw reportsError;
+
+      if (reports && reports.length > 0) {
+        setAnalysisData(reports[0].constraint_analysis);
       }
 
       await loadConstraintLayers();
@@ -161,7 +187,11 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
           <DevelopabilityScore projectId={projectId} />
         </div>
         <div className="flex gap-2">
-          <PDFReportGenerator projectId={projectId} />
+          <PDFReportGenerator 
+            projectId={projectId} 
+            projectName={projectData?.name || 'Unnamed Project'}
+            analysis={analysisData}
+          />
           <Button
             onClick={() => setShowChat(!showChat)}
             className="bg-australis-blue hover:bg-australis-blue/90 text-white"
@@ -216,7 +246,10 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
       {showChat && (
         <Card>
           <CardContent className="p-0">
-            <ConstraintChatInterface projectId={projectId} />
+            <ConstraintChatInterface 
+              analysis={analysisData}
+              projectName={projectData?.name || 'Unnamed Project'}
+            />
           </CardContent>
         </Card>
       )}
