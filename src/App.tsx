@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import Pricing from "./pages/Pricing";
 import AuthPage from './pages/Auth';
 import Dashboard from './pages/Dashboard';
+import ProjectDetail from './pages/ProjectDetail';
 
 const queryClient = new QueryClient();
 
@@ -55,10 +57,13 @@ const App = () => (
               <Dashboard />
             </ProtectedRoute>
           } />
+          <Route path="/project/:id" element={
+            <ProtectedRoute>
+              <ProjectDetail />
+            </ProtectedRoute>
+          } />
           <Route path="/" element={<Index />} />
           <Route path="/pricing" element={<Pricing />} />
-          {/* Example protected route usage: */}
-          {/* <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} /> */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

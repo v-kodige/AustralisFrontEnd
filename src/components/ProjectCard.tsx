@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Download, FolderOpen, FileText, BarChart3 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Project {
   id: number;
@@ -17,8 +18,11 @@ interface ProjectCardProps {
 }
 
 const ProjectCard = ({ project }: ProjectCardProps) => {
+  const navigate = useNavigate();
+
   const handleOpenProject = () => {
     console.log("Opening project:", project.name);
+    navigate(`/project/${project.id}`);
   };
 
   const handleOpenReport = () => {

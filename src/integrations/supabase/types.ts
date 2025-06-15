@@ -9,7 +9,127 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      project_files: {
+        Row: {
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_type: string
+          geometry_data: Json | null
+          id: string
+          processed: boolean | null
+          project_id: string
+          upload_date: string
+        }
+        Insert: {
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          file_type: string
+          geometry_data?: Json | null
+          id?: string
+          processed?: boolean | null
+          project_id: string
+          upload_date?: string
+        }
+        Update: {
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          file_type?: string
+          geometry_data?: Json | null
+          id?: string
+          processed?: boolean | null
+          project_id?: string
+          upload_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_reports: {
+        Row: {
+          completed_at: string | null
+          constraint_analysis: Json | null
+          developability_score: number | null
+          generated_at: string
+          id: string
+          project_id: string
+          report_status: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          constraint_analysis?: Json | null
+          developability_score?: number | null
+          generated_at?: string
+          id?: string
+          project_id: string
+          report_status?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          constraint_analysis?: Json | null
+          developability_score?: number | null
+          generated_at?: string
+          id?: string
+          project_id?: string
+          report_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          boundary_file_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          location: string | null
+          name: string
+          status: string | null
+          team_members: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          boundary_file_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          name: string
+          status?: string | null
+          team_members?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          boundary_file_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          name?: string
+          status?: string | null
+          team_members?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
