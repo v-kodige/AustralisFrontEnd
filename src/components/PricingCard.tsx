@@ -1,12 +1,6 @@
 
 import { Button } from "@/components/ui/button";
 import { ReactNode, useState } from "react";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
 import { ChevronDown } from "lucide-react";
 
 type FeatureGroup = {
@@ -16,7 +10,6 @@ type FeatureGroup = {
 
 type PricingCardProps = {
   name: string;
-  price: string;
   description: string;
   features: string[];
   accent?: string;
@@ -30,13 +23,12 @@ type PricingCardProps = {
 
 const PricingCard = ({
   name,
-  price,
   description,
   features,
   accent = "from-australis-indigo to-australis-aqua",
   recommended,
   onContact,
-  ctaText = "Get Started",
+  ctaText = "Get in touch with the team",
   buttonClass,
   children,
   detailedFeatures = [],
@@ -61,13 +53,9 @@ const PricingCard = ({
           </div>
         )}
         <h3 className="text-2xl font-bold mb-2 text-australis-navy">{name}</h3>
-        <div className="flex items-baseline gap-2 mb-1">
-          <span className={`text-4xl font-extrabold ${name === "Enterprise" ? "text-black" : name === "Developer" ? "text-australis-indigo" : "text-australis-navy"}`}>{price}</span>
-          <span className="text-base text-australis-navy/70">{name !== "Enterprise" ? "/month (ann.)" : ""}</span>
-        </div>
         <p className="text-gray-700 mb-4">{description}</p>
         {/* Uniform bullet points */}
-        <ul className="mb-6 text-base list-disc list-inside text-australis-navy space-y-2 pl-2">
+        <ul className="mb-6 text-base list-disc list-inside text-australis-navy space-y-2 pl-4">
           {features.map((f, i) => (
             <li key={i} className="">{f}</li>
           ))}
@@ -123,4 +111,3 @@ const PricingCard = ({
 };
 
 export default PricingCard;
-

@@ -3,10 +3,10 @@ import PricingCard from "@/components/PricingCard";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
+// Remove "price" from all tier definitions and update ctaText.
 const tiers = [
   {
     name: "Scout",
-    price: "£249",
     description:
       "For freelancers, consultants, and small teams doing initial site screening. Billed annually.",
     accent: "from-australis-aqua to-australis-indigo",
@@ -42,13 +42,12 @@ const tiers = [
         ]
       }
     ],
-    ctaText: "Get Started with Scout",
+    ctaText: "Get in touch with the team",
     buttonClass:
       "bg-white text-australis-navy border border-australis-navy hover:bg-australis-navy hover:text-white transition-colors",
   },
   {
     name: "Developer",
-    price: "£999",
     description:
       "For growing solar developers and IPPs managing an active and complex pipeline. Billed annually.",
     accent: "from-australis-indigo to-australis-aqua",
@@ -94,13 +93,12 @@ const tiers = [
       }
     ],
     recommended: true,
-    ctaText: "Choose Developer",
+    ctaText: "Get in touch with the team",
     buttonClass:
       "bg-australis-indigo text-white hover:bg-white hover:text-australis-indigo border border-australis-indigo transition-colors",
   },
   {
     name: "Enterprise",
-    price: "Custom Pricing",
     description:
       "A tailored solution for large developers, funds, and organisations requiring scale and integration.",
     accent: "from-australis-indigo to-australis-navy",
@@ -139,7 +137,7 @@ const tiers = [
         ]
       }
     ],
-    ctaText: "Contact Sales",
+    ctaText: "Get in touch with the team",
     buttonClass:
       "bg-black text-white hover:bg-white hover:text-black border border-black transition-colors",
   }
@@ -148,12 +146,7 @@ const tiers = [
 const Pricing = () => {
   const navigate = useNavigate();
 
-  const handleContact = () => {
-    const element = document.getElementById("expert-panel");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  // Remove the previous handleContact function as we will use mailto links
 
   return (
     <section className="py-24 min-h-screen bg-gradient-to-br from-australis-offWhite via-white to-australis-lightGray relative overflow-hidden">
@@ -172,7 +165,9 @@ const Pricing = () => {
         </div>
         <div className="text-center mb-12">
           <div className="inline-block px-7 py-4 bg-white/50 border border-white/20 rounded-3xl shadow-xl backdrop-blur-2xl">
-            <h1 className="text-3xl md:text-5xl font-extrabold text-australis-navy mb-2">Find the Plan That's Right for You</h1>
+            <h1 className="text-3xl md:text-5xl font-extrabold text-australis-navy mb-2">
+              Find the Plan That's Right for You
+            </h1>
             <p className="text-lg max-w-2xl mx-auto text-australis-navy/70">
               Predictable, powerful plans that scale with your project pipeline.
             </p>
@@ -184,13 +179,11 @@ const Pricing = () => {
             <PricingCard
               key={tier.name}
               name={tier.name}
-              price={tier.price}
               description={tier.description}
               features={tier.features}
               detailedFeatures={tier.detailedFeatures}
               accent={tier.accent}
               recommended={tier.recommended}
-              onContact={tier.name === "Enterprise" ? handleContact : undefined}
               ctaText={tier.ctaText}
               buttonClass={tier.buttonClass || ""}
             />
@@ -207,12 +200,14 @@ const Pricing = () => {
         {/* Usage info and contact */}
         <div className="text-center mt-10 text-australis-navy/60 max-w-xl mx-auto">
           For detailed usage info, integrations, or to discuss custom enterprise solutions,{" "}
-          <button
+          <a
             className="inline underline text-australis-indigo hover:text-australis-aqua font-medium transition-colors"
-            onClick={handleContact}
+            href="mailto:hello@autralis.energy?subject=Enquiry%20from%20website"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             contact our team
-          </button>
+          </a>
           .
         </div>
       </div>
