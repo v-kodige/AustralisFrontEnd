@@ -19,7 +19,7 @@ const FeaturesSection = () => {
   }, [inView]);
 
   return (
-    <section id="features" className="py-24" ref={ref} style={{ backgroundColor: '#ebfef8' }}>
+    <section id="features" className="py-24 bg-white" ref={ref}>
       <div className="container-custom">
         <FeatureSectionTitle isVisible={isVisible} />
         <FeatureTabs />

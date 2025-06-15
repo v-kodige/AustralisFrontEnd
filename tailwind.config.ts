@@ -88,10 +88,6 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
-      boxShadow: {
-        'glow-aqua': '0 0 10px rgba(59, 245, 183, 0.6), 0 0 20px rgba(59, 245, 183, 0.4)',
-        'glow-indigo': '0 0 10px rgba(96, 98, 255, 0.6), 0 0 20px rgba(96, 98, 255, 0.4)'
-      },
 			keyframes: {
 				'accordion-down': {
 					from: { height: '0' },
@@ -104,10 +100,6 @@ export default {
         'fade-in': {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' }
-        },
-        'fade-in-blur': {
-          '0%': { opacity: '0', transform: 'translateY(10px)', filter: 'blur(4px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)', filter: 'blur(0px)' }
         },
         'pulse-slow': {
           '0%, 100%': { opacity: '1' },
@@ -126,7 +118,6 @@ export default {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in': 'fade-in 0.6s ease-out',
-        'fade-in-blur': 'fade-in-blur 0.8s ease-out forwards',
         'pulse-slow': 'pulse-slow 3s infinite',
         'typewriter': 'typewriter 4s steps(44) 1s forwards',
         'blink-caret': 'blink-caret .75s step-end infinite'
@@ -135,4 +126,3 @@ export default {
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-

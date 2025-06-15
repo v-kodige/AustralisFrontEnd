@@ -1,46 +1,46 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 
-COLOR REFERENCE - Light Theme Palette:
-- Background: #ebfef8 (very light mint)
-- Card Background: #f0f0f4 (light grey)
-- Headlines/Text: #002060 (very dark blue)
-- Secondary Text: #3a3d5d (slate blue)
-- Primary Accent: #3bf5b7 (turquoise)
-- Secondary Accent: #6062ff (electric blue)
-- Footer Background: #3a3d5d (dark slate blue)
-*/
-
 @layer base {
   :root {
-    --background: 235 254 248; /* #ebfef8 - very light mint */
-    --foreground: 0 32 96; /* #002060 - very dark blue */
+    --background: 210 40% 98%;
+    --foreground: 222.2 84% 4.9%;
 
-    --card: 240 240 244; /* #f0f0f4 - light grey */
-    --card-foreground: 58 61 93; /* #3a3d5d - slate blue */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    --primary: 59 245 183; /* #3bf5b7 - turquoise */
-    --primary-foreground: 0 32 96; /* #002060 - very dark blue */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    --secondary: 96 98 255; /* #6062ff - electric blue */
-    --secondary-foreground: 235 254 248; /* #ebfef8 - very light mint */
+    --primary: 201 96% 32%;
+    --primary-foreground: 210 40% 98%;
 
-    --muted: 240 240 244; /* #f0f0f4 - light grey */
-    --muted-foreground: 58 61 93; /* #3a3d5d - slate blue */
+    --secondary: 160 84% 39%;
+    --secondary-foreground: 0 0% 100%;
 
-    --accent: 240 240 244; /* #f0f0f4 - light grey */
-    --accent-foreground: 0 32 96; /* #002060 - very dark blue */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --border: 226 232 240; /* #e2e8f0 - light border */
-    --input: 226 232 240; /* #e2e8f0 - light input bg */
-    --ring: 59 245 183; /* #3bf5b7 - turquoise */
+    --accent: 188 95% 28%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    /* Add variables for the australis colors */
+    --aqua: #3bf5b7;
+    --indigo: #6062ff;
+    --navy: #3a3d5d;
+    --blue: #1E3A8A;
   }
 }
 
@@ -48,111 +48,54 @@ COLOR REFERENCE - Light Theme Palette:
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Poppins', sans-serif;
-    background-color: #ebfef8;
-    color: #002060;
   }
+  
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
-    color: #002060;
   }
+  
   section {
     @apply py-16 md:py-24;
-    background-color: #ebfef8;
   }
+  
   .container-custom {
     @apply container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 }
 
 @layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
   .text-gradient {
-    background: linear-gradient(to right, #6062ff, #3bf5b7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .glow-aqua {
-    box-shadow: 0 0 12px 2px #3bf5b780;
-  }
-  .glow-electric {
-    box-shadow: 0 0 12px 2px #6062ff88;
+    @apply bg-gradient-to-r from-australis-blue to-australis-teal bg-clip-text text-transparent;
   }
   
-  /* Explicit color utilities */
-  .bg-light-mint { background-color: #ebfef8; }
-  .bg-light-grey { background-color: #f0f0f4; }
-  .bg-dark-blue { background-color: #002060; }
-  .bg-slate-blue { background-color: #3a3d5d; }
-  .bg-turquoise { background-color: #3bf5b7; }
-  .bg-electric-blue { background-color: #6062ff; }
-  
-  .text-light-mint { color: #ebfef8; }
-  .text-light-grey { color: #f0f0f4; }
-  .text-dark-blue { color: #002060; }
-  .text-slate-blue { color: #3a3d5d; }
-  .text-turquoise { color: #3bf5b7; }
-  .text-electric-blue { color: #6062ff; }
-  
-  .border-light-mint { border-color: #ebfef8; }
-  .border-light-grey { border-color: #f0f0f4; }
-  .border-dark-blue { border-color: #002060; }
-  .border-slate-blue { border-color: #3a3d5d; }
-  .border-turquoise { border-color: #3bf5b7; }
-  .border-electric-blue { border-color: #6062ff; }
-}
-
-/* Advanced animations for high-tech feel */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .glass-card {
+    @apply bg-white/50 backdrop-blur-sm border border-white/20 shadow-sm;
   }
 }
 
-@keyframes typewriter {
-  from { width: 0; }
-  to { width: 100%; }
+/* Parallax scroll effect */
+.parallax {
+  transform: translateZ(0);
+  will-change: transform;
 }
 
-@keyframes blink-caret {
-  from, to { border-color: transparent; }
-  50% { border-color: #3bf5b7; }
+.parallax-slow {
+  transform: translateZ(-10px) scale(2);
 }
 
-@keyframes pulseGlow {
-  0%, 100% { 
-    box-shadow: 0 0 20px rgba(59, 245, 183, 0.3);
-  }
-  50% { 
-    box-shadow: 0 0 30px rgba(59, 245, 183, 0.5), 0 0 50px rgba(59, 245, 183, 0.2);
-  }
+.parallax-medium {
+  transform: translateZ(-5px) scale(1.5);
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
+.parallax-fast {
+  transform: translateZ(0);
 }
 
-.animate-typewriter {
-  animation: typewriter 3s steps(60) 1s forwards;
-}
 
-.animate-pulse-glow {
-  animation: pulseGlow 2s ease-in-out infinite;
-}
-
-.typewriter-text {
-  overflow: hidden;
-  border-right: 2px solid #3bf5b7;
-  white-space: nowrap;
-  animation: 
-    typewriter 3s steps(60) 1s forwards,
-    blink-caret 0.8s step-end infinite;
-  width: 0;
-}

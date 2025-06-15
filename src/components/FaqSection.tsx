@@ -1,3 +1,4 @@
+
 import {
   Accordion,
   AccordionContent,
@@ -30,22 +31,22 @@ const FaqSection = () => {
   ];
 
   return (
-    <section id="faq" className="py-24 bg-background">
+    <section id="faq" className="py-24 bg-white">
       <div className="container-custom max-w-4xl">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4 text-foreground">Frequently Asked Questions</h2>
-          <p className="text-lg text-muted-foreground">
-            Have other questions? Contact us at <a href="mailto:hello@australis.energy" className="text-primary hover:underline">hello@australis.energy</a>
+          <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
+          <p className="text-lg text-gray-600">
+            Have other questions? Contact us at <a href="mailto:hello@australis.energy" className="text-australis-blue hover:underline">hello@australis.energy</a>
           </p>
         </div>
         
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
-            <AccordionItem key={index} value={`item-${index}`} className="border-b-border">
-              <AccordionTrigger className="text-lg font-medium text-left text-foreground hover:text-primary">
+            <AccordionItem key={index} value={`item-${index}`}>
+              <AccordionTrigger className="text-lg font-medium">
                 {faq.question}
               </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
+              <AccordionContent className="text-gray-600">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>

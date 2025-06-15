@@ -13,23 +13,22 @@ const DevelopabilityRings = () => {
   const [expandCard, setExpandCard] = useState(false);
 
   useEffect(() => {
-    let animationFrameId: number;
     if (inView) {
-      let start: number | null = null;
-      const animateScore = (timestamp: number) => {
-        if (!start) start = timestamp;
-        const progress = timestamp - start;
-        const duration = 1500; // Animate over 1.5 seconds
-        const nextScore = Math.min(Math.floor((progress / duration) * 88), 88);
-        setScore(nextScore);
-        if (progress < duration) {
-          animationFrameId = requestAnimationFrame(animateScore);
+      setIsVisible(true);
+
+      if (score < 88) {
+        animationRef.current = setTimeout(() => {
+          setScore((prev) => Math.min(prev + 1, 88));
+        }, 20);
+      }
+
+      return () => {
+        if (animationRef.current) {
+          clearTimeout(animationRef.current);
         }
       };
-      animationFrameId = requestAnimationFrame(animateScore);
     }
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [inView]);
+  }, [inView, score]);
 
   useEffect(() => {
     if (score >= 88) {
@@ -43,11 +42,14 @@ const DevelopabilityRings = () => {
     }
   }, [score]);
 
+  const [isVisible, setIsVisible] = useState(false);
+  const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const legends = [
-    { name: "Landscape", color: "#3bf5b7", score: 82 },
-    { name: "Environmental", color: "#6062ff", score: 76 },
-    { name: "Planning", color: "#3a3d5d", score: 68 },
-    { name: "Other", color: "#002060", score: 72 }
+    { name: "Landscape", color: "bg-australis-aqua", score: 82 },
+    { name: "Environmental", color: "bg-australis-indigo", score: 76 },
+    { name: "Planning", color: "bg-australis-navy", score: 68 },
+    { name: "Other", color: "bg-australis-blue", score: 72 }
   ];
 
   const calculateStrokeDasharray = (percentage: number, radius: number) => {
@@ -57,11 +59,11 @@ const DevelopabilityRings = () => {
 
   return (
     <div ref={ref} className="flex flex-col items-center w-full">
-      <div className="relative w-full max-w-lg min-h-[420px] border border-border rounded-3xl shadow-lg flex flex-row items-center px-6 py-8 mb-6 transition-shadow hover:shadow-xl" style={{ backgroundColor: '#f0f0f4' }}>
+      <div className="relative w-full max-w-lg min-h-[420px] bg-white/60 backdrop-blur-lg border border-white/30 rounded-3xl shadow-lg flex flex-row items-center px-6 py-8 mb-6 transition-shadow hover:shadow-xl">
         {/* Score number on the left */}
         <div className="flex flex-col items-center justify-center min-w-[80px]">
-          <span className="text-5xl font-extrabold drop-shadow-sm" style={{ color: '#002060' }}>{score}</span>
-          <span className="text-xs mt-2" style={{ color: '#3a3d5d' }}>Score</span>
+          <span className="text-5xl font-extrabold text-australis-navy drop-shadow-sm">{score}</span>
+          <span className="text-xs text-gray-500 mt-2">Score</span>
         </div>
         {/* Rings in the center */}
         <div className="relative w-56 h-56 flex items-center justify-center mx-6">
@@ -73,6 +75,13 @@ const DevelopabilityRings = () => {
                 radius
               );
 
+              // Get color variable value or fallback
+              let colorHex = "#3bf5b7";
+              if (legend.color === "bg-australis-aqua") colorHex = "#3bf5b7";
+              if (legend.color === "bg-australis-indigo") colorHex = "#6062ff";
+              if (legend.color === "bg-australis-navy") colorHex = "#3a3d5d";
+              if (legend.color === "bg-australis-blue") colorHex = "#1E3A8A";
+
               return (
                 <circle
                   key={legend.name}
@@ -80,7 +89,7 @@ const DevelopabilityRings = () => {
                   cy="50"
                   r={radius}
                   fill="none"
-                  stroke={legend.color}
+                  stroke={colorHex}
                   strokeWidth="6"
                   strokeDasharray={strokeDasharray}
                   strokeLinecap="round"
@@ -100,24 +109,25 @@ const DevelopabilityRings = () => {
           expandCard ? 'max-h-96 opacity-100 py-6' : 'max-h-0 opacity-0 py-0'
         }`}
         style={{
-          backgroundColor: '#f0f0f4',
+          background: 'rgba(255,255,255,0.55)',
           borderRadius: '1.5rem',
-          boxShadow: '0 5px 32px rgba(0,0,0,0.1)',
-          border: '1px solid rgba(58, 61, 93, 0.2)'
+          boxShadow: '0 5px 32px rgba(0,0,0,0.05)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255,255,255,0.25)'
         }}
       >
         {legends.map((legend) => (
           <div 
             key={legend.name} 
-            className={`flex items-center justify-between gap-4 transition-opacity duration-500 px-6 py-3 rounded-lg hover:bg-turquoise/20 ${
+            className={`flex items-center justify-between gap-4 transition-opacity duration-500 px-6 py-3 rounded-lg hover:bg-australis-aqua/20 ${
               showLegends ? 'opacity-100' : 'opacity-0'
             }`}
           >
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full border" style={{ backgroundColor: legend.color, borderColor: '#3a3d5d' }}></div>
-              <span className="text-base" style={{ color: '#002060' }}>{legend.name}</span>
+              <div className={`w-4 h-4 rounded-full ${legend.color} border border-white/80`}></div>
+              <span className="text-base text-australis-navy">{legend.name}</span>
             </div>
-            <span className="font-semibold text-lg" style={{ color: '#002060' }}>{legend.score}%</span>
+            <span className="font-semibold text-lg">{legend.score}%</span>
           </div>
         ))}
       </div>

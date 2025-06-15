@@ -29,25 +29,25 @@ const SocialProofSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-background" ref={ref}>
+    <section className="py-20 bg-white" ref={ref}>
       <div className="container-custom max-w-4xl">
-        <h2 className="text-3xl font-bold text-center mb-16 text-foreground">
+        <h2 className="text-3xl font-bold text-center mb-16">
           Partners
         </h2>
 
-        <div className="bg-card p-8 rounded-xl border border-border shadow-sm">
+        <div className="glass-card p-8 rounded-xl backdrop-blur-sm">
           <Carousel ref={emblaRef} className="w-full">
             <CarouselContent className="flex justify-center">
               {partners.map((partner, index) => (
                 <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/4 flex justify-center">
                   <div className="flex items-center justify-center p-4 h-24">
                     {partner.isText ? (
-                      <p className="text-lg font-medium text-muted-foreground">{partner.name}</p>
+                      <p className="text-lg font-medium text-gray-500">{partner.name}</p>
                     ) : (
                       <img 
                         src={partner.logo} 
                         alt={partner.name} 
-                        className="max-h-16 max-w-full object-contain" 
+                        className="max-h-16 max-w-full object-contain filter-none" 
                       />
                     )}
                   </div>
