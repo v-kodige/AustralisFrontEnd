@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -144,7 +143,7 @@ const DistanceConstraintAnalysis = ({ projectId, geometry }: DistanceConstraintA
         return {
           category: categoryName,
           score: categoryScore,
-          status: categoryScore >= 80 ? 'good' : categoryScore >= 60 ? 'moderate' : 'challenging',
+          status: (categoryScore >= 80 ? 'good' : categoryScore >= 60 ? 'moderate' : 'challenging') as const,
           constraints: categoryConstraints
         };
       }).filter(cat => cat.constraints.length > 0);
@@ -180,7 +179,7 @@ const DistanceConstraintAnalysis = ({ projectId, geometry }: DistanceConstraintA
 
       setAnalysis({
         overall_score: overallScore,
-        overall_status: overallScore >= 80 ? 'good' : overallScore >= 60 ? 'moderate' : 'challenging',
+        overall_status: (overallScore >= 80 ? 'good' : overallScore >= 60 ? 'moderate' : 'challenging') as const,
         constraints: results,
         categories,
         summary: {
@@ -215,7 +214,7 @@ const DistanceConstraintAnalysis = ({ projectId, geometry }: DistanceConstraintA
           constraint_id: constraint.id,
           constraint_name: constraint.name,
           constraint_type: constraint.category,
-          status: 'good',
+          status: 'good' as const,
           score: 100,
           intersecting_features: 0,
           details: { message: 'No constraints of this type found in the area' },
