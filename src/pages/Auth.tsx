@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -86,7 +85,7 @@ const Auth = () => {
           <Button
             type="submit"
             className="w-full mt-3"
-            loading={processing ? 1 : undefined}
+            disabled={processing}
           >
             {tab === "Login" ? "Sign In" : tab === "Signup" ? "Sign Up" : "Send Reset Email"}
           </Button>
