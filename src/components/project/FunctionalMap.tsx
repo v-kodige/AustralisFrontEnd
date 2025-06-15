@@ -5,9 +5,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 
 interface FunctionalMapProps {
   boundaryData: any;
@@ -30,11 +27,12 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
   const [mapboxToken, setMapboxToken] = useState('');
   const [isTokenSet, setIsTokenSet] = useState(false);
   const [showTokenInput, setShowTokenInput] = useState(true);
+  const [mapError, setMapError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if we have a stored token
     const storedToken = localStorage.getItem('mapbox_token');
     if (storedToken) {
+      console.log('Found stored token:', storedToken.substring(0, 10) + '...');
       setMapboxToken(storedToken);
       setIsTokenSet(true);
       setShowTokenInput(false);
@@ -42,12 +40,19 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
     }
   }, []);
 
-  const initializeMap = (token: string) => {
+  const initializeMap = async (token: string) => {
     if (!mapContainer.current || mapRef.current) return;
 
-    mapboxgl.accessToken = token;
-
     try {
+      console.log('Setting Mapbox token and initializing map...');
+      mapboxgl.accessToken = token;
+
+      // Test token validity
+      const testResponse = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/london.json?access_token=${token}`);
+      if (!testResponse.ok) {
+        throw new Error('Invalid Mapbox token');
+      }
+
       const map = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/satellite-streets-v12',
@@ -59,13 +64,12 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
 
       map.on('load', () => {
         console.log('Map loaded successfully');
+        setMapError(null);
         
-        // Add boundary data if available
         if (boundaryData) {
           addBoundaryToMap(map, boundaryData);
         }
 
-        // Add constraint layers
         if (constraintLayers.length > 0) {
           addConstraintLayers(map, constraintLayers);
         }
@@ -75,11 +79,18 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
         }
       });
 
-      // Add navigation controls
+      map.on('error', (e) => {
+        console.error('Map error:', e);
+        setMapError('Map failed to load. Please check your token.');
+      });
+
       map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     } catch (error) {
       console.error('Error initializing map:', error);
+      setMapError(error instanceof Error ? error.message : 'Failed to initialize map');
+      setIsTokenSet(false);
+      setShowTokenInput(true);
     }
   };
 
@@ -87,13 +98,11 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
     if (!data || !data.features) return;
 
     try {
-      // Add source for boundary
       map.addSource('project-boundary', {
         type: 'geojson',
         data: data
       });
 
-      // Add fill layer
       map.addLayer({
         id: 'boundary-fill',
         type: 'fill',
@@ -104,7 +113,6 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
         }
       });
 
-      // Add stroke layer
       map.addLayer({
         id: 'boundary-stroke',
         type: 'line',
@@ -115,7 +123,6 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
         }
       });
 
-      // Fit map to boundary
       const bounds = new mapboxgl.LngLatBounds();
       data.features.forEach((feature: any) => {
         if (feature.geometry.type === 'Polygon') {
@@ -135,13 +142,12 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
   };
 
   const addConstraintLayers = (map: mapboxgl.Map, layers: ConstraintLayer[]) => {
-    layers.forEach((layer, index) => {
+    layers.forEach((layer) => {
       if (!layer.visible || !layer.features.length) return;
 
       try {
         const sourceId = `constraint-${layer.id}`;
         
-        // Create GeoJSON from constraint features
         const geoJsonData = {
           type: 'FeatureCollection',
           features: layer.features.map(feature => ({
@@ -154,13 +160,11 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
           }))
         };
 
-        // Add source
         map.addSource(sourceId, {
           type: 'geojson',
           data: geoJsonData as any
         });
 
-        // Add circle layer for point features
         map.addLayer({
           id: `${sourceId}-points`,
           type: 'circle',
@@ -175,7 +179,6 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
           }
         });
 
-        // Add fill layer for polygon features
         map.addLayer({
           id: `${sourceId}-fill`,
           type: 'fill',
@@ -187,7 +190,6 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
           }
         });
 
-        // Add line layer for polygon outlines
         map.addLayer({
           id: `${sourceId}-line`,
           type: 'line',
@@ -196,22 +198,6 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
           paint: {
             'line-color': layer.color,
             'line-width': 2
-          }
-        });
-
-        // Add popup on click
-        map.on('click', `${sourceId}-points`, (e) => {
-          if (e.features && e.features[0]) {
-            const feature = e.features[0];
-            new mapboxgl.Popup()
-              .setLngLat(e.lngLat)
-              .setHTML(`
-                <div class="p-2">
-                  <h3 class="font-bold">${feature.properties?.name}</h3>
-                  <p class="text-sm text-gray-600">${layer.name}</p>
-                </div>
-              `)
-              .addTo(map);
           }
         });
 
@@ -226,6 +212,7 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
       localStorage.setItem('mapbox_token', mapboxToken);
       setIsTokenSet(true);
       setShowTokenInput(false);
+      setMapError(null);
       initializeMap(mapboxToken);
     }
   };
@@ -235,16 +222,15 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
     setMapboxToken('');
     setIsTokenSet(false);
     setShowTokenInput(true);
+    setMapError(null);
     if (mapRef.current) {
       mapRef.current.remove();
       mapRef.current = null;
     }
   };
 
-  // Update constraint layers when they change
   useEffect(() => {
     if (mapRef.current && isTokenSet) {
-      // Clear existing constraint layers
       const map = mapRef.current;
       const style = map.getStyle();
       
@@ -260,7 +246,6 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
         });
       }
 
-      // Clear existing constraint sources
       Object.keys(style.sources || {}).forEach(sourceId => {
         if (sourceId.startsWith('constraint-')) {
           try {
@@ -271,7 +256,6 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
         }
       });
 
-      // Re-add constraint layers
       addConstraintLayers(map, constraintLayers);
     }
   }, [constraintLayers, isTokenSet]);
@@ -282,10 +266,11 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
         <CardContent className="text-center space-y-4 p-6">
           <CardTitle>Mapbox Token Required</CardTitle>
           <p className="text-sm text-gray-600">
-            To display the interactive map, please enter your Mapbox public token.
-            <br />
-            Get yours at: <a href="https://mapbox.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">mapbox.com</a>
+            Get your free token at: <a href="https://mapbox.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">mapbox.com</a>
           </p>
+          {mapError && (
+            <p className="text-sm text-red-600">{mapError}</p>
+          )}
           <div className="flex gap-2 max-w-md">
             <Input
               type="text"
@@ -312,10 +297,21 @@ const FunctionalMap = ({ boundaryData, constraintLayers = [], onMapReady }: Func
           variant="outline"
           size="sm"
           onClick={resetToken}
-          className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm"
+          className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm z-10"
         >
           Change Token
         </Button>
+      )}
+      
+      {mapError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-red-50 rounded-lg">
+          <div className="text-center">
+            <p className="text-red-600 mb-2">{mapError}</p>
+            <Button onClick={resetToken} variant="outline">
+              Reset Token
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );
