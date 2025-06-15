@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Pricing from "./pages/Pricing";
 import AuthPage from './pages/Auth';
+import Dashboard from './pages/Dashboard';
 
 const queryClient = new QueryClient();
 
@@ -50,6 +50,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<AuthPage />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
           <Route path="/" element={<Index />} />
           <Route path="/pricing" element={<Pricing />} />
           {/* Example protected route usage: */}
@@ -62,4 +67,3 @@ const App = () => (
 );
 
 export default App;
-
