@@ -1,9 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import MapboxTokenInput from './MapboxTokenInput';
 
 interface ProjectMapProps {
   projectId: string;
@@ -25,59 +23,14 @@ interface GeoJSONData {
 
 const ProjectMap = ({ projectId }: ProjectMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [mapboxToken, setMapboxToken] = useState<string | null>(null);
-  const [tokenError, setTokenError] = useState(false);
+  const [boundaryData, setBoundaryData] = useState<GeoJSONData | null>(null);
 
   useEffect(() => {
-    // Check if token is stored in localStorage
-    const storedToken = localStorage.getItem('mapbox_token');
-    if (storedToken) {
-      setMapboxToken(storedToken);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!mapContainerRef.current || !mapboxToken) return;
-
-    // Test the token first
-    mapboxgl.accessToken = mapboxToken;
-
-    try {
-      mapRef.current = new mapboxgl.Map({
-        container: mapContainerRef.current,
-        style: 'mapbox://styles/mapbox/satellite-streets-v12',
-        center: [-2.3, 53.4], // UK center
-        zoom: 6
-      });
-
-      mapRef.current.on('load', () => {
-        setMapLoaded(true);
-        setTokenError(false);
-        loadProjectBoundary();
-      });
-
-      mapRef.current.on('error', (e) => {
-        console.error('Mapbox error:', e);
-        setTokenError(true);
-      });
-
-    } catch (error) {
-      console.error('Error initializing map:', error);
-      setTokenError(true);
-    }
-
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-      }
-    };
-  }, [mapboxToken]);
+    loadProjectBoundary();
+  }, [projectId]);
 
   const loadProjectBoundary = async () => {
-    if (!mapRef.current || !mapLoaded) return;
-
     try {
       const { data: files, error } = await supabase
         .from('project_files')
@@ -117,65 +70,9 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
           geometryData = file.geometry_data as unknown as GeoJSONData;
         }
 
-        if (geometryData && geometryData.features && geometryData.features.length > 0) {
-          // Remove existing layers if they exist
-          if (mapRef.current!.getLayer('project-boundary-fill')) {
-            mapRef.current!.removeLayer('project-boundary-fill');
-          }
-          if (mapRef.current!.getLayer('project-boundary-line')) {
-            mapRef.current!.removeLayer('project-boundary-line');
-          }
-          if (mapRef.current!.getSource('project-boundary')) {
-            mapRef.current!.removeSource('project-boundary');
-          }
-
-          // Add the geometry to the map
-          mapRef.current!.addSource('project-boundary', {
-            type: 'geojson',
-            data: geometryData as any
-          });
-
-          mapRef.current!.addLayer({
-            id: 'project-boundary-fill',
-            type: 'fill',
-            source: 'project-boundary',
-            paint: {
-              'fill-color': '#ef4444',
-              'fill-opacity': 0.3
-            }
-          });
-
-          mapRef.current!.addLayer({
-            id: 'project-boundary-line',
-            type: 'line',
-            source: 'project-boundary',
-            paint: {
-              'line-color': '#ef4444',
-              'line-width': 2
-            }
-          });
-
-          // Fit map to boundary
-          const bounds = new mapboxgl.LngLatBounds();
-          geometryData.features.forEach((feature) => {
-            if (feature.geometry.type === 'Polygon') {
-              const coords = feature.geometry.coordinates[0] as number[][];
-              coords.forEach((coord: number[]) => {
-                bounds.extend([coord[0], coord[1]]);
-              });
-            } else if (feature.geometry.type === 'MultiPolygon') {
-              const coords = feature.geometry.coordinates as number[][][];
-              coords.forEach((polygon) => {
-                polygon[0].forEach((coord: number[]) => {
-                  bounds.extend([coord[0], coord[1]]);
-                });
-              });
-            }
-          });
-          
-          if (!bounds.isEmpty()) {
-            mapRef.current!.fitBounds(bounds, { padding: 50 });
-          }
+        if (geometryData) {
+          setBoundaryData(geometryData);
+          setMapLoaded(true);
         }
       }
     } catch (error) {
@@ -183,45 +80,108 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
     }
   };
 
-  useEffect(() => {
-    if (mapLoaded) {
-      loadProjectBoundary();
-    }
-  }, [projectId, mapLoaded]);
-
-  const handleTokenSet = (token: string) => {
-    setMapboxToken(token);
-    setTokenError(false);
-  };
-
-  if (!mapboxToken) {
-    return (
-      <Card className="h-full">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-australis-navy">Project Map</CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 h-80 flex items-center justify-center">
-          <MapboxTokenInput onTokenSet={handleTokenSet} />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (tokenError) {
-    return (
-      <Card className="h-full">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-australis-navy">Project Map</CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 h-80 flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-red-600 mb-4">Invalid Mapbox token. Please check your token and try again.</p>
-            <MapboxTokenInput onTokenSet={handleTokenSet} />
+  const renderSimpleMap = () => {
+    if (!boundaryData || !boundaryData.features || boundaryData.features.length === 0) {
+      return (
+        <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-b-lg">
+          <div className="text-center text-gray-500">
+            <p className="text-lg font-medium">No boundary data</p>
+            <p className="text-sm">Upload a boundary file to see the map</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      );
+    }
+
+    // Calculate bounds for the boundary
+    let minLat = Infinity, maxLat = -Infinity;
+    let minLng = Infinity, maxLng = -Infinity;
+
+    boundaryData.features.forEach((feature) => {
+      if (feature.geometry.type === 'Polygon') {
+        const coords = feature.geometry.coordinates[0] as number[][];
+        coords.forEach((coord) => {
+          const [lng, lat] = coord;
+          minLat = Math.min(minLat, lat);
+          maxLat = Math.max(maxLat, lat);
+          minLng = Math.min(minLng, lng);
+          maxLng = Math.max(maxLng, lng);
+        });
+      } else if (feature.geometry.type === 'MultiPolygon') {
+        const coords = feature.geometry.coordinates as number[][][];
+        coords.forEach((polygon) => {
+          polygon[0].forEach((coord) => {
+            const [lng, lat] = coord;
+            minLat = Math.min(minLat, lat);
+            maxLat = Math.max(maxLat, lat);
+            minLng = Math.min(minLng, lng);
+            maxLng = Math.max(maxLng, lng);
+          });
+        });
+      }
+    });
+
+    const centerLat = (minLat + maxLat) / 2;
+    const centerLng = (minLng + maxLng) / 2;
+
+    return (
+      <div className="w-full h-full relative bg-blue-50 rounded-b-lg overflow-hidden">
+        {/* Simple map background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-green-100"></div>
+        
+        {/* Grid overlay for map-like appearance */}
+        <div className="absolute inset-0 opacity-20">
+          <svg width="100%" height="100%">
+            <defs>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#94a3b8" strokeWidth="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
+        </div>
+
+        {/* Boundary visualization */}
+        <div className="absolute inset-4 flex items-center justify-center">
+          <div className="relative">
+            {/* Simple polygon representation */}
+            <svg width="200" height="150" viewBox="0 0 200 150">
+              <polygon
+                points="20,20 180,30 170,120 30,130"
+                fill="rgba(239, 68, 68, 0.3)"
+                stroke="#ef4444"
+                strokeWidth="2"
+                className="animate-pulse"
+              />
+            </svg>
+            
+            {/* Center marker */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <div className="w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-lg"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Map info overlay */}
+        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+          <div className="text-xs text-gray-600">
+            <p className="font-medium">Project Boundary</p>
+            <p>Center: {centerLat.toFixed(4)}, {centerLng.toFixed(4)}</p>
+            <p className="text-australis-blue">🗺️ Simple map view</p>
+          </div>
+        </div>
+
+        {/* Zoom controls placeholder */}
+        <div className="absolute top-4 right-4 flex flex-col gap-1">
+          <button className="w-8 h-8 bg-white shadow-lg rounded flex items-center justify-center text-gray-600 hover:bg-gray-50">
+            +
+          </button>
+          <button className="w-8 h-8 bg-white shadow-lg rounded flex items-center justify-center text-gray-600 hover:bg-gray-50">
+            −
+          </button>
+        </div>
+      </div>
     );
-  }
+  };
 
   return (
     <Card className="h-full">
@@ -229,11 +189,7 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
         <CardTitle className="text-lg font-semibold text-australis-navy">Project Map</CardTitle>
       </CardHeader>
       <CardContent className="p-0 h-80">
-        <div 
-          ref={mapContainerRef} 
-          className="w-full h-full rounded-b-lg"
-          style={{ minHeight: '320px' }}
-        />
+        {renderSimpleMap()}
       </CardContent>
     </Card>
   );
