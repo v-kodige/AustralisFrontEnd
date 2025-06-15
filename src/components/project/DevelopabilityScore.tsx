@@ -10,6 +10,15 @@ interface DevelopabilityScoreProps {
   projectId: string;
 }
 
+interface ConstraintAnalysis {
+  planning?: { score: number; status: string; };
+  environmental?: { score: number; status: string; };
+  infrastructure?: { score: number; status: string; };
+  grid_connection?: { score: number; status: string; };
+  landscape?: { score: number; status: string; };
+  [key: string]: any;
+}
+
 const DevelopabilityScore = ({ projectId }: DevelopabilityScoreProps) => {
   const [score, setScore] = useState<number | null>(null);
   const [isRunning, setIsRunning] = useState(false);
@@ -84,7 +93,7 @@ const DevelopabilityScore = ({ projectId }: DevelopabilityScoreProps) => {
   };
 
   const completeReport = async (projectFiles: any) => {
-    let constraintAnalysis = generateMockConstraintData();
+    let constraintAnalysis: ConstraintAnalysis = generateMockConstraintData();
     let developabilityScore = Math.floor(Math.random() * 30) + 70;
 
     // If we have spatial data, try to run the spatial analysis
@@ -96,8 +105,8 @@ const DevelopabilityScore = ({ projectId }: DevelopabilityScoreProps) => {
             buffer_distance_meters: 5000 
           });
 
-        if (!error && spatialAnalysis) {
-          constraintAnalysis = spatialAnalysis;
+        if (!error && spatialAnalysis && typeof spatialAnalysis === 'object') {
+          constraintAnalysis = spatialAnalysis as ConstraintAnalysis;
           
           // Calculate overall score from constraint analysis
           const scores = Object.values(spatialAnalysis).map((constraint: any) => constraint.score || 0);
@@ -115,7 +124,7 @@ const DevelopabilityScore = ({ projectId }: DevelopabilityScoreProps) => {
         developability_score: developabilityScore,
         report_status: 'completed',
         completed_at: new Date().toISOString(),
-        constraint_analysis: constraintAnalysis
+        constraint_analysis: constraintAnalysis as any
       })
       .eq('project_id', projectId)
       .eq('report_status', 'running');
@@ -131,7 +140,7 @@ const DevelopabilityScore = ({ projectId }: DevelopabilityScoreProps) => {
     }
   };
 
-  const generateMockConstraintData = () => {
+  const generateMockConstraintData = (): ConstraintAnalysis => {
     return {
       planning: { score: Math.floor(Math.random() * 20) + 80, status: 'good' },
       environmental: { score: Math.floor(Math.random() * 30) + 60, status: 'moderate' },

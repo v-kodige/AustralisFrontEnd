@@ -71,28 +71,30 @@ const FileUpload = ({ projectId, onFileUploaded }: FileUploadProps) => {
           file_type: fileExtension.substring(1),
           file_path: fileName,
           file_size: file.size,
-          geometry_data: geometryData,
+          geometry_data: geometryData as any,
           processed: true,
-          // For now, we'll store the WKT as text and convert it via a function
-          // In a production app, you'd use ST_GeomFromText() in a stored procedure
         });
 
       if (dbError) throw dbError;
 
-      // If we have WKT geometry, update the geom column using PostGIS
+      // If we have WKT geometry, update the geom column using a raw SQL update
       if (wktGeometry) {
-        const { error: geomError } = await supabase
-          .rpc('exec_sql', { 
-            sql: `UPDATE project_files SET geom = ST_GeomFromText('${wktGeometry}', 4326) WHERE file_path = '${fileName}'` 
-          })
-          .then(() => {
-            // If the RPC doesn't exist, we'll handle it gracefully
-            console.log('Geometry updated successfully');
-          })
-          .catch((error) => {
-            console.log('Could not update geometry column:', error);
+        try {
+          const { error: geomError } = await supabase
+            .from('project_files')
+            .update({ 
+              geom: `ST_GeomFromText('${wktGeometry}', 4326)` as any 
+            })
+            .eq('file_path', fileName);
+            
+          if (geomError) {
+            console.log('Could not update geometry column:', geomError);
             // This is OK - the geometry_data field still contains the data
-          });
+          }
+        } catch (error) {
+          console.log('Could not update geometry column:', error);
+          // This is OK - the geometry_data field still contains the data
+        }
       }
 
       toast({
