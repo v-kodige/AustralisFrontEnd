@@ -28,10 +28,13 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       <Header />
       <main>
+        {/* Always show authentication as the very TOP of the page if not logged in */}
         {!user && (
-          <div className="pt-4 pb-8">
-            <Auth />
-          </div>
+          <section className="w-full flex justify-center bg-gradient-to-br from-australis-offWhite via-white to-australis-lightGray pt-8 pb-8">
+            <div className="w-full max-w-lg">
+              <Auth />
+            </div>
+          </section>
         )}
         {user && (
           <>
