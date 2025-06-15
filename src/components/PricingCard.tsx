@@ -7,10 +7,11 @@ type PricingCardProps = {
   price: string;
   description: string;
   features: string[];
-  accent?: string; // e.g. "from-australis-indigo to-australis-aqua"
+  accent?: string;
   recommended?: boolean;
   onContact?: () => void;
   ctaText?: string;
+  buttonClass?: string;
   children?: ReactNode;
 };
 
@@ -23,6 +24,7 @@ const PricingCard = ({
   recommended,
   onContact,
   ctaText = "Get Started",
+  buttonClass,
   children,
 }: PricingCardProps) => {
   return (
@@ -35,35 +37,39 @@ const PricingCard = ({
     >
       {/* Layered background accent */}
       <div className={`absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl z-0 bg-gradient-to-br ${accent} opacity-30`}></div>
-      <div className="relative z-10">
-        <h3 className="text-2xl font-bold mb-2 text-australis-navy">{name}</h3>
-        <div className="flex items-baseline gap-2 mb-4">
-          <span className="text-4xl font-extrabold text-australis-indigo">{price}</span>
-          <span className="text-base text-australis-navy/70">{name !== "Enterprise Plus" ? "/mo" : "Custom"}</span>
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="flex flex-col h-full">
+          {recommended && (
+            <div className="absolute top-6 right-6 px-3 py-1 text-xs font-semibold bg-[#3bf5b7] text-[#3a3d5d] rounded-full shadow">
+              MOST POPULAR
+            </div>
+          )}
+          <h3 className="text-2xl font-bold mb-2 text-australis-navy">{name}</h3>
+          <div className="flex items-baseline gap-2 mb-1">
+            <span className={`text-4xl font-extrabold ${name === "Enterprise" ? "text-black" : name === "Developer" ? "text-australis-indigo" : "text-australis-navy"}`}>{price}</span>
+            <span className="text-base text-australis-navy/70">{name !== "Enterprise" ? "/month (ann.)" : ""}</span>
+          </div>
+          <p className="text-gray-700 mb-4">{description}</p>
+          <ul className="mb-6 text-base list-none space-y-2">
+            {features.map((f, i) => (
+              <li key={i} className="flex items-start gap-2 text-australis-navy">
+                <span className="inline-block w-2 h-2 rounded-full bg-gradient-to-tr from-australis-indigo to-australis-aqua shadow mt-2" />
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+          {children}
         </div>
-        <p className="text-gray-700 mb-6">{description}</p>
-        <ul className="space-y-2 mb-8 text-base">
-          {features.map((f, i) => (
-            <li key={i} className="flex items-center gap-2 text-australis-navy">
-              <span className="inline-block w-2 h-2 rounded-full bg-gradient-to-tr from-australis-indigo to-australis-aqua shadow" />
-              {f}
-            </li>
-          ))}
-        </ul>
-        {children}
-        <Button
-          size="lg"
-          className={
-            "w-full mt-2 bg-gradient-to-r from-australis-indigo to-australis-aqua border border-white/30 backdrop-blur-md " +
-            "hover:from-australis-indigo/80 hover:to-australis-aqua/80 shadow-lg shadow-australis-indigo/10"
-          }
-          onClick={onContact}
-        >
-          {ctaText}
-        </Button>
-        {recommended && (
-          <span className="absolute top-6 right-6 px-3 py-1 text-xs font-semibold bg-australis-indigo/90 text-white rounded-full shadow">Most Popular</span>
-        )}
+        <div className="flex-grow" />
+        <div className="flex w-full justify-center mt-4">
+          <Button
+            size="lg"
+            className={buttonClass + " w-64 text-base font-semibold py-3"}
+            onClick={onContact}
+          >
+            {ctaText}
+          </Button>
+        </div>
       </div>
     </div>
   );

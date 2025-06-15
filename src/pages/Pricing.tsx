@@ -1,67 +1,62 @@
-
 import PricingCard from "@/components/PricingCard";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 const tiers = [
   {
-    name: "Explorer",
-    price: "$0",
-    description: "For individuals and startups beginning their renewable journey.",
+    name: "Scout",
+    price: "£249",
+    description: "For freelancers, consultants, and small teams doing initial site screening.",
     accent: "from-australis-aqua to-australis-indigo",
     features: [
-      "10 site assessments per month",
-      "Core geospatial analytics",
-      "Standard map overlays",
-      "Basic PDF reporting",
-      "Community support"
+      "1 User Seat",
+      "10 Assessment Credits / month",
+      "Design Engine (Full Access)",
+      "Basic Regulatory Insights (National Policy)",
+      "Standard Grid Proximity Analysis",
+      "Standard Email Support (48hr response)",
+      "Top-up credit packs available for purchase."
     ],
-    ctaText: "Start Free",
+    ctaText: "Get Started with Scout",
+    buttonClass: "bg-white text-australis-navy border border-australis-navy hover:bg-australis-navy hover:text-white transition-colors",
   },
   {
-    name: "Professional",
-    price: "$59",
-    description: "Ideal for growing teams or consultants who need advanced tools.",
+    name: "Developer",
+    price: "£999",
+    description: "For growing solar developers and IPPs managing an active and complex pipeline.",
     accent: "from-australis-indigo to-australis-aqua",
     features: [
-      "100 site assessments per month",
-      "All Explorer features",
-      "Batch upload & prioritization",
-      "CSV/PDF export & analytics",
-      "Collaborative workspace",
-      "Priority email support"
+      "5 User Seats",
+      "50 Assessment Credits / month",
+      "Everything in Scout, plus:",
+      "Full Regulatory Compliance Engine (Agentic AI) for local plan analysis",
+      "Full Grid Insights Engine for connection feasibility",
+      "Customisable Developability Index Scoring",
+      "Advanced Reporting & Data Exports",
+      "Priority Support (Chat & Email, <24hr response)",
+      "Top-up credit packs available for purchase."
     ],
     recommended: true,
-    ctaText: "Start Trial",
+    ctaText: "Choose Developer",
+    buttonClass: "bg-australis-indigo text-white hover:bg-white hover:text-australis-indigo border border-australis-indigo transition-colors",
   },
   {
     name: "Enterprise",
-    price: "$249",
-    description: "For teams requiring high capacity, integration and advanced security.",
-    accent: "from-australis-navy to-australis-indigo",
-    features: [
-      "Unlimited site assessments",
-      "Team management & SSO",
-      "Regulatory & compliance reports",
-      "API access",
-      "Integration support (Slack/Teams)",
-      "Dedicated success manager"
-    ],
-    ctaText: "Contact Sales",
-  },
-  {
-    name: "Enterprise Plus",
-    price: "Contact Us",
-    description: "Custom solutions for large organizations with bespoke needs.",
+    price: "Custom Pricing",
+    description: "A tailored solution for large developers, funds, and organisations requiring scale and integration.",
     accent: "from-australis-indigo to-australis-navy",
     features: [
-      "Custom platform integration",
-      "On-premise deployments",
-      "Dedicated account manager",
-      "Advanced compliance/SLAs",
-      "Tailored data models & analytics"
+      "Custom User Seats",
+      "Custom / Pooled Annual Credit Allowance",
+      "Everything in Developer, plus:",
+      "Negotiable API Access for integration into your systems",
+      "Single Sign-On (SSO) for enhanced security",
+      "Portfolio-Wide Analytics",
+      "Dedicated Account Manager & Onboarding",
+      "Guaranteed Support SLA"
     ],
     ctaText: "Contact Sales",
+    buttonClass: "bg-black text-white hover:bg-white hover:text-black border border-black transition-colors",
   }
 ];
 
@@ -70,19 +65,18 @@ const Pricing = () => {
 
   const handleContact = () => {
     const element = document.getElementById("expert-panel");
-    if(element) {
-      element.scrollIntoView({behavior: "smooth"});
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   return (
     <section className="py-24 min-h-screen bg-gradient-to-br from-australis-offWhite via-white to-australis-lightGray relative overflow-hidden">
-      {/* Elevated blurred background accents */}
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-australis-aqua/40 to-transparent rounded-full blur-3xl"></div>
       <div className="absolute top-16 right-12 w-60 h-60 bg-gradient-to-xl from-white/20 to-australis-indigo/10 rounded-full blur-2xl"></div>
       <div className="container-custom relative z-10">
         <div className="flex items-center mb-6">
-          <button 
+          <button
             className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/60 backdrop-blur hover:bg-white/80 transition-colors shadow border border-white/30"
             onClick={() => navigate(-1)}
             aria-label="Back"
@@ -91,15 +85,15 @@ const Pricing = () => {
             <span className="text-australis-navy font-medium text-base">Back</span>
           </button>
         </div>
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <div className="inline-block px-7 py-4 bg-white/50 border border-white/20 rounded-3xl shadow-xl backdrop-blur-2xl">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-australis-navy mb-2">Pricing</h1>
+            <h1 className="text-3xl md:text-5xl font-extrabold text-australis-navy mb-2">Find the Plan That's Right for You</h1>
             <p className="text-lg max-w-2xl mx-auto text-australis-navy/70">
-              Flexible plans for every stage of renewable project development.
+              Predictable, powerful plans that scale with your project pipeline. All plans are for UK-wide analysis. Future country-specific access will be available via <span className="font-semibold">"Country Packs"</span>.
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-8">
           {tiers.map((tier, idx) => (
             <PricingCard
               key={tier.name}
@@ -109,18 +103,15 @@ const Pricing = () => {
               features={tier.features}
               accent={tier.accent}
               recommended={tier.recommended}
-              onContact={
-                tier.name === "Enterprise" || tier.name === "Enterprise Plus"
-                  ? handleContact
-                  : undefined
-              }
+              onContact={tier.name === "Enterprise" ? handleContact : undefined}
               ctaText={tier.ctaText}
+              buttonClass={tier.buttonClass || ""}
             />
           ))}
         </div>
-        <div className="text-center mt-16 text-australis-navy/60">
+        <div className="text-center mt-16 text-australis-navy/60 max-w-xl mx-auto">
           For detailed usage info, integrations, or to discuss custom enterprise solutions,{" "}
-          <button 
+          <button
             className="inline underline text-australis-indigo hover:text-australis-aqua font-medium transition-colors"
             onClick={handleContact}
           >
