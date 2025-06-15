@@ -121,7 +121,7 @@ const DistanceConstraintAnalysis = ({ projectId, geometry }: DistanceConstraintA
           return {
             category: categoryName,
             score: 100,
-            status: 'good' as const,
+            status: 'good' as 'good' | 'moderate' | 'challenging',
             constraints: []
           };
         }
@@ -139,11 +139,12 @@ const DistanceConstraintAnalysis = ({ projectId, geometry }: DistanceConstraintA
         }
         
         const categoryScore = totalWeight > 0 ? Math.round(weightedSum / totalWeight) : 100;
+        const categoryStatus: 'good' | 'moderate' | 'challenging' = categoryScore >= 80 ? 'good' : categoryScore >= 60 ? 'moderate' : 'challenging';
 
         return {
           category: categoryName,
           score: categoryScore,
-          status: (categoryScore >= 80 ? 'good' : categoryScore >= 60 ? 'moderate' : 'challenging') as const,
+          status: categoryStatus,
           constraints: categoryConstraints
         };
       }).filter(cat => cat.constraints.length > 0);
@@ -161,6 +162,7 @@ const DistanceConstraintAnalysis = ({ projectId, geometry }: DistanceConstraintA
       }
       
       const overallScore = totalWeight > 0 ? Math.round(weightedSum / totalWeight) : 0;
+      const overallStatus: 'good' | 'moderate' | 'challenging' = overallScore >= 80 ? 'good' : overallScore >= 60 ? 'moderate' : 'challenging';
 
       // Generate recommendations
       const recommendations: string[] = [];
@@ -179,7 +181,7 @@ const DistanceConstraintAnalysis = ({ projectId, geometry }: DistanceConstraintA
 
       setAnalysis({
         overall_score: overallScore,
-        overall_status: (overallScore >= 80 ? 'good' : overallScore >= 60 ? 'moderate' : 'challenging') as const,
+        overall_status: overallStatus,
         constraints: results,
         categories,
         summary: {
@@ -214,7 +216,7 @@ const DistanceConstraintAnalysis = ({ projectId, geometry }: DistanceConstraintA
           constraint_id: constraint.id,
           constraint_name: constraint.name,
           constraint_type: constraint.category,
-          status: 'good' as const,
+          status: 'good' as 'good' | 'moderate' | 'challenging',
           score: 100,
           intersecting_features: 0,
           details: { message: 'No constraints of this type found in the area' },
