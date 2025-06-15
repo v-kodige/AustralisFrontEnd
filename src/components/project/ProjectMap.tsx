@@ -11,6 +11,16 @@ interface ProjectMapProps {
   projectId: string;
 }
 
+interface GeoJSONFeature {
+  geometry: {
+    coordinates: [number, number][][];
+  };
+}
+
+interface GeoJSONData {
+  features: GeoJSONFeature[];
+}
+
 const ProjectMap = ({ projectId }: ProjectMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -58,10 +68,13 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
       if (files && files.length > 0) {
         const file = files[0];
         if (file.geometry_data) {
+          // Type assertion since we know this should be GeoJSON data
+          const geometryData = file.geometry_data as GeoJSONData;
+          
           // Add the geometry to the map
           mapRef.current!.addSource('project-boundary', {
             type: 'geojson',
-            data: file.geometry_data as any
+            data: geometryData as any
           });
 
           mapRef.current!.addLayer({
@@ -86,8 +99,8 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
 
           // Fit map to boundary
           const bounds = new mapboxgl.LngLatBounds();
-          if (file.geometry_data.features) {
-            file.geometry_data.features.forEach((feature: any) => {
+          if (geometryData.features) {
+            geometryData.features.forEach((feature) => {
               if (feature.geometry.coordinates) {
                 feature.geometry.coordinates[0].forEach((coord: [number, number]) => {
                   bounds.extend(coord);

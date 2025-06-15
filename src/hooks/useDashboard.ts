@@ -89,10 +89,20 @@ export const useDashboard = () => {
   };
 
   const handleCreateProject = async (projectData: any) => {
+    if (!user?.id) {
+      toast({
+        title: "Error",
+        description: "User not authenticated.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('projects')
         .insert({
+          user_id: user.id,
           name: projectData.name,
           description: projectData.description,
           location: projectData.location,
