@@ -4,9 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import OnboardingForm from "@/components/OnboardingForm";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,9 +20,25 @@ const Dashboard = () => {
     supabase.auth.getUser().then(({ data }) => {
       setUser(data?.user ?? null);
       if (!data?.user) navigate("/auth");
+      
+      // Check if this is a first-time user (you can customize this logic)
+      // For now, we'll show onboarding for all users on first visit
+      const hasCompletedOnboarding = localStorage.getItem("onboarding_completed");
+      if (!hasCompletedOnboarding && data?.user) {
+        setShowOnboarding(true);
+      }
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem("onboarding_completed", "true");
+    setShowOnboarding(false);
+    toast({
+      title: "Welcome to Australis!",
+      description: "Your workspace is ready. Let's get started!",
+    });
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -36,6 +54,11 @@ const Dashboard = () => {
         <div className="text-gray-400">Loading your dashboard…</div>
       </div>
     );
+  }
+
+  // Show onboarding form for first-time users
+  if (showOnboarding) {
+    return <OnboardingForm user={user} onComplete={handleOnboardingComplete} />;
   }
 
   return (
