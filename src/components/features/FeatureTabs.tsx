@@ -19,53 +19,53 @@ const FeatureTabs = () => {
     {
       id: "scoring",
       icon: <LineChart className="h-5 w-5" />,
-      label: "Developability Scoring",
-      title: "Developability Scoring",
-      description: "Aggregates constraints and opportunities to give you clear prioritisation.",
+      label: "Instant Site Ranking",
+      title: "Prioritise High-Potential Sites Instantly",
+      description: "Identify the sites with the best prospects so you invest energy where it matters most.",
       image: "bg-gradient-to-br from-australis-navy/10 to-australis-aqua/10",
       highlights: [
-        "Weighted scoring algorithm",
-        "Comparative site ranking",
-        "Priority recommendations"
+        "Clear site scores based on your actual constraints",
+        "Immediate mapping of your best opportunities",
+        "Consistent, bias-free assessment across all locations"
       ]
     },
     {
       id: "compliance",
       icon: <FileCheck className="h-5 w-5" />,
-      label: "Compliance Agent",
-      title: "Compliance Agent",
-      description: "Uses GenAI to interpret planning policies and regulatory risks.",
+      label: "Automated Compliance",
+      title: "Eliminate Regulatory Uncertainty",
+      description: "Automate the interpretation of complex rules so that nothing is missed.",
       image: "bg-gradient-to-br from-australis-aqua/10 to-australis-indigo/10",
       highlights: [
-        "Policy interpretation",
-        "Risk assessment",
-        "Regulation compliance checks"
+        "Instantly surface all relevant planning rules",
+        "Auto-flag potential red flags and blockers early",
+        "Get actionable, tailored policy guidance for each site"
       ]
     },
     {
       id: "design",
       icon: <Map className="h-5 w-5" />,
-      label: "Design Engine",
-      title: "Design Engine",
-      description: "Analyses land features, buildability, and power capacity to assess early-stage site potential.",
+      label: "Buildability Insights",
+      title: "Visualise What’s Truly Buildable, Effortlessly",
+      description: "Move beyond maps—see what you can really deliver on the ground.",
       image: "bg-gradient-to-br from-australis-navy/10 to-australis-indigo/10",
       highlights: [
-        "Automated terrain analysis",
-        "Solar capacity calculation",
-        "Land suitability assessment"
+        "Calculate true buildable area instantly",
+        "Auto-detect limiting land features and obstructions",
+        "Preview realistic project layouts and outputs"
       ]
     },
     {
       id: "grid",
       icon: <CircuitBoard className="h-5 w-5" />,
-      label: "Grid Insights",
-      title: "Grid Insights",
-      description: "Real-time analysis of local grid constraints and connection opportunities.",
+      label: "Grid Readiness",
+      title: "Connect to the Grid with Confidence",
+      description: "Uncover the closest and most viable grid points for every site.",
       image: "bg-gradient-to-br from-australis-indigo/10 to-australis-navy/10",
       highlights: [
-        "Connection point identification",
-        "Capacity analysis",
-        "Distance calculation"
+        "Find your nearest connection options in seconds",
+        "Estimate connection feasibility, not just distance",
+        "Plan with live, location-specific grid insights"
       ]
     }
   ];
