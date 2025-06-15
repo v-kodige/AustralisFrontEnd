@@ -1,16 +1,14 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, LogIn } from 'lucide-react';
 import { Link } from "react-router-dom";
-import UserMenu from "@/components/UserMenu";
-import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
 const B2C_LOGIN_URL =
   "https://australisenergyb2corg.b2clogin.com/australisenergyb2corg.onmicrosoft.com/b2c_1_signupsignin-dev/oauth2/v2.0/authorize?client_id=27285428-316d-429f-a2a7-40e6c2c758f7&scope=openid%20profile%20email%20offline_access&redirect_uri=https%3A%2F%2Faustralis-energy-dev-app.azurewebsites.net&client-request-id=019773f9-2e20-747a-8525-51f33052216e&response_mode=fragment&response_type=code&x-client-SKU=msal.js.browser&x-client-VER=3.23.0&client_info=1&code_challenge=yjgwPuAcxqVCd7CdVkxluUsc_I6Y3694UvEVwHGxomw&code_challenge_method=S256&nonce=019773f9-2ec4-7932-9c65-5b32a1d45fa6&state=eyJpZCI6IjAxOTc3M2Y5LTJlYzMtNzNkMC05YmNkLWUzMDE5MDk0ZTUwNSIsIm1ldGEiOnsiaW50ZXJhY3Rpb25UeXBlIjoicG9wdXAifX0%3D";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user } = useSupabaseAuth();
 
   const handleLogin = () => {
     window.open(
@@ -47,11 +45,18 @@ const Header = () => {
           <Link to="/pricing" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
             Pricing
           </Link>
-          {user ? (
-            <UserMenu />
-          ) : (
-            null
-          )}
+          <Button
+            size="sm"
+            onClick={handleLogin}
+            className="flex items-center gap-2 bg-australis-indigo text-white border border-australis-indigo transition-colors hover:bg-white hover:text-australis-indigo"
+            style={{ boxShadow: "0 1px 4px 0 rgba(60,98,255,.10)" }}
+          >
+            <LogIn size={16} />
+            Login
+          </Button>
+          <Button variant="default" size="sm">
+            Book a Demo
+          </Button>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -81,11 +86,18 @@ const Header = () => {
             <Link to="/pricing" className="block text-gray-600 hover:text-australis-blue">
               Pricing
             </Link>
-            {user ? (
-              <UserMenu />
-            ) : (
-              null
-            )}
+            <Button
+              size="sm"
+              onClick={handleLogin}
+              className="w-full flex items-center justify-center gap-2 bg-australis-indigo text-white border border-australis-indigo transition-colors hover:bg-white hover:text-australis-indigo"
+              style={{ boxShadow: "0 1px 4px 0 rgba(60,98,255,.10)" }}
+            >
+              <LogIn size={16} />
+              Login
+            </Button>
+            <Button variant="default" size="sm" className="w-full">
+              Book a Demo
+            </Button>
           </div>
         </div>
       )}

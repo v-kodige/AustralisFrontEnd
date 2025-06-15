@@ -10,45 +10,21 @@ import CtaSection from '@/components/CtaSection';
 import FaqSection from '@/components/FaqSection';
 import Footer from '@/components/Footer';
 import ExpertPanel from '@/components/ExpertPanel';
-import Auth from './Auth';
-import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
 const Index = () => {
-  const { user, loading } = useSupabaseAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="spinner-border animate-spin h-8 w-8 border-4 border-australis-indigo rounded-full border-r-transparent"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-white">
       <Header />
       <main>
-        {/* Always show authentication as the very TOP of the page if not logged in */}
-        {!user && (
-          <section className="w-full flex justify-center bg-gradient-to-br from-australis-offWhite via-white to-australis-lightGray pt-8 pb-8">
-            <div className="w-full max-w-lg">
-              <Auth />
-            </div>
-          </section>
-        )}
-        {user && (
-          <>
-            <HeroSection />
-            <ProblemSection />
-            <BenefitsSection />
-            <FeaturesSection />
-            <SocialProofSection />
-            <DemoSection />
-            <ExpertPanel />
-            <CtaSection />
-            <FaqSection />
-          </>
-        )}
+        <HeroSection />
+        <ProblemSection />
+        <BenefitsSection />
+        <FeaturesSection />
+        <SocialProofSection />
+        <DemoSection />
+        <ExpertPanel />
+        <CtaSection />
+        <FaqSection />
       </main>
       <Footer />
     </div>
