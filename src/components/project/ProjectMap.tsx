@@ -68,8 +68,8 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
       if (files && files.length > 0) {
         const file = files[0];
         if (file.geometry_data) {
-          // Type assertion since we know this should be GeoJSON data
-          const geometryData = file.geometry_data as GeoJSONData;
+          // Safely convert Json type to GeoJSONData via unknown
+          const geometryData = file.geometry_data as unknown as GeoJSONData;
           
           // Add the geometry to the map
           mapRef.current!.addSource('project-boundary', {
