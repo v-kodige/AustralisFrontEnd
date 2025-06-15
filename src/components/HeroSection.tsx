@@ -1,30 +1,25 @@
-
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PlayCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
-
 const HeroSection = () => {
   const [showFirstLine, setShowFirstLine] = useState(false);
   const [showSecondLine, setShowSecondLine] = useState(false);
-
   useEffect(() => {
     const timer1 = setTimeout(() => {
       setShowFirstLine(true);
       setTimeout(() => setShowSecondLine(true), 1000);
     }, 200);
-
     return () => clearTimeout(timer1);
   }, []);
-
   const handleEarlyAccess = () => {
     const element = document.getElementById('expert-panel');
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({
+        behavior: 'smooth'
+      });
     }
   };
-
-  return (
-    <section className="pt-32 pb-20 bg-gradient-to-br from-australis-offWhite to-australis-lightGray relative overflow-hidden">
+  return <section className="pt-32 pb-20 bg-gradient-to-br from-australis-offWhite to-australis-lightGray relative overflow-hidden">
       {/* Aurora-style light effects */}
       <div className="absolute -top-20 -right-20 w-96 h-96 bg-australis-aqua/20 rounded-full blur-3xl animate-pulse-slow"></div>
       <div className="absolute -bottom-20 -left-20 w-96 h-96 rounded-full blur-3xl animate-pulse-slow bg-australis-indigo/[0.17]"></div>
@@ -49,11 +44,7 @@ const HeroSection = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg" 
-                className="bg-australis-indigo hover:bg-australis-indigo/90"
-                onClick={handleEarlyAccess}
-              >
+              <Button size="lg" className="bg-australis-indigo hover:bg-australis-indigo/90" onClick={handleEarlyAccess}>
                 Request Early Access
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -64,20 +55,12 @@ const HeroSection = () => {
             </div>
           </div>
           <div className="relative animate-fade-in">
-            <div className="aspect-square md:aspect-[4/3] bg-gradient-to-br from-australis-navy/20 via-australis-indigo/20 to-australis-aqua/30 rounded-xl shadow-lg overflow-hidden backdrop-blur-sm border border-white/20">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-center text-australis-navy italic">
-                  Interactive map visualization
-                </p>
-              </div>
-            </div>
+            
             <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-australis-aqua/10 rounded-full blur-2xl"></div>
             <div className="absolute -top-6 -left-6 w-32 h-32 bg-australis-indigo/10 rounded-full blur-2xl"></div>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default HeroSection;
