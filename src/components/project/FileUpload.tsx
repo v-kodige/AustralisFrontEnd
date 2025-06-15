@@ -46,6 +46,8 @@ const FileUpload = ({ projectId, onFileUploaded }: FileUploadProps) => {
         throw new Error('Failed to parse geometry from file');
       }
 
+      console.log('Parsed geometry data:', geometryData);
+
       const fileName = `${user.id}/${projectId}/${Date.now()}_${file.name}`;
       
       // Upload file to storage
@@ -55,15 +57,8 @@ const FileUpload = ({ projectId, onFileUploaded }: FileUploadProps) => {
 
       if (uploadError) throw uploadError;
 
-      // Convert first feature geometry to PostGIS format
-      let wktGeometry = null;
-      if (geometryData.features && geometryData.features.length > 0) {
-        const feature = geometryData.features[0];
-        wktGeometry = convertGeoJSONToWKT(feature.geometry);
-      }
-
       // Store file information and geometry in database
-      const { error: dbError } = await supabase
+      const { data: insertedFile, error: dbError } = await supabase
         .from('project_files')
         .insert({
           project_id: projectId,
@@ -73,27 +68,35 @@ const FileUpload = ({ projectId, onFileUploaded }: FileUploadProps) => {
           file_size: file.size,
           geometry_data: geometryData as any,
           processed: true,
-        });
+        })
+        .select()
+        .single();
 
       if (dbError) throw dbError;
 
-      // If we have WKT geometry, update the geom column using a raw SQL update
-      if (wktGeometry) {
-        try {
-          const { error: geomError } = await supabase
-            .from('project_files')
-            .update({ 
-              geom: `ST_GeomFromText('${wktGeometry}', 4326)` as any 
-            })
-            .eq('file_path', fileName);
-            
-          if (geomError) {
-            console.log('Could not update geometry column:', geomError);
-            // This is OK - the geometry_data field still contains the data
+      // Convert first feature geometry to PostGIS format and update
+      if (geometryData.features && geometryData.features.length > 0) {
+        const feature = geometryData.features[0];
+        const wktGeometry = convertGeoJSONToWKT(feature.geometry);
+        
+        if (wktGeometry) {
+          try {
+            // Use SQL query to update geometry column with proper PostGIS conversion
+            const { error: updateError } = await supabase
+              .from('project_files')
+              .update({ 
+                geom: wktGeometry as any 
+              })
+              .eq('id', insertedFile.id);
+              
+            if (updateError) {
+              console.log('Could not update PostGIS geometry column:', updateError);
+            } else {
+              console.log('Successfully updated PostGIS geometry');
+            }
+          } catch (error) {
+            console.log('PostGIS update error:', error);
           }
-        } catch (error) {
-          console.log('Could not update geometry column:', error);
-          // This is OK - the geometry_data field still contains the data
         }
       }
 
@@ -123,13 +126,13 @@ const FileUpload = ({ projectId, onFileUploaded }: FileUploadProps) => {
     try {
       switch (geometry.type) {
         case 'Point':
-          return `POINT(${geometry.coordinates[0]} ${geometry.coordinates[1]})`;
+          return `ST_GeomFromText('POINT(${geometry.coordinates[0]} ${geometry.coordinates[1]})', 4326)`;
         
         case 'Polygon':
           const rings = geometry.coordinates.map((ring: number[][]) => 
             '(' + ring.map((coord: number[]) => `${coord[0]} ${coord[1]}`).join(', ') + ')'
           ).join(', ');
-          return `POLYGON(${rings})`;
+          return `ST_GeomFromText('POLYGON(${rings})', 4326)`;
         
         case 'MultiPolygon':
           const polygons = geometry.coordinates.map((polygon: number[][][]) =>
@@ -137,7 +140,7 @@ const FileUpload = ({ projectId, onFileUploaded }: FileUploadProps) => {
               '(' + ring.map((coord: number[]) => `${coord[0]} ${coord[1]}`).join(', ') + ')'
             ).join(', ') + ')'
           ).join(', ');
-          return `MULTIPOLYGON(${polygons})`;
+          return `ST_GeomFromText('MULTIPOLYGON(${polygons})', 4326)`;
         
         default:
           console.warn('Unsupported geometry type:', geometry.type);
@@ -188,6 +191,7 @@ const FileUpload = ({ projectId, onFileUploaded }: FileUploadProps) => {
           <p>• Maximum file size: 50MB</p>
           <p>• Supported formats: KML, KMZ, Shapefile (ZIP), GeoJSON</p>
           <p>• One boundary file per project</p>
+          <p>• Boundary will be displayed on Azure Maps</p>
         </div>
       </CardContent>
     </Card>

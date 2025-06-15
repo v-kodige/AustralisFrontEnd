@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import AzureMap from './AzureMap';
 
 interface ProjectMapProps {
   projectId: string;
@@ -22,9 +23,8 @@ interface GeoJSONData {
 }
 
 const ProjectMap = ({ projectId }: ProjectMapProps) => {
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
   const [boundaryData, setBoundaryData] = useState<GeoJSONData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadProjectBoundary();
@@ -32,6 +32,7 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
 
   const loadProjectBoundary = async () => {
     try {
+      setLoading(true);
       const { data: files, error } = await supabase
         .from('project_files')
         .select('*')
@@ -49,19 +50,22 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
 
         // Try to get geometry from the geom column first (PostGIS)
         if (file.geom) {
-          // Convert PostGIS geometry to GeoJSON
-          const { data: geoJsonData, error: geoError } = await supabase
-            .rpc('st_asgeojson', { geom: file.geom });
-          
-          if (!geoError && geoJsonData) {
-            geometryData = {
-              type: "FeatureCollection",
-              features: [{
-                type: "Feature",
-                geometry: JSON.parse(geoJsonData),
-                properties: { name: file.file_name }
-              }]
-            };
+          try {
+            const { data: geoJsonData, error: geoError } = await supabase
+              .rpc('st_asgeojson', { geom: file.geom });
+            
+            if (!geoError && geoJsonData) {
+              geometryData = {
+                type: "FeatureCollection",
+                features: [{
+                  type: "Feature",
+                  geometry: JSON.parse(geoJsonData),
+                  properties: { name: file.file_name }
+                }]
+              };
+            }
+          } catch (geoError) {
+            console.log('PostGIS geometry conversion failed, trying geometry_data');
           }
         }
         
@@ -71,22 +75,24 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
         }
 
         if (geometryData) {
+          console.log('Loaded boundary data:', geometryData);
           setBoundaryData(geometryData);
-          setMapLoaded(true);
         }
       }
     } catch (error) {
       console.error('Error loading project boundary:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const renderSimpleMap = () => {
+  const renderFallbackMap = () => {
     if (!boundaryData || !boundaryData.features || boundaryData.features.length === 0) {
       return (
         <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-b-lg">
           <div className="text-center text-gray-500">
             <p className="text-lg font-medium">No boundary data</p>
-            <p className="text-sm">Upload a boundary file to see the map</p>
+            <p className="text-sm">Upload a KML, GeoJSON, or Shapefile to see the boundary</p>
           </div>
         </div>
       );
@@ -95,6 +101,7 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
     // Calculate bounds for the boundary
     let minLat = Infinity, maxLat = -Infinity;
     let minLng = Infinity, maxLng = -Infinity;
+    let coordCount = 0;
 
     boundaryData.features.forEach((feature) => {
       if (feature.geometry.type === 'Polygon') {
@@ -109,6 +116,7 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
                   maxLat = Math.max(maxLat, lat);
                   minLng = Math.min(minLng, lng);
                   maxLng = Math.max(maxLng, lng);
+                  coordCount++;
                 }
               }
             });
@@ -128,6 +136,7 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
                       maxLat = Math.max(maxLat, lat);
                       minLng = Math.min(minLng, lng);
                       maxLng = Math.max(maxLng, lng);
+                      coordCount++;
                     }
                   }
                 });
@@ -184,18 +193,9 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
           <div className="text-xs text-gray-600">
             <p className="font-medium">Project Boundary</p>
             <p>Center: {centerLat.toFixed(4)}, {centerLng.toFixed(4)}</p>
-            <p className="text-australis-blue">🗺️ Simple map view</p>
+            <p>Coordinates: {coordCount}</p>
+            <p className="text-australis-blue">📍 Fallback map view</p>
           </div>
-        </div>
-
-        {/* Zoom controls placeholder */}
-        <div className="absolute top-4 right-4 flex flex-col gap-1">
-          <button className="w-8 h-8 bg-white shadow-lg rounded flex items-center justify-center text-gray-600 hover:bg-gray-50">
-            +
-          </button>
-          <button className="w-8 h-8 bg-white shadow-lg rounded flex items-center justify-center text-gray-600 hover:bg-gray-50">
-            −
-          </button>
         </div>
       </div>
     );
@@ -207,7 +207,23 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
         <CardTitle className="text-lg font-semibold text-australis-navy">Project Map</CardTitle>
       </CardHeader>
       <CardContent className="p-0 h-80">
-        {renderSimpleMap()}
+        {loading ? (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-b-lg">
+            <div className="animate-spin w-6 h-6 border-4 border-australis-blue/20 rounded-full border-t-australis-blue"></div>
+          </div>
+        ) : (
+          <>
+            {/* Try Azure Maps first, fallback to simple visualization */}
+            <div className="w-full h-full">
+              <AzureMap 
+                boundaryData={boundaryData}
+                onMapReady={(map) => console.log('Azure Map ready:', map)}
+              />
+            </div>
+            {/* Uncomment below to use fallback map instead */}
+            {/* {renderFallbackMap()} */}
+          </>
+        )}
       </CardContent>
     </Card>
   );
