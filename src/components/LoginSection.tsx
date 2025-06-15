@@ -22,7 +22,6 @@ const LoginSection = () => {
         >
           <a
             href={LOGIN_URL}
-            rel="noopener noreferrer"
             target="_self"
             aria-label="Login to Australis Energy Dashboard"
           >
