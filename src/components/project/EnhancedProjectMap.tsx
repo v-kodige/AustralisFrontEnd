@@ -80,24 +80,19 @@ const EnhancedProjectMap = ({ projectId }: EnhancedProjectMapProps) => {
     try {
       const layers: ConstraintLayer[] = [];
       
-      // Get unique constraint types from our data
-      const { data: constraintTypes, error } = await supabase
+      // Get all constraint data and extract unique types
+      const { data: allConstraints, error } = await supabase
         .from('constraint_datasets')
-        .select('type')
-        .distinct();
+        .select('*');
 
       if (error) throw error;
 
-      for (const typeRow of constraintTypes || []) {
-        const type = typeRow.type;
-        
-        // Get all features for this constraint type
-        const { data: features, error: featuresError } = await supabase
-          .from('constraint_datasets')
-          .select('*')
-          .eq('type', type);
+      // Extract unique constraint types
+      const uniqueTypes = Array.from(new Set(allConstraints?.map(c => c.type) || []));
 
-        if (featuresError) continue;
+      for (const type of uniqueTypes) {
+        // Filter features for this constraint type
+        const features = allConstraints?.filter(c => c.type === type) || [];
 
         const constraint = UK_SOLAR_CONSTRAINTS.find(c => c.id === type);
         
@@ -107,7 +102,7 @@ const EnhancedProjectMap = ({ projectId }: EnhancedProjectMapProps) => {
           type: constraint?.category || 'other',
           visible: false, // Start with layers hidden
           color: constraintColors[type as keyof typeof constraintColors] || '#666666',
-          features: features || []
+          features: features
         });
       }
 
@@ -267,7 +262,6 @@ const EnhancedProjectMap = ({ projectId }: EnhancedProjectMapProps) => {
                       id={layer.id}
                       checked={layer.visible}
                       onCheckedChange={() => toggleLayer(layer.id)}
-                      size="sm"
                     />
                   </div>
                 ))}
