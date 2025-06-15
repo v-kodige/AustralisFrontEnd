@@ -63,8 +63,8 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
   const loadProjectData = async () => {
     try {
       setLoading(true);
-      console.log('=== LOADING PROJECT DATA DEBUG START ===');
-      console.log('Project ID:', projectId);
+      console.log('=== GIS TROUBLESHOOTING: PROJECT DATA LOADING START ===');
+      console.log('1. Project ID:', projectId);
       
       // Load project details
       const { data: project, error: projectError } = await supabase
@@ -74,10 +74,11 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
         .single();
 
       if (projectError) throw projectError;
-      console.log('Loaded project:', project);
+      console.log('2. Project loaded:', project);
       setProjectData(project);
 
-      // Check if file exists
+      // Check if file exists - STEP-BY-STEP DEBUGGING
+      console.log('3. Querying project_files table...');
       const { data: files, error: fileError } = await supabase
         .from('project_files')
         .select('*')
@@ -85,37 +86,68 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
         .eq('processed', true);
 
       if (fileError) throw fileError;
-      console.log('Found project files:', files);
+      console.log('4. Raw files from database:', files);
+      console.log('4a. Files count:', files ? files.length : 0);
 
       if (files && files.length > 0) {
         const file = files[0];
-        console.log('Processing file:', file.file_name);
-        console.log('File ID:', file.id);
-        console.log('File uploaded at:', file.created_at);
-        console.log('File geometry_data exists:', !!file.geometry_data);
+        console.log('=== GIS TROUBLESHOOTING: FILE ANALYSIS START ===');
+        console.log('5. Selected file details:');
+        console.log('   - File name:', file.file_name);
+        console.log('   - File ID:', file.id);
+        console.log('   - File type:', file.file_type);
+        console.log('   - File uploaded at:', file.upload_date); // Fixed: use upload_date instead of created_at
+        console.log('   - File processed:', file.processed);
+        console.log('   - File size:', file.file_size);
+        console.log('   - Has geometry_data:', !!file.geometry_data);
+        console.log('   - Has geom (PostGIS):', !!file.geom);
         
         if (file.geometry_data) {
-          console.log('=== GEOMETRY DATA ANALYSIS ===');
-          console.log('Geometry data type:', typeof file.geometry_data);
-          console.log('Geometry data content:', JSON.stringify(file.geometry_data, null, 2));
+          console.log('=== GIS TROUBLESHOOTING: GEOMETRY DATA ANALYSIS ===');
+          console.log('6. Geometry data type:', typeof file.geometry_data);
           
-          // Check for coordinate bounds
-          if (file.geometry_data.features && file.geometry_data.features.length > 0) {
-            const feature = file.geometry_data.features[0];
-            console.log('First feature geometry type:', feature.geometry?.type);
-            console.log('First feature coordinates:', feature.geometry?.coordinates);
-            console.log('Feature properties:', feature.properties);
+          // Type assertion for geometry_data to handle the Json type properly
+          const geometryData = file.geometry_data as any;
+          console.log('7. Geometry data structure:', JSON.stringify(geometryData, null, 2));
+          
+          // Check for coordinate bounds and features - Fixed type assertions
+          if (geometryData && typeof geometryData === 'object' && geometryData.features && Array.isArray(geometryData.features)) {
+            console.log('8. Features found:', geometryData.features.length);
+            
+            if (geometryData.features.length > 0) {
+              const feature = geometryData.features[0];
+              console.log('9. First feature analysis:');
+              console.log('   - Geometry type:', feature.geometry?.type);
+              console.log('   - Has coordinates:', !!feature.geometry?.coordinates);
+              console.log('   - Coordinates preview:', feature.geometry?.coordinates);
+              console.log('   - Feature properties:', feature.properties);
+              
+              // Coordinate validation
+              if (feature.geometry?.coordinates) {
+                console.log('10. Coordinate validation:');
+                const coords = feature.geometry.coordinates;
+                if (feature.geometry.type === 'Polygon' && Array.isArray(coords[0])) {
+                  console.log('    - Polygon with', coords[0].length, 'coordinate pairs');
+                  console.log('    - First coordinate:', coords[0][0]);
+                  console.log('    - Last coordinate:', coords[0][coords[0].length - 1]);
+                } else if (feature.geometry.type === 'Point') {
+                  console.log('    - Point at:', coords);
+                }
+              }
+            }
+          } else {
+            console.log('8. ❌ No valid features array found in geometry_data');
           }
           
-          setBoundaryData(file.geometry_data);
+          setBoundaryData(geometryData);
           setHasUploadedFile(true);
           setShowFileUpload(false);
-          console.log('✓ Boundary data set successfully');
+          console.log('11. ✅ Boundary data set in state successfully');
         } else {
-          console.log('✗ No geometry_data found in file');
+          console.log('6. ❌ No geometry_data found in file record');
         }
       } else {
-        console.log('✗ No processed files found for project');
+        console.log('4. ❌ No processed files found for project');
       }
 
       // Load analysis data
@@ -130,16 +162,16 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
 
       if (reports && reports.length > 0) {
         setAnalysisData(reports[0].constraint_analysis);
-        console.log('Loaded analysis data:', reports[0].constraint_analysis);
+        console.log('12. Analysis data loaded:', reports[0].constraint_analysis);
       } else {
-        console.log('No analysis data found');
+        console.log('12. No analysis data found');
       }
 
       await loadConstraintLayers();
-      console.log('=== LOADING PROJECT DATA DEBUG END ===');
+      console.log('=== GIS TROUBLESHOOTING: PROJECT DATA LOADING END ===');
 
     } catch (error) {
-      console.error('Error loading project data:', error);
+      console.error('❌ Error loading project data:', error);
     } finally {
       setLoading(false);
     }
@@ -164,7 +196,7 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
           id: type,
           name: constraint?.name || type.replace('_', ' ').toUpperCase(),
           type: constraint?.category || 'other',
-          visible: true, // Auto-show all constraints
+          visible: true,
           color: constraintColors[type as keyof typeof constraintColors] || '#666666',
           features: features
         });
@@ -187,11 +219,10 @@ const ConsolidatedProjectView = ({ projectId }: ConsolidatedProjectViewProps) =>
   };
 
   const handleFileUploaded = () => {
-    console.log('=== FILE UPLOADED CALLBACK ===');
+    console.log('=== GIS TROUBLESHOOTING: FILE UPLOAD CALLBACK ===');
     console.log('File uploaded, reloading project data...');
     setHasUploadedFile(true);
     setShowFileUpload(false);
-    // Add a small delay to ensure the file is processed
     setTimeout(() => {
       console.log('Reloading project data after file upload...');
       loadProjectData();

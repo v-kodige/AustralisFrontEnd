@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -44,7 +43,7 @@ const FunctionalMap = ({
     if (!mapContainer.current || mapRef.current) return;
 
     try {
-      console.log('Initializing map with boundary data:', boundaryData);
+      console.log('=== MAP INITIALIZATION ===');
       setDebugInfo('Initializing map...');
       mapboxgl.accessToken = MAPBOX_TOKEN;
 
@@ -58,12 +57,13 @@ const FunctionalMap = ({
       mapRef.current = map;
 
       map.on('load', () => {
-        console.log('Map loaded successfully');
+        console.log('✅ Map loaded successfully');
         setMapError(null);
         setDebugInfo('Map loaded, processing boundary data...');
         
         if (boundaryData) {
-          console.log('Boundary data received:', JSON.stringify(boundaryData, null, 2));
+          console.log('=== STARTING BOUNDARY ANALYSIS FROM MAP ===');
+          console.log('Boundary data received in map:', JSON.stringify(boundaryData, null, 2));
           startAnalysisVisualization(map);
         } else {
           setDebugInfo('No boundary data found - please upload a KML file');
@@ -75,37 +75,40 @@ const FunctionalMap = ({
       });
 
       map.on('error', (e) => {
-        console.error('Map error:', e);
+        console.error('❌ Map error:', e);
         setMapError('Map failed to load. Please check your connection.');
       });
 
       map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     } catch (error) {
-      console.error('Error initializing map:', error);
+      console.error('❌ Error initializing map:', error);
       setMapError(error instanceof Error ? error.message : 'Failed to initialize map');
     }
   };
 
   const startAnalysisVisualization = async (map: mapboxgl.Map) => {
-    console.log('Starting analysis with boundary data:', boundaryData);
+    console.log('=== GIS TROUBLESHOOTING: MAP VISUALIZATION START ===');
+    console.log('1. Boundary data input to map:', boundaryData);
     
     if (!boundaryData) {
       setDebugInfo('No boundary data to analyze');
-      console.log('No boundary data provided to startAnalysisVisualization');
+      console.log('❌ No boundary data provided to startAnalysisVisualization');
       return;
     }
 
-    console.log('Boundary data type:', typeof boundaryData);
-    console.log('Boundary data structure:', JSON.stringify(boundaryData, null, 2));
+    console.log('2. Boundary data type:', typeof boundaryData);
+    console.log('3. Boundary data structure:', JSON.stringify(boundaryData, null, 2));
     
     // Step 1: Show project boundary
     setAnalysisStep(1);
     setDebugInfo('Step 1: Displaying project boundary...');
+    console.log('4. Starting boundary display process...');
     const boundingBox = await addProjectBoundary(map);
     
     if (!boundingBox) {
       setDebugInfo('Error: Could not create boundary from KML data');
+      console.log('❌ Boundary creation failed');
       return;
     }
     
@@ -128,10 +131,11 @@ const FunctionalMap = ({
 
   const addProjectBoundary = async (map: mapboxgl.Map) => {
     try {
-      console.log('addProjectBoundary called with data:', boundaryData);
+      console.log('=== GIS TROUBLESHOOTING: BOUNDARY PROCESSING START ===');
+      console.log('1. addProjectBoundary called with data:', boundaryData);
 
       if (!boundaryData) {
-        console.error('No boundary data provided to addProjectBoundary');
+        console.error('❌ No boundary data provided to addProjectBoundary');
         setDebugInfo('Error: No boundary data provided');
         return null;
       }
@@ -139,51 +143,58 @@ const FunctionalMap = ({
       let geoJsonData = null;
       let bounds = new mapboxgl.LngLatBounds();
 
+      console.log('2. Analyzing boundary data structure...');
+      console.log('   - Type:', boundaryData.type);
+      console.log('   - Has features:', !!boundaryData.features);
+      console.log('   - Features type:', Array.isArray(boundaryData.features) ? 'array' : typeof boundaryData.features);
+
       // Handle different data structures more robustly
       if (boundaryData.type === 'FeatureCollection') {
         geoJsonData = boundaryData;
-        console.log('Using FeatureCollection format');
+        console.log('3. Using FeatureCollection format directly');
       } else if (boundaryData.features && Array.isArray(boundaryData.features)) {
         geoJsonData = {
           type: 'FeatureCollection',
           features: boundaryData.features
         };
-        console.log('Converting to FeatureCollection format');
+        console.log('3. Converting to FeatureCollection format');
       } else if (boundaryData.type === 'Feature') {
         geoJsonData = {
           type: 'FeatureCollection',
           features: [boundaryData]
         };
-        console.log('Converting single Feature to FeatureCollection');
+        console.log('3. Converting single Feature to FeatureCollection');
       } else {
-        console.error('Unrecognized boundary data structure:', boundaryData);
+        console.error('❌ Unrecognized boundary data structure:', boundaryData);
         setDebugInfo('Error: Unrecognized boundary data format');
         return null;
       }
 
-      console.log('Processed GeoJSON data:', geoJsonData);
+      console.log('4. Final processed GeoJSON data:', JSON.stringify(geoJsonData, null, 2));
 
       // Validate and extract coordinates
       if (geoJsonData.features && geoJsonData.features.length > 0) {
-        console.log(`Processing ${geoJsonData.features.length} features`);
+        console.log(`5. Processing ${geoJsonData.features.length} features for coordinate extraction`);
         
         geoJsonData.features.forEach((feature: any, index: number) => {
-          console.log(`Processing feature ${index}:`, feature);
+          console.log(`=== FEATURE ${index + 1} ANALYSIS ===`);
+          console.log('Feature:', JSON.stringify(feature, null, 2));
           
           if (feature.geometry) {
-            console.log('Feature geometry type:', feature.geometry.type);
-            console.log('Feature coordinates:', feature.geometry.coordinates);
+            console.log('Geometry type:', feature.geometry.type);
+            console.log('Coordinates:', feature.geometry.coordinates);
             
             // Handle different geometry types
             switch (feature.geometry.type) {
               case 'Polygon':
                 if (feature.geometry.coordinates && feature.geometry.coordinates[0]) {
+                  console.log(`Processing Polygon with ${feature.geometry.coordinates[0].length} coordinates`);
                   feature.geometry.coordinates[0].forEach((coord: number[], coordIndex: number) => {
                     if (coord.length >= 2 && !isNaN(coord[0]) && !isNaN(coord[1])) {
                       bounds.extend([coord[0], coord[1]]);
-                      console.log(`Added coordinate ${coordIndex}: [${coord[0]}, ${coord[1]}]`);
+                      console.log(`✓ Added coordinate ${coordIndex + 1}: [${coord[0]}, ${coord[1]}]`);
                     } else {
-                      console.warn(`Invalid coordinate at ${coordIndex}:`, coord);
+                      console.warn(`❌ Invalid coordinate at ${coordIndex + 1}:`, coord);
                     }
                   });
                 }
@@ -191,37 +202,42 @@ const FunctionalMap = ({
               case 'Point':
                 if (feature.geometry.coordinates && feature.geometry.coordinates.length >= 2) {
                   bounds.extend([feature.geometry.coordinates[0], feature.geometry.coordinates[1]]);
-                  console.log('Added point coordinate:', feature.geometry.coordinates);
+                  console.log('✓ Added point coordinate:', feature.geometry.coordinates);
                 }
                 break;
               case 'LineString':
                 if (feature.geometry.coordinates) {
+                  console.log(`Processing LineString with ${feature.geometry.coordinates.length} coordinates`);
                   feature.geometry.coordinates.forEach((coord: number[], coordIndex: number) => {
                     if (coord.length >= 2 && !isNaN(coord[0]) && !isNaN(coord[1])) {
                       bounds.extend([coord[0], coord[1]]);
-                      console.log(`Added line coordinate ${coordIndex}: [${coord[0]}, ${coord[1]}]`);
+                      console.log(`✓ Added line coordinate ${coordIndex + 1}: [${coord[0]}, ${coord[1]}]`);
                     }
                   });
                 }
                 break;
               default:
-                console.warn('Unsupported geometry type:', feature.geometry.type);
+                console.warn('❌ Unsupported geometry type:', feature.geometry.type);
             }
           } else {
-            console.warn('Feature missing geometry:', feature);
+            console.warn('❌ Feature missing geometry:', feature);
           }
         });
       }
 
       if (bounds.isEmpty()) {
-        console.error('No valid coordinates found in boundary data');
+        console.error('❌ No valid coordinates found in boundary data');
         setDebugInfo('Error: No valid coordinates found in KML file');
         return null;
       }
 
-      console.log('Bounds calculated:', bounds.getNorthEast(), bounds.getSouthWest());
+      console.log('6. Final bounds calculated:');
+      console.log('   - NorthEast:', bounds.getNorthEast());
+      console.log('   - SouthWest:', bounds.getSouthWest());
+      console.log('   - Center:', bounds.getCenter());
 
       // Add source and layers
+      console.log('7. Adding boundary to map...');
       map.addSource('project-boundary', {
         type: 'geojson',
         data: geoJsonData
@@ -248,13 +264,14 @@ const FunctionalMap = ({
       });
 
       // Fit map to boundary
+      console.log('8. Fitting map to boundary...');
       map.fitBounds(bounds, { padding: 100 });
-      console.log('Successfully displayed boundary and fitted map');
+      console.log('✅ Successfully displayed boundary and fitted map');
 
       return bounds;
 
     } catch (error) {
-      console.error('Error adding boundary:', error);
+      console.error('❌ Error adding boundary:', error);
       setDebugInfo(`Error displaying boundary: ${error}`);
       return null;
     }
@@ -265,7 +282,6 @@ const FunctionalMap = ({
 
     try {
       const center = bounds.getCenter();
-      // More accurate 5km buffer calculation (approximately 0.045 degrees at UK latitude)
       const bufferDistance = 0.045;
 
       const bufferPolygon = {
@@ -312,10 +328,10 @@ const FunctionalMap = ({
         }
       });
 
-      console.log('Added 5km buffer around boundary');
+      console.log('✅ Added 5km buffer around boundary');
 
     } catch (error) {
-      console.error('Error adding buffer:', error);
+      console.error('❌ Error adding buffer:', error);
       setDebugInfo(`Error adding buffer: ${error}`);
     }
   };
@@ -330,7 +346,6 @@ const FunctionalMap = ({
       console.log('Fetched real constraints:', constraints);
       setRealConstraints(constraints);
 
-      // Display each constraint type
       for (const constraint of constraints) {
         await displayConstraintLayer(map, constraint);
         await delay(300);
@@ -347,7 +362,6 @@ const FunctionalMap = ({
     const constraints = [];
 
     try {
-      // Fetch Ancient Woodland from Natural England
       const ancientWoodlandResponse = await fetch(
         `https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?f=geojson&where=1=1&geometry=${lng-0.05},${lat-0.05},${lng+0.05},${lat+0.05}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects`
       );
@@ -367,7 +381,6 @@ const FunctionalMap = ({
     }
 
     try {
-      // Fetch Listed Buildings from Historic England
       const listedBuildingsResponse = await fetch(
         `https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/National_Heritage_List_for_England_NHLE/FeatureServer/0/query?f=geojson&where=1=1&geometry=${lng-0.05},${lat-0.05},${lng+0.05},${lat+0.05}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects`
       );
@@ -387,7 +400,6 @@ const FunctionalMap = ({
     }
 
     try {
-      // Fetch SSSI data from Natural England
       const sssiResponse = await fetch(
         `https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/SSSI_England/FeatureServer/0/query?f=geojson&where=1=1&geometry=${lng-0.05},${lat-0.05},${lng+0.05},${lat+0.05}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects`
       );
@@ -423,7 +435,6 @@ const FunctionalMap = ({
         }
       });
 
-      // Add appropriate layer based on geometry type
       const firstFeature = constraint.features[0];
       if (firstFeature?.geometry?.type === 'Polygon' || firstFeature?.geometry?.type === 'MultiPolygon') {
         map.addLayer({
@@ -459,7 +470,6 @@ const FunctionalMap = ({
         });
       }
 
-      // Add click handler for popups
       map.on('click', `${sourceId}-fill`, (e) => {
         if (e.features && e.features[0]) {
           const feature = e.features[0];
@@ -475,15 +485,14 @@ const FunctionalMap = ({
         }
       });
 
-      console.log(`Added real constraint layer: ${constraint.name} (${constraint.features.length} features)`);
+      console.log(`✅ Added real constraint layer: ${constraint.name} (${constraint.features.length} features)`);
 
     } catch (error) {
-      console.error(`Error adding constraint layer ${constraint.id}:`, error);
+      console.error(`❌ Error adding constraint layer ${constraint.id}:`, error);
     }
   };
 
   const addDemoConstraints = async (map: mapboxgl.Map, bounds: mapboxgl.LngLatBounds) => {
-    // Fallback demo data if real APIs fail
     const center = bounds.getCenter();
     const demoConstraints = [
       {
@@ -544,14 +553,15 @@ const FunctionalMap = ({
 
   // Re-run analysis when boundary changes
   useEffect(() => {
-    console.log('Boundary data changed, current data:', boundaryData);
+    console.log('=== BOUNDARY DATA CHANGE DETECTED ===');
+    console.log('Previous boundary data exists:', !!boundaryData);
+    console.log('Map exists:', !!mapRef.current);
+    console.log('New boundary data:', boundaryData);
     
     if (mapRef.current && boundaryData) {
-      console.log('Map exists and boundary data provided, restarting analysis...');
-      // Clear existing layers
+      console.log('🔄 Map exists and boundary data provided, restarting analysis...');
       const map = mapRef.current;
       try {
-        // Remove previous layers
         const layersToRemove = ['boundary-fill', 'boundary-stroke', 'buffer-fill', 'buffer-stroke'];
         layersToRemove.forEach(layerId => {
           if (map.getLayer(layerId)) {
@@ -568,7 +578,6 @@ const FunctionalMap = ({
           }
         });
 
-        // Remove constraint layers
         realConstraints.forEach(constraint => {
           const sourceId = `constraint-${constraint.id}`;
           [`${sourceId}-fill`, `${sourceId}-stroke`, `${sourceId}-points`].forEach(layerId => {
@@ -583,7 +592,7 @@ const FunctionalMap = ({
       
       startAnalysisVisualization(map);
     } else {
-      console.log('Map not ready or no boundary data:', {
+      console.log('❌ Cannot restart analysis:', {
         mapExists: !!mapRef.current,
         boundaryData: !!boundaryData
       });
