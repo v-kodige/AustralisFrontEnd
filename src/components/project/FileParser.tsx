@@ -1,4 +1,3 @@
-
 export interface ParsedGeometry {
   type: string;
   features: Array<{
@@ -17,7 +16,7 @@ export const parseKMLFile = async (file: File): Promise<ParsedGeometry | null> =
     reader.onload = (e) => {
       try {
         const kmlText = e.target?.result as string;
-        console.log('KML file content preview:', kmlText.substring(0, 500));
+        console.log('KML file content (first 1000 chars):', kmlText.substring(0, 1000));
         
         // Parse KML using DOMParser
         const parser = new DOMParser();
@@ -31,17 +30,32 @@ export const parseKMLFile = async (file: File): Promise<ParsedGeometry | null> =
           return;
         }
         
-        // Look for coordinates in various KML elements
-        const coordinates = extractKMLCoordinates(kmlDoc);
+        // Enhanced coordinate extraction with better namespace handling
+        const coordinates = extractKMLCoordinatesEnhanced(kmlDoc);
         console.log('Extracted coordinates:', coordinates);
         
         if (coordinates.length > 0) {
-          // Ensure coordinates form a closed polygon
+          // Ensure coordinates form a closed polygon if needed
           const closedCoordinates = [...coordinates];
-          if (closedCoordinates.length > 0 && 
+          if (closedCoordinates.length > 2 && 
               (closedCoordinates[0][0] !== closedCoordinates[closedCoordinates.length - 1][0] ||
                closedCoordinates[0][1] !== closedCoordinates[closedCoordinates.length - 1][1])) {
             closedCoordinates.push(closedCoordinates[0]);
+          }
+          
+          // Determine geometry type based on coordinate count
+          let geometryType = 'Point';
+          let geometryCoordinates: any = coordinates[0];
+          
+          if (coordinates.length === 1) {
+            geometryType = 'Point';
+            geometryCoordinates = coordinates[0];
+          } else if (coordinates.length === 2) {
+            geometryType = 'LineString';
+            geometryCoordinates = coordinates;
+          } else {
+            geometryType = 'Polygon';
+            geometryCoordinates = [closedCoordinates];
           }
           
           const geometry: ParsedGeometry = {
@@ -49,19 +63,21 @@ export const parseKMLFile = async (file: File): Promise<ParsedGeometry | null> =
             features: [{
               type: "Feature",
               geometry: {
-                type: "Polygon",
-                coordinates: [closedCoordinates]
+                type: geometryType,
+                coordinates: geometryCoordinates
               },
               properties: {
                 name: file.name.replace(/\.[^/.]+$/, ""),
-                source: "KML Upload"
+                source: "KML Upload",
+                originalFile: file.name
               }
             }]
           };
-          console.log('Generated geometry:', geometry);
+          
+          console.log('Generated geometry structure:', JSON.stringify(geometry, null, 2));
           resolve(geometry);
         } else {
-          console.warn('No coordinates found in KML file');
+          console.warn('No valid coordinates found in KML file');
           resolve(null);
         }
       } catch (error) {
@@ -79,16 +95,32 @@ export const parseKMLFile = async (file: File): Promise<ParsedGeometry | null> =
   });
 };
 
-const extractKMLCoordinates = (kmlDoc: Document): number[][] => {
+const extractKMLCoordinatesEnhanced = (kmlDoc: Document): number[][] => {
   const coordinates: number[][] = [];
   
-  // Try different KML coordinate elements and namespaces
+  console.log('KML Document structure:', kmlDoc.documentElement?.tagName);
+  
+  // Enhanced selectors for better KML parsing
   const coordinateSelectors = [
     'coordinates',
     'kml\\:coordinates',
-    '*|coordinates'
+    '*|coordinates',
+    'Placemark coordinates',
+    'Polygon coordinates',
+    'LinearRing coordinates',
+    'Point coordinates'
   ];
   
+  // Also try to find specific KML elements
+  const kmlElements = [
+    'Placemark',
+    'Polygon',
+    'LinearRing', 
+    'Point',
+    'LineString'
+  ];
+  
+  // First, try to find coordinate elements directly
   for (const selector of coordinateSelectors) {
     try {
       const coordinateElements = kmlDoc.querySelectorAll(selector);
@@ -96,46 +128,104 @@ const extractKMLCoordinates = (kmlDoc: Document): number[][] => {
       
       coordinateElements.forEach((element, index) => {
         const coordText = element.textContent?.trim();
-        console.log(`Processing coordinate element ${index}:`, coordText?.substring(0, 100));
+        console.log(`Processing coordinate element ${index} (${selector}):`, coordText?.substring(0, 200));
         
         if (coordText) {
-          // KML coordinates can be separated by whitespace, newlines, or commas
-          // Format: longitude,latitude,altitude (altitude is optional)
-          const coordPairs = coordText
-            .replace(/\s+/g, ' ') // normalize whitespace
-            .trim()
-            .split(/\s+/)
-            .filter(pair => pair.length > 0);
-            
-          console.log(`Found ${coordPairs.length} coordinate pairs`);
-          
-          coordPairs.forEach(coordStr => {
-            const parts = coordStr.split(',');
-            if (parts.length >= 2) {
-              const lng = parseFloat(parts[0]);
-              const lat = parseFloat(parts[1]);
-              
-              // Validate coordinates are reasonable (rough bounds for Earth)
-              if (!isNaN(lng) && !isNaN(lat) && 
-                  lng >= -180 && lng <= 180 && 
-                  lat >= -90 && lat <= 90) {
-                coordinates.push([lng, lat]);
-              } else {
-                console.warn('Invalid coordinate pair:', coordStr, 'parsed as:', lng, lat);
-              }
-            }
-          });
+          const parsedCoords = parseCoordinateString(coordText);
+          coordinates.push(...parsedCoords);
         }
       });
       
       if (coordinates.length > 0) {
-        console.log(`Successfully extracted ${coordinates.length} coordinates`);
-        break; // Stop trying other selectors if we found coordinates
+        console.log(`Successfully extracted ${coordinates.length} coordinates using selector: ${selector}`);
+        break;
       }
     } catch (error) {
       console.warn(`Error with selector ${selector}:`, error);
       continue;
     }
+  }
+  
+  // If no coordinates found, try parsing KML structure elements
+  if (coordinates.length === 0) {
+    console.log('No coordinates found with direct selectors, trying structural elements...');
+    
+    for (const elementType of kmlElements) {
+      try {
+        const elements = kmlDoc.getElementsByTagName(elementType);
+        console.log(`Found ${elements.length} ${elementType} elements`);
+        
+        for (let i = 0; i < elements.length; i++) {
+          const element = elements[i];
+          const coordElements = element.getElementsByTagName('coordinates');
+          
+          for (let j = 0; j < coordElements.length; j++) {
+            const coordText = coordElements[j].textContent?.trim();
+            if (coordText) {
+              console.log(`Found coordinates in ${elementType}:`, coordText.substring(0, 100));
+              const parsedCoords = parseCoordinateString(coordText);
+              coordinates.push(...parsedCoords);
+            }
+          }
+        }
+        
+        if (coordinates.length > 0) {
+          console.log(`Successfully extracted coordinates from ${elementType} elements`);
+          break;
+        }
+      } catch (error) {
+        console.warn(`Error parsing ${elementType} elements:`, error);
+      }
+    }
+  }
+  
+  return coordinates;
+};
+
+const parseCoordinateString = (coordText: string): number[][] => {
+  const coordinates: number[][] = [];
+  
+  try {
+    // Clean up the coordinate string
+    const cleanedText = coordText
+      .replace(/\s+/g, ' ')
+      .replace(/,\s*,/g, ',')
+      .trim();
+    
+    console.log('Parsing coordinate string:', cleanedText.substring(0, 200));
+    
+    // KML coordinates can be space-separated or comma-separated tuples
+    // Format: longitude,latitude,altitude longitude,latitude,altitude ...
+    // or: longitude,latitude longitude,latitude ...
+    
+    // Split by whitespace first to get coordinate tuples
+    const coordTuples = cleanedText.split(/\s+/).filter(tuple => tuple.length > 0);
+    
+    console.log(`Found ${coordTuples.length} coordinate tuples`);
+    
+    coordTuples.forEach((tuple, index) => {
+      const parts = tuple.split(',').map(part => part.trim()).filter(part => part.length > 0);
+      
+      if (parts.length >= 2) {
+        const lng = parseFloat(parts[0]);
+        const lat = parseFloat(parts[1]);
+        
+        // Validate coordinates are reasonable
+        if (!isNaN(lng) && !isNaN(lat) && 
+            lng >= -180 && lng <= 180 && 
+            lat >= -90 && lat <= 90) {
+          coordinates.push([lng, lat]);
+          console.log(`Valid coordinate ${index + 1}: [${lng}, ${lat}]`);
+        } else {
+          console.warn(`Invalid coordinate tuple ${index + 1}:`, tuple, 'parsed as:', lng, lat);
+        }
+      } else {
+        console.warn(`Insufficient coordinate parts in tuple ${index + 1}:`, tuple);
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error parsing coordinate string:', error);
   }
   
   return coordinates;

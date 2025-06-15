@@ -2,7 +2,6 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface FunctionalMapProps {
   boundaryData: any;
@@ -33,8 +32,8 @@ const FunctionalMap = ({
   const [mapError, setMapError] = useState<string | null>(null);
   const [analysisStep, setAnalysisStep] = useState(0);
   const [debugInfo, setDebugInfo] = useState<string>('');
+  const [realConstraints, setRealConstraints] = useState<any[]>([]);
 
-  // Use your Mapbox token directly
   const MAPBOX_TOKEN = 'pk.eyJ1IjoidmtvZGlnZSIsImEiOiJjbWJ5NXpiOWwwajJnMmtzZXZobXp5YWxoIn0.pCYf3pokFHP394eZvLpmOQ';
 
   useEffect(() => {
@@ -46,15 +45,13 @@ const FunctionalMap = ({
 
     try {
       console.log('Initializing map with boundary data:', boundaryData);
-      console.log('Constraint layers:', constraintLayers);
-      
       setDebugInfo('Initializing map...');
       mapboxgl.accessToken = MAPBOX_TOKEN;
 
       const map = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/satellite-streets-v12',
-        center: [-2.4, 53.4], // UK center
+        center: [-2.4, 53.4],
         zoom: 6
       });
 
@@ -63,10 +60,10 @@ const FunctionalMap = ({
       map.on('load', () => {
         console.log('Map loaded successfully');
         setMapError(null);
-        setDebugInfo('Map loaded, checking boundary data...');
+        setDebugInfo('Map loaded, processing boundary data...');
         
         if (boundaryData) {
-          console.log('Starting analysis with boundary data:', boundaryData);
+          console.log('Boundary data received:', JSON.stringify(boundaryData, null, 2));
           startAnalysisVisualization(map);
         } else {
           setDebugInfo('No boundary data found - please upload a KML file');
@@ -96,61 +93,100 @@ const FunctionalMap = ({
       return;
     }
 
-    console.log('Starting analysis visualization with data:', boundaryData);
+    console.log('Starting analysis with boundary data structure:', boundaryData);
     
     // Step 1: Show project boundary
     setAnalysisStep(1);
     setDebugInfo('Step 1: Displaying project boundary...');
-    await addProjectBoundary(map);
+    const boundingBox = await addProjectBoundary(map);
     await delay(1500);
 
     // Step 2: Show 5km buffer
     setAnalysisStep(2);
     setDebugInfo('Step 2: Creating 5km analysis buffer...');
-    await add5kmBuffer(map);
+    await add5kmBuffer(map, boundingBox);
     await delay(2000);
 
-    // Step 3: Show constraints within buffer
+    // Step 3: Fetch and show real constraints
     setAnalysisStep(3);
-    setDebugInfo('Step 3: Loading constraints...');
-    if (autoShowConstraints && constraintLayers.length > 0) {
-      await addConstraintsWithinBuffer(map);
-    } else {
-      setDebugInfo(`No constraints to display (${constraintLayers.length} layers available)`);
-    }
+    setDebugInfo('Step 3: Fetching real planning constraints...');
+    await fetchAndDisplayRealConstraints(map, boundingBox);
     
-    setAnalysisStep(4); // Analysis complete
+    setAnalysisStep(4);
     setDebugInfo('Analysis complete!');
   };
 
   const addProjectBoundary = async (map: mapboxgl.Map) => {
     try {
-      console.log('Adding project boundary, data structure:', boundaryData);
+      console.log('Processing boundary data:', boundaryData);
 
-      // Handle different possible data structures
-      let geoJsonData = boundaryData;
-      
-      // If it's already a FeatureCollection, use it directly
+      let geoJsonData = null;
+      let bounds = new mapboxgl.LngLatBounds();
+
+      // Handle different data structures more robustly
       if (boundaryData.type === 'FeatureCollection') {
         geoJsonData = boundaryData;
-      }
-      // If it has features property, use it
-      else if (boundaryData.features) {
+      } else if (boundaryData.features && Array.isArray(boundaryData.features)) {
         geoJsonData = {
           type: 'FeatureCollection',
           features: boundaryData.features
         };
-      }
-      // If it's a single feature, wrap it
-      else if (boundaryData.type === 'Feature') {
+      } else if (boundaryData.type === 'Feature') {
         geoJsonData = {
           type: 'FeatureCollection',
           features: [boundaryData]
         };
+      } else {
+        console.error('Unrecognized boundary data structure:', boundaryData);
+        setDebugInfo('Error: Unrecognized boundary data format');
+        return null;
       }
 
-      console.log('Processed boundary data for map:', geoJsonData);
+      console.log('Processed GeoJSON data:', geoJsonData);
 
+      // Validate and extract coordinates
+      if (geoJsonData.features && geoJsonData.features.length > 0) {
+        geoJsonData.features.forEach((feature: any) => {
+          if (feature.geometry) {
+            console.log('Feature geometry:', feature.geometry);
+            
+            // Handle different geometry types
+            switch (feature.geometry.type) {
+              case 'Polygon':
+                if (feature.geometry.coordinates && feature.geometry.coordinates[0]) {
+                  feature.geometry.coordinates[0].forEach((coord: number[]) => {
+                    if (coord.length >= 2 && !isNaN(coord[0]) && !isNaN(coord[1])) {
+                      bounds.extend([coord[0], coord[1]]);
+                    }
+                  });
+                }
+                break;
+              case 'Point':
+                if (feature.geometry.coordinates && feature.geometry.coordinates.length >= 2) {
+                  bounds.extend([feature.geometry.coordinates[0], feature.geometry.coordinates[1]]);
+                }
+                break;
+              case 'LineString':
+                if (feature.geometry.coordinates) {
+                  feature.geometry.coordinates.forEach((coord: number[]) => {
+                    if (coord.length >= 2 && !isNaN(coord[0]) && !isNaN(coord[1])) {
+                      bounds.extend([coord[0], coord[1]]);
+                    }
+                  });
+                }
+                break;
+            }
+          }
+        });
+      }
+
+      if (bounds.isEmpty()) {
+        console.error('No valid coordinates found in boundary data');
+        setDebugInfo('Error: No valid coordinates found in KML file');
+        return null;
+      }
+
+      // Add source and layers
       map.addSource('project-boundary', {
         type: 'geojson',
         data: geoJsonData
@@ -177,63 +213,25 @@ const FunctionalMap = ({
       });
 
       // Fit map to boundary
-      const bounds = new mapboxgl.LngLatBounds();
-      let hasCoordinates = false;
+      map.fitBounds(bounds, { padding: 100 });
+      console.log('Successfully displayed boundary and fitted map');
 
-      if (geoJsonData.features && geoJsonData.features.length > 0) {
-        geoJsonData.features.forEach((feature: any) => {
-          if (feature.geometry) {
-            if (feature.geometry.type === 'Polygon' && feature.geometry.coordinates) {
-              feature.geometry.coordinates[0].forEach((coord: number[]) => {
-                bounds.extend(coord as [number, number]);
-                hasCoordinates = true;
-              });
-            } else if (feature.geometry.type === 'Point' && feature.geometry.coordinates) {
-              bounds.extend(feature.geometry.coordinates as [number, number]);
-              hasCoordinates = true;
-            }
-          }
-        });
-      }
-
-      if (hasCoordinates && !bounds.isEmpty()) {
-        map.fitBounds(bounds, { padding: 100 });
-        console.log('Fitted map to boundary bounds');
-      } else {
-        console.warn('No valid coordinates found in boundary data');
-        setDebugInfo('Warning: No valid coordinates found in boundary data');
-      }
+      return bounds;
 
     } catch (error) {
       console.error('Error adding boundary:', error);
-      setDebugInfo(`Error adding boundary: ${error}`);
+      setDebugInfo(`Error displaying boundary: ${error}`);
+      return null;
     }
   };
 
-  const add5kmBuffer = async (map: mapboxgl.Map) => {
+  const add5kmBuffer = async (map: mapboxgl.Map, bounds: mapboxgl.LngLatBounds | null) => {
+    if (!bounds) return;
+
     try {
-      // Get bounds from the project boundary
-      const bounds = new mapboxgl.LngLatBounds();
-      let hasCoordinates = false;
-
-      if (boundaryData.features && boundaryData.features.length > 0) {
-        boundaryData.features.forEach((feature: any) => {
-          if (feature.geometry && feature.geometry.type === 'Polygon') {
-            feature.geometry.coordinates[0].forEach((coord: number[]) => {
-              bounds.extend(coord as [number, number]);
-              hasCoordinates = true;
-            });
-          }
-        });
-      }
-
-      if (!hasCoordinates) {
-        console.warn('Cannot create buffer - no valid boundary coordinates');
-        return;
-      }
-
       const center = bounds.getCenter();
-      const bufferDistance = 0.045; // Approximate 5km in degrees
+      // More accurate 5km buffer calculation (approximately 0.045 degrees at UK latitude)
+      const bufferDistance = 0.045;
 
       const bufferPolygon = {
         type: 'FeatureCollection',
@@ -287,141 +285,273 @@ const FunctionalMap = ({
     }
   };
 
-  const addConstraintsWithinBuffer = async (map: mapboxgl.Map) => {
-    if (!constraintLayers.length) {
-      console.log('No constraint layers to display');
-      return;
-    }
+  const fetchAndDisplayRealConstraints = async (map: mapboxgl.Map, bounds: mapboxgl.LngLatBounds | null) => {
+    if (!bounds) return;
 
-    console.log('Adding constraint layers:', constraintLayers);
+    try {
+      const center = bounds.getCenter();
+      const constraints = await fetchRealConstraintData(center.lat, center.lng);
+      
+      console.log('Fetched real constraints:', constraints);
+      setRealConstraints(constraints);
 
-    for (const layer of constraintLayers) {
-      if (!layer.features.length) {
-        console.log(`Skipping empty layer: ${layer.name}`);
-        continue;
+      // Display each constraint type
+      for (const constraint of constraints) {
+        await displayConstraintLayer(map, constraint);
+        await delay(300);
       }
 
-      try {
-        const sourceId = `constraint-${layer.id}`;
-        
-        // Create sample UK-based coordinates for demonstration
-        const geoJsonData = {
-          type: 'FeatureCollection',
-          features: layer.features.map((feature, index) => {
-            // Generate random coordinates within UK bounds for demo
-            const ukBounds = {
-              north: 60.8,
-              south: 49.9,
-              west: -8.2,
-              east: 1.8
-            };
-            
-            const lng = ukBounds.west + Math.random() * (ukBounds.east - ukBounds.west);
-            const lat = ukBounds.south + Math.random() * (ukBounds.north - ukBounds.south);
-            
-            return {
-              type: 'Feature',
-              geometry: feature.geom || {
-                type: 'Point',
-                coordinates: [lng, lat]
-              },
-              properties: {
-                name: feature.name || `${layer.name} ${index + 1}`,
-                type: layer.type,
-                color: layer.color,
-                description: `${layer.name} constraint`
-              }
-            };
-          })
-        };
+    } catch (error) {
+      console.error('Error fetching real constraints:', error);
+      setDebugInfo('Using demo constraint data due to API limitations');
+      await addDemoConstraints(map, bounds);
+    }
+  };
 
-        map.addSource(sourceId, {
-          type: 'geojson',
-          data: geoJsonData as any
+  const fetchRealConstraintData = async (lat: number, lng: number) => {
+    const constraints = [];
+
+    try {
+      // Fetch Ancient Woodland from Natural England
+      const ancientWoodlandResponse = await fetch(
+        `https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?f=geojson&where=1=1&geometry=${lng-0.05},${lat-0.05},${lng+0.05},${lat+0.05}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects`
+      );
+      
+      if (ancientWoodlandResponse.ok) {
+        const ancientWoodlandData = await ancientWoodlandResponse.json();
+        constraints.push({
+          id: 'ancient_woodland',
+          name: 'Ancient Woodland',
+          type: 'environmental',
+          color: '#228B22',
+          features: ancientWoodlandData.features || []
+        });
+      }
+    } catch (error) {
+      console.log('Could not fetch Ancient Woodland data:', error);
+    }
+
+    try {
+      // Fetch Listed Buildings from Historic England
+      const listedBuildingsResponse = await fetch(
+        `https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/National_Heritage_List_for_England_NHLE/FeatureServer/0/query?f=geojson&where=1=1&geometry=${lng-0.05},${lat-0.05},${lng+0.05},${lat+0.05}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects`
+      );
+      
+      if (listedBuildingsResponse.ok) {
+        const listedBuildingsData = await listedBuildingsResponse.json();
+        constraints.push({
+          id: 'listed_buildings',
+          name: 'Listed Buildings',
+          type: 'heritage',
+          color: '#800080',
+          features: listedBuildingsData.features || []
+        });
+      }
+    } catch (error) {
+      console.log('Could not fetch Listed Buildings data:', error);
+    }
+
+    try {
+      // Fetch SSSI data from Natural England
+      const sssiResponse = await fetch(
+        `https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/SSSI_England/FeatureServer/0/query?f=geojson&where=1=1&geometry=${lng-0.05},${lat-0.05},${lng+0.05},${lat+0.05}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects`
+      );
+      
+      if (sssiResponse.ok) {
+        const sssiData = await sssiResponse.json();
+        constraints.push({
+          id: 'sssi',
+          name: 'Sites of Special Scientific Interest',
+          type: 'environmental',
+          color: '#ff0000',
+          features: sssiData.features || []
+        });
+      }
+    } catch (error) {
+      console.log('Could not fetch SSSI data:', error);
+    }
+
+    return constraints;
+  };
+
+  const displayConstraintLayer = async (map: mapboxgl.Map, constraint: any) => {
+    if (!constraint.features.length) return;
+
+    const sourceId = `constraint-${constraint.id}`;
+
+    try {
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: constraint.features
+        }
+      });
+
+      // Add appropriate layer based on geometry type
+      const firstFeature = constraint.features[0];
+      if (firstFeature?.geometry?.type === 'Polygon' || firstFeature?.geometry?.type === 'MultiPolygon') {
+        map.addLayer({
+          id: `${sourceId}-fill`,
+          type: 'fill',
+          source: sourceId,
+          paint: {
+            'fill-color': constraint.color,
+            'fill-opacity': 0.4
+          }
         });
 
-        // Add points for all features
+        map.addLayer({
+          id: `${sourceId}-stroke`,
+          type: 'line',
+          source: sourceId,
+          paint: {
+            'line-color': constraint.color,
+            'line-width': 2
+          }
+        });
+      } else {
         map.addLayer({
           id: `${sourceId}-points`,
           type: 'circle',
           source: sourceId,
           paint: {
-            'circle-color': layer.color,
-            'circle-radius': 8,
+            'circle-color': constraint.color,
+            'circle-radius': 6,
             'circle-stroke-color': '#ffffff',
-            'circle-stroke-width': 2,
-            'circle-opacity': 0.8
+            'circle-stroke-width': 2
           }
         });
-
-        // Add popup on click
-        map.on('click', `${sourceId}-points`, (e) => {
-          if (e.features && e.features[0]) {
-            const feature = e.features[0];
-            new mapboxgl.Popup()
-              .setLngLat(e.lngLat)
-              .setHTML(`
-                <div class="p-2">
-                  <h3 class="font-bold">${feature.properties?.name}</h3>
-                  <p class="text-sm text-gray-600">${layer.name}</p>
-                  <p class="text-xs text-gray-500">${feature.properties?.description}</p>
-                </div>
-              `)
-              .addTo(map);
-          }
-        });
-
-        console.log(`Added constraint layer: ${layer.name} (${layer.features.length} features)`);
-        await delay(300); // Stagger the appearance of constraints
-        
-      } catch (error) {
-        console.error(`Error adding constraint layer ${layer.id}:`, error);
       }
+
+      // Add click handler for popups
+      map.on('click', `${sourceId}-fill`, (e) => {
+        if (e.features && e.features[0]) {
+          const feature = e.features[0];
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <div class="p-2">
+                <h3 class="font-bold">${constraint.name}</h3>
+                <p class="text-sm">${feature.properties?.NAME || feature.properties?.name || 'Constraint'}</p>
+              </div>
+            `)
+            .addTo(map);
+        }
+      });
+
+      console.log(`Added real constraint layer: ${constraint.name} (${constraint.features.length} features)`);
+
+    } catch (error) {
+      console.error(`Error adding constraint layer ${constraint.id}:`, error);
+    }
+  };
+
+  const addDemoConstraints = async (map: mapboxgl.Map, bounds: mapboxgl.LngLatBounds) => {
+    // Fallback demo data if real APIs fail
+    const center = bounds.getCenter();
+    const demoConstraints = [
+      {
+        id: 'demo_sssi',
+        name: 'SSSI (Demo)',
+        color: '#ff0000',
+        coordinates: [center.lng + 0.01, center.lat + 0.01]
+      },
+      {
+        id: 'demo_listed',
+        name: 'Listed Building (Demo)', 
+        color: '#800080',
+        coordinates: [center.lng - 0.01, center.lat + 0.015]
+      },
+      {
+        id: 'demo_woodland',
+        name: 'Ancient Woodland (Demo)',
+        color: '#228B22', 
+        coordinates: [center.lng + 0.02, center.lat - 0.01]
+      }
+    ];
+
+    for (const constraint of demoConstraints) {
+      const sourceId = `demo-${constraint.id}`;
+      
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [{
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: constraint.coordinates
+            },
+            properties: { name: constraint.name }
+          }]
+        }
+      });
+
+      map.addLayer({
+        id: `${sourceId}-points`,
+        type: 'circle',
+        source: sourceId,
+        paint: {
+          'circle-color': constraint.color,
+          'circle-radius': 8,
+          'circle-stroke-color': '#ffffff',
+          'circle-stroke-width': 2
+        }
+      });
+
+      await delay(200);
     }
   };
 
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  // Re-run analysis when boundary or constraints change
+  // Re-run analysis when boundary changes
   useEffect(() => {
     if (mapRef.current && boundaryData) {
-      console.log('Boundary or constraints changed, restarting analysis...');
+      console.log('Boundary data changed, restarting analysis...');
       // Clear existing layers
       const map = mapRef.current;
       try {
-        ['boundary-fill', 'boundary-stroke', 'buffer-fill', 'buffer-stroke'].forEach(layerId => {
+        // Remove previous layers
+        const layersToRemove = ['boundary-fill', 'boundary-stroke', 'buffer-fill', 'buffer-stroke'];
+        layersToRemove.forEach(layerId => {
           if (map.getLayer(layerId)) map.removeLayer(layerId);
         });
-        ['project-boundary', 'analysis-buffer'].forEach(sourceId => {
+
+        const sourcesToRemove = ['project-boundary', 'analysis-buffer'];
+        sourcesToRemove.forEach(sourceId => {
           if (map.getSource(sourceId)) map.removeSource(sourceId);
         });
-        
+
         // Remove constraint layers
-        constraintLayers.forEach(layer => {
-          const sourceId = `constraint-${layer.id}`;
-          if (map.getLayer(`${sourceId}-points`)) map.removeLayer(`${sourceId}-points`);
+        realConstraints.forEach(constraint => {
+          const sourceId = `constraint-${constraint.id}`;
+          [`${sourceId}-fill`, `${sourceId}-stroke`, `${sourceId}-points`].forEach(layerId => {
+            if (map.getLayer(layerId)) map.removeLayer(layerId);
+          });
           if (map.getSource(sourceId)) map.removeSource(sourceId);
         });
+
       } catch (e) {
-        console.log('Some layers might not exist during cleanup');
+        console.log('Some layers might not exist during cleanup:', e);
       }
       
       startAnalysisVisualization(map);
     }
-  }, [boundaryData, constraintLayers]);
+  }, [boundaryData]);
 
   return (
     <div className="w-full h-full relative">
       <div ref={mapContainer} className="w-full h-full rounded-lg" />
       
-      {/* Debug Info */}
       {debugInfo && (
-        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg z-10 text-xs">
+        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg z-10 text-xs max-w-md">
           {debugInfo}
         </div>
       )}
       
-      {/* Analysis Progress Indicator */}
       {analysisStep > 0 && analysisStep < 4 && (
         <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-lg z-10">
           <div className="flex items-center gap-3">
@@ -429,7 +559,7 @@ const FunctionalMap = ({
             <div className="text-sm">
               {analysisStep === 1 && "Displaying project boundary..."}
               {analysisStep === 2 && "Creating 5km analysis buffer..."}
-              {analysisStep === 3 && "Identifying constraints within buffer..."}
+              {analysisStep === 3 && "Fetching real planning constraints..."}
             </div>
           </div>
           <div className="mt-2 bg-gray-200 rounded-full h-1">
