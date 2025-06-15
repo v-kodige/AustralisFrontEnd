@@ -32,6 +32,11 @@ const AccountDropdown = ({ user }: AccountDropdownProps) => {
     console.log("Opening help center");
   };
 
+  // Add null check for user
+  if (!user) {
+    return null;
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -41,7 +46,7 @@ const AccountDropdown = ({ user }: AccountDropdownProps) => {
         >
           <User className="w-4 h-4 text-australis-gray" />
           <span className="text-sm font-medium text-australis-navy hidden sm:inline">
-            {user.user_metadata?.first_name || user.email?.split('@')[0]}
+            {user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'User'}
           </span>
           <ChevronDown className="w-3 h-3 text-australis-gray" />
         </Button>
