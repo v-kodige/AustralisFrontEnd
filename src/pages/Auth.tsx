@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { LogIn, Mail, Lock, GMail } from "lucide-react";
+import { LogIn, Mail, Lock } from "lucide-react";
 
 type Mode = "login" | "signup" | "reset";
 
@@ -23,8 +22,7 @@ const AuthPage = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user || null);
       if (session?.user) {
-        toast({ title: "Welcome!", description: "You’re signed in." });
-        // After login or signup, go to dashboard
+        toast({ title: "Welcome!", description: "You're signed in." });
         navigate("/dashboard", { replace: true });
       }
     });
@@ -140,7 +138,6 @@ const AuthPage = () => {
           </Button>
         </form>
 
-        {/* OR divider */}
         {mode !== "reset" && (
           <>
             <div className="flex items-center my-5">
@@ -155,7 +152,7 @@ const AuthPage = () => {
               disabled={loading}
               type="button"
             >
-              <GMail className="w-5 h-5 text-[#EA4335]" />
+              <Mail className="w-5 h-5 text-[#EA4335]" />
               Continue with Google
             </Button>
           </>
@@ -185,4 +182,3 @@ const AuthPage = () => {
 };
 
 export default AuthPage;
-
