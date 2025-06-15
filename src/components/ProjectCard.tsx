@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Download, FolderOpen, FileText } from "lucide-react";
+import { Download, FolderOpen, FileText, BarChart3 } from "lucide-react";
 
 interface Project {
   id: number;
@@ -30,59 +30,73 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   };
 
   return (
-    <Card className="bg-white border border-gray-200 hover:shadow-lg transition-shadow">
-      <CardContent className="p-6">
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{project.name}</h3>
-          <p className="text-sm text-gray-500 mb-4">{project.date}</p>
-          
-          <div className="mb-4">
-            <p className="text-sm font-medium text-gray-700 mb-1">{project.status}:</p>
-            <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+    <Card className="group bg-white border border-gray-200/60 hover:border-australis-blue/30 hover:shadow-xl transition-all duration-300 overflow-hidden">
+      <CardContent className="p-0">
+        <div className="relative">
+          <div className="w-full h-40 bg-gradient-to-br from-australis-lightGray to-australis-offWhite overflow-hidden">
+            <img 
+              src={project.image} 
+              alt={`${project.name} preview`}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+          <div className="absolute top-3 right-3">
+            <div className={`px-3 py-1 rounded-full text-xs font-medium ${
               project.score === 'undefined' 
-                ? 'bg-gray-100 text-gray-600' 
-                : 'bg-green-100 text-green-800'
+                ? 'bg-australis-lightGray text-australis-gray' 
+                : 'bg-gradient-to-r from-australis-aqua to-australis-teal text-white shadow-sm'
             }`}>
               {project.score}
-            </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <h3 className="text-lg font-semibold text-australis-navy mb-2 group-hover:text-australis-blue transition-colors">
+            {project.name}
+          </h3>
+          <p className="text-sm text-australis-gray mb-4">{project.date}</p>
+          
+          <div className="mb-6">
+            <p className="text-xs font-medium text-australis-gray mb-2 uppercase tracking-wider">
+              {project.status}
+            </p>
+            <div className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-australis-teal" />
+              <span className="text-sm font-medium text-australis-navy">Analysis Complete</span>
+            </div>
           </div>
 
-          <div className="space-y-2 mb-4">
+          <div className="space-y-2">
             <Button 
               variant="outline" 
               size="sm" 
-              className="w-full flex items-center gap-2"
+              className="w-full flex items-center gap-2 border-australis-blue/20 text-australis-blue hover:bg-australis-blue hover:text-white transition-all duration-200"
               onClick={handleOpenProject}
             >
               <FolderOpen className="w-4 h-4" />
               Open Project
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="w-full flex items-center gap-2"
-              onClick={handleOpenReport}
-            >
-              <FileText className="w-4 h-4" />
-              Open Latest Report
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="w-full flex items-center gap-2"
-              onClick={handleDownloadReport}
-            >
-              <Download className="w-4 h-4" />
-              Download Latest Report
-            </Button>
-          </div>
-
-          <div className="w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
-            <img 
-              src={project.image} 
-              alt={`${project.name} preview`}
-              className="w-full h-full object-cover"
-            />
+            <div className="grid grid-cols-2 gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center gap-2 border-australis-teal/20 text-australis-teal hover:bg-australis-teal hover:text-white transition-all duration-200"
+                onClick={handleOpenReport}
+              >
+                <FileText className="w-4 h-4" />
+                Report
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center gap-2 border-australis-indigo/20 text-australis-indigo hover:bg-australis-indigo hover:text-white transition-all duration-200"
+                onClick={handleDownloadReport}
+              >
+                <Download className="w-4 h-4" />
+                Download
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>

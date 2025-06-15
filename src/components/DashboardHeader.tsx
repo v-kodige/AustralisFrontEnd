@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { LogOut, User } from "lucide-react";
 
 interface DashboardHeaderProps {
   user: any;
@@ -18,33 +19,36 @@ const DashboardHeader = ({ user }: DashboardHeaderProps) => {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 shadow-sm">
+    <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-50">
       <div className="container-custom">
         <div className="flex items-center justify-between py-4">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-                <span className="text-white font-bold text-sm">AE</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">Australis</span>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <img 
+                alt="AE Logo" 
+                className="h-8 w-auto" 
+                src="/lovable-uploads/edc919d7-a5bd-4ead-bba9-be9e35909623.png" 
+              />
+              <span className="text-xl font-bold text-australis-navy">Australis</span>
             </div>
-            <div className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium">
-              My Dashboard
+            <div className="hidden sm:flex bg-gradient-to-r from-australis-blue to-australis-teal text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm">
+              Dashboard
             </div>
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Australis</span>
-              <div className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-md">
-                <span className="text-sm font-medium">{user.email}</span>
-                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
+            <div className="hidden sm:flex items-center gap-3 bg-australis-offWhite px-4 py-2 rounded-lg border border-gray-200/50">
+              <User className="w-4 h-4 text-australis-gray" />
+              <span className="text-sm font-medium text-australis-navy">{user.email}</span>
             </div>
-            <Button variant="outline" onClick={handleLogout} size="sm">
-              Logout
+            <Button 
+              variant="outline" 
+              onClick={handleLogout} 
+              size="sm"
+              className="flex items-center gap-2 border-australis-gray/20 text-australis-gray hover:bg-australis-lightGray hover:text-australis-navy transition-all duration-200"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           </div>
         </div>
