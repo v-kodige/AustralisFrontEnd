@@ -1,10 +1,8 @@
-
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import ProblemSection from '@/components/ProblemSection';
 import BenefitsSection from '@/components/BenefitsSection';
 import FeaturesSection from '@/components/FeaturesSection';
-import PricingSection from '@/components/PricingSection';
 import SocialProofSection from '@/components/SocialProofSection';
 import DemoSection from '@/components/DemoSection';
 import CtaSection from '@/components/CtaSection';
@@ -21,8 +19,6 @@ const Index = () => {
         <ProblemSection />
         <BenefitsSection />
         <FeaturesSection />
-        {/* Pricing now integrated here */}
-        <PricingSection />
         <SocialProofSection />
         <DemoSection />
         <ExpertPanel />

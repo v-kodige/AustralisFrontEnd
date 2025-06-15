@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
@@ -16,21 +17,21 @@ const Header = () => {
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <a href="#benefits" className="text-sm text-gray-600 hover:text-aquamarine transition-colors">
+          <a href="#benefits" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
             Benefits
           </a>
-          <a href="#features" className="text-sm text-gray-600 hover:text-aquamarine transition-colors">
+          <a href="#features" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
             Features
           </a>
-          <a href="#blog" className="text-sm text-gray-600 hover:text-aquamarine transition-colors">
+          <a href="#blog" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
             Blog
           </a>
-          <a href="#faq" className="text-sm text-gray-600 hover:text-aquamarine transition-colors">
+          <a href="#faq" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
             FAQ
           </a>
-          <a href="#pricing" className="text-sm text-gray-600 hover:text-aquamarine transition-colors">
+          <Link to="/pricing" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
             Pricing
-          </a>
+          </Link>
           <Button variant="default" size="sm">
             Book a Demo
           </Button>
@@ -59,9 +60,9 @@ const Header = () => {
             <a href="#faq" className="block text-gray-600 hover:text-australis-blue">
               FAQ
             </a>
-            <a href="#pricing" className="block text-gray-600 hover:text-australis-blue">
+            <Link to="/pricing" className="block text-gray-600 hover:text-australis-blue">
               Pricing
-            </a>
+            </Link>
             <Button variant="default" size="sm" className="w-full">
               Book a Demo
             </Button>
