@@ -98,24 +98,42 @@ const ProjectMap = ({ projectId }: ProjectMapProps) => {
 
     boundaryData.features.forEach((feature) => {
       if (feature.geometry.type === 'Polygon') {
-        const coords = feature.geometry.coordinates[0] as number[][];
-        coords.forEach((coord) => {
-          const [lng, lat] = coord;
-          minLat = Math.min(minLat, lat);
-          maxLat = Math.max(maxLat, lat);
-          minLng = Math.min(minLng, lng);
-          maxLng = Math.max(maxLng, lng);
+        const coords = feature.geometry.coordinates as number[][][];
+        coords.forEach((ring) => {
+          if (Array.isArray(ring)) {
+            ring.forEach((coord) => {
+              if (Array.isArray(coord) && coord.length >= 2) {
+                const [lng, lat] = coord;
+                if (typeof lng === 'number' && typeof lat === 'number') {
+                  minLat = Math.min(minLat, lat);
+                  maxLat = Math.max(maxLat, lat);
+                  minLng = Math.min(minLng, lng);
+                  maxLng = Math.max(maxLng, lng);
+                }
+              }
+            });
+          }
         });
       } else if (feature.geometry.type === 'MultiPolygon') {
-        const coords = feature.geometry.coordinates as number[][][];
+        const coords = feature.geometry.coordinates as number[][][][];
         coords.forEach((polygon) => {
-          polygon[0].forEach((coord) => {
-            const [lng, lat] = coord;
-            minLat = Math.min(minLat, lat);
-            maxLat = Math.max(maxLat, lat);
-            minLng = Math.min(minLng, lng);
-            maxLng = Math.max(maxLng, lng);
-          });
+          if (Array.isArray(polygon)) {
+            polygon.forEach((ring) => {
+              if (Array.isArray(ring)) {
+                ring.forEach((coord) => {
+                  if (Array.isArray(coord) && coord.length >= 2) {
+                    const [lng, lat] = coord;
+                    if (typeof lng === 'number' && typeof lat === 'number') {
+                      minLat = Math.min(minLat, lat);
+                      maxLat = Math.max(maxLat, lat);
+                      minLng = Math.min(minLng, lng);
+                      maxLng = Math.max(maxLng, lng);
+                    }
+                  }
+                });
+              }
+            });
+          }
         });
       }
     });
