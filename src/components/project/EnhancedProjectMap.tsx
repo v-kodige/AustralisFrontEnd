@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import AzureMap from './AzureMap';
+import FunctionalMap from './FunctionalMap';
 import { UK_SOLAR_CONSTRAINTS } from './ConstraintCategories';
 
 interface EnhancedProjectMapProps {
@@ -26,11 +26,10 @@ const EnhancedProjectMap = ({ projectId }: EnhancedProjectMapProps) => {
   const [boundaryData, setBoundaryData] = useState<any>(null);
   const [constraintLayers, setConstraintLayers] = useState<ConstraintLayer[]>([]);
   const [loading, setLoading] = useState(true);
-  const mapInstanceRef = useRef<any>(null);
 
   const constraintColors = {
     sssi: '#ff0000',
-    aonb: '#00ff00',
+    aonb: '#00ff00', 
     flood_zone_3: '#0066cc',
     green_belt: '#90EE90',
     listed_buildings: '#800080',
@@ -39,7 +38,13 @@ const EnhancedProjectMap = ({ projectId }: EnhancedProjectMapProps) => {
     spa: '#ff9900',
     electrical_substations: '#ffff00',
     major_roads: '#808080',
-    residential_areas: '#ffb6c1'
+    residential_areas: '#ffb6c1',
+    environmental: '#ff4444',
+    landscape: '#44ff44',
+    heritage: '#4444ff',
+    flood_risk: '#44ffff',
+    planning: '#ff44ff',
+    infrastructure: '#ffff44'
   };
 
   useEffect(() => {
@@ -122,84 +127,6 @@ const EnhancedProjectMap = ({ projectId }: EnhancedProjectMapProps) => {
     );
   };
 
-  const onMapReady = (map: any) => {
-    mapInstanceRef.current = map;
-    addConstraintLayers(map);
-  };
-
-  const addConstraintLayers = (map: any) => {
-    constraintLayers.forEach(layer => {
-      if (layer.visible && layer.features.length > 0) {
-        try {
-          // Create data source for this layer
-          const dataSource = new (window as any).atlas.source.DataSource();
-          map.sources.add(dataSource);
-
-          // Add features to data source
-          layer.features.forEach(feature => {
-            if (feature.geom) {
-              // Convert PostGIS geometry to GeoJSON
-              // This is a simplified approach - in production you'd use ST_AsGeoJSON
-              const geoJsonFeature = {
-                type: 'Feature',
-                geometry: feature.geom,
-                properties: {
-                  name: feature.name,
-                  description: feature.description,
-                  ...feature.properties
-                }
-              };
-              dataSource.add(geoJsonFeature);
-            }
-          });
-
-          // Add appropriate layer based on geometry type
-          if (layer.features.some(f => f.geom?.type?.includes('Polygon'))) {
-            // Polygon layer
-            map.layers.add(new (window as any).atlas.layer.PolygonLayer(dataSource, undefined, {
-              fillColor: layer.color,
-              fillOpacity: 0.3,
-              strokeColor: layer.color,
-              strokeWidth: 2
-            }));
-          } else if (layer.features.some(f => f.geom?.type === 'Point')) {
-            // Symbol layer for points
-            map.layers.add(new (window as any).atlas.layer.SymbolLayer(dataSource, undefined, {
-              iconOptions: {
-                image: 'pin-round-red',
-                size: 0.8
-              }
-            }));
-          } else if (layer.features.some(f => f.geom?.type?.includes('LineString'))) {
-            // Line layer
-            map.layers.add(new (window as any).atlas.layer.LineLayer(dataSource, undefined, {
-              strokeColor: layer.color,
-              strokeWidth: 3
-            }));
-          }
-
-        } catch (error) {
-          console.error(`Error adding layer ${layer.id}:`, error);
-        }
-      }
-    });
-  };
-
-  // Update map when layer visibility changes
-  useEffect(() => {
-    if (mapInstanceRef.current) {
-      // Clear existing layers and re-add
-      // In a production app, you'd manage this more efficiently
-      try {
-        mapInstanceRef.current.sources.clear();
-        mapInstanceRef.current.layers.clear();
-        addConstraintLayers(mapInstanceRef.current);
-      } catch (error) {
-        console.error('Error updating map layers:', error);
-      }
-    }
-  }, [constraintLayers]);
-
   const groupedLayers = constraintLayers.reduce((acc, layer) => {
     if (!acc[layer.type]) {
       acc[layer.type] = [];
@@ -222,9 +149,10 @@ const EnhancedProjectMap = ({ projectId }: EnhancedProjectMapProps) => {
                 <div className="animate-spin w-6 h-6 border-4 border-australis-blue/20 rounded-full border-t-australis-blue"></div>
               </div>
             ) : (
-              <AzureMap 
+              <FunctionalMap 
                 boundaryData={boundaryData}
-                onMapReady={onMapReady}
+                constraintLayers={constraintLayers}
+                onMapReady={(map) => console.log('Map ready:', map)}
               />
             )}
           </CardContent>
