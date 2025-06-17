@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -352,8 +353,15 @@ const FunctionalMap = ({
     if (!boundaryGeoJson) return;
 
     try {
-      const center = boundaryGeoJson ? calculateBounds(boundaryGeoJson).getCenter() : null;
-      const constraints = await fetchRealConstraintData(center.lat, center.lng);
+      const bounds = calculateBounds(boundaryGeoJson);
+      if (!bounds) {
+        console.error('Could not calculate bounds for constraint fetching');
+        return;
+      }
+
+      // Fix: Use bounds.center instead of bounds.getCenter()
+      const center = bounds.center;
+      const constraints = await fetchRealConstraintData(center[1], center[0]); // lat, lng
       
       console.log('Fetched real constraints:', constraints);
       setRealConstraints(constraints);
@@ -505,25 +513,29 @@ const FunctionalMap = ({
   };
 
   const addDemoConstraints = async (map: mapboxgl.Map, boundaryGeoJson: any) => {
-    const center = boundaryGeoJson ? calculateBounds(boundaryGeoJson).getCenter() : null;
+    const bounds = calculateBounds(boundaryGeoJson);
+    if (!bounds) return;
+
+    // Fix: Use bounds.center instead of bounds.getCenter()
+    const center = bounds.center;
     const demoConstraints = [
       {
         id: 'demo_sssi',
         name: 'SSSI (Demo)',
         color: '#ff0000',
-        coordinates: [center.lng + 0.01, center.lat + 0.01]
+        coordinates: [center[0] + 0.01, center[1] + 0.01] // lng, lat
       },
       {
         id: 'demo_listed',
         name: 'Listed Building (Demo)', 
         color: '#800080',
-        coordinates: [center.lng - 0.01, center.lat + 0.015]
+        coordinates: [center[0] - 0.01, center[1] + 0.015] // lng, lat
       },
       {
         id: 'demo_woodland',
         name: 'Ancient Woodland (Demo)',
         color: '#228B22', 
-        coordinates: [center.lng + 0.02, center.lat - 0.01]
+        coordinates: [center[0] + 0.02, center[1] - 0.01] // lng, lat
       }
     ];
 
