@@ -1,32 +1,41 @@
-name: Deploy Australis Marketing Site (SWA)
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Install
-        run: npm ci
-
-      - name: Build
-        run: npm run build  # Vite -> outputs to dist
-
-      - name: Deploy (SWA)
-        uses: Azure/static-web-apps-deploy@v1
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - run: echo australis.energy > dist/CNAME
+      - run: touch dist/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
         with:
-          azure_static_web_apps_api_token: ${{ github.ref == 'refs/heads/develop' && secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_DEV || secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PROD }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: upload
-          app_location: /
-          api_location: ""
-          output_location: dist
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
