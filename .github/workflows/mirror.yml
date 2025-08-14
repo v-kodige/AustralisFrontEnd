@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   mirror:
@@ -13,11 +12,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # This ensures all history is fetched for a complete mirror
+          fetch-depth: 0
 
       - name: Mirror to Organization Repo
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GH_TOKEN }}
+          # Use your custom secret here, not GITHUB_TOKEN
+          github_token: ${{ secrets.MIRROR_TO_ORG }}
           repository: 'Australis-Energy/LandingSite'
           force: true
