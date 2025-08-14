@@ -17,7 +17,7 @@ jobs:
       - name: Mirror to Organization Repo
         uses: ad-m/github-push-action@master
         with:
-          # Use your custom secret here, not GITHUB_TOKEN
+          # This must exactly match the name of your secret
           github_token: ${{ secrets.MIRROR_TO_ORG }}
           repository: 'Australis-Energy/LandingSite'
           force: true
