@@ -3,16 +3,21 @@ name: Mirror Lovable Repo to Org
 on:
   push:
     branches:
-      - main # The branch Lovable pushes to
+      - main
+  workflow_dispatch:
 
 jobs:
   mirror:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # This ensures all history is fetched for a complete mirror
+
       - name: Mirror to Organization Repo
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.MIRROR_TO_ORG }}
-          source: 'refs/heads/main' # The branch in your personal repo
-          target_repo: 'git@github.com:Australis-Energy/LandingSite.git'
+          github_token: ${{ secrets.GH_TOKEN }}
+          repository: 'Australis-Energy/LandingSite'
           force: true
