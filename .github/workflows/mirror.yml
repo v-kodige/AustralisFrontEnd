@@ -18,6 +18,6 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           # Use your custom secret here, not GITHUB_TOKEN
-          github_token: ${{ secrets.MIRROR_TO_ORG }}
+          github_token: ${{ secrets.mirror-to-org }}
           repository: 'Australis-Energy/LandingSite'
           force: true
