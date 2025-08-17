@@ -64,7 +64,7 @@ const HeroSection = () => {
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="border-australis-indigo/30 text-australis-indigo hover:bg-australis-indigo/10 backdrop-blur-sm bg-white/40 shadow-lg"
+                  className="border-australis-indigo/30 text-australis-indigo hover:bg-australis-navy hover:text-white backdrop-blur-sm bg-white/40 shadow-lg"
                 >
                   How It Works
                   <PlayCircle className="ml-2 h-4 w-4" />
