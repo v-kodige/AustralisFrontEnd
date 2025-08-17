@@ -3,18 +3,14 @@ import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
 
 const SocialProofSection = () => {
-  const [emblaRef] = useEmblaCarousel(
-    { 
-      loop: true, 
-      align: "center",
-      dragFree: true,
-      duration: 50 // Controls the scroll animation speed (higher = slower)
-    },
-    [Autoplay({ delay: 3000, stopOnInteraction: false })]
-  );
+  const [emblaRef] = useEmblaCarousel({ 
+    loop: true, 
+    align: "center",
+    dragFree: true,
+    duration: 50
+  });
   
   const { ref, inView } = useInView({
     triggerOnce: true,

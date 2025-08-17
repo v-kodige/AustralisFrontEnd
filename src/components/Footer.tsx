@@ -27,17 +27,14 @@ const Footer = () => {
               Accelerating renewable energy development with AI-powered site selection tools.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-australis-blue" aria-label="X (formerly Twitter)">
+              <a href="https://x.com/australisenergy" className="text-gray-400 hover:text-australis-blue" aria-label="X (formerly Twitter)" target="_blank" rel="noopener noreferrer">
                 <XLogo />
               </a>
-              <a href="#" className="text-gray-400 hover:text-australis-blue" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/company/australis-energy/about/" className="text-gray-400 hover:text-australis-blue" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
                 <Linkedin className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-australis-blue" aria-label="Bluesky">
+              <a href="https://bsky.app/profile/australisenergy.bsky.social" className="text-gray-400 hover:text-australis-blue" aria-label="Bluesky" target="_blank" rel="noopener noreferrer">
                 <BlueskyLogo />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-australis-blue" aria-label="External Link">
-                <ExternalLink className="h-5 w-5" />
               </a>
             </div>
           </div>

@@ -56,30 +56,16 @@ const Header = () => {
           <Link to="/pricing" className="text-sm text-gray-600 hover:text-australis-blue transition-colors">
             Pricing
           </Link>
-          {!user ? (
-            <Button
-              size="sm"
-              asChild
-              className="flex items-center gap-2 bg-australis-indigo text-white border border-australis-indigo transition-colors hover:bg-white hover:text-australis-indigo"
-              style={{ boxShadow: "0 1px 4px 0 rgba(60,98,255,.10)" }}
-            >
-              <Link to="/auth">
-                <LogIn size={16} />
-                Login / Signup
-              </Link>
-            </Button>
-          ) : (
-            <>
-              <span className="flex items-center gap-2 text-gray-800 text-sm">
-                <UserIcon size={17} />
-                {user.email}
-              </span>
-              <Button size="sm" variant="outline" className="gap-2" onClick={handleLogout}>
-                <LogOut size={15} />
-                Logout
-              </Button>
-            </>
-          )}
+          <Button
+            size="sm"
+            asChild
+            className="flex items-center gap-2 bg-australis-indigo text-white border border-australis-indigo transition-colors hover:bg-white hover:text-australis-indigo"
+            style={{ boxShadow: "0 1px 4px 0 rgba(60,98,255,.10)" }}
+          >
+            <a href="#expert-panel">
+              Join Waitlist
+            </a>
+          </Button>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -109,30 +95,16 @@ const Header = () => {
             <Link to="/pricing" className="block text-gray-600 hover:text-australis-blue">
               Pricing
             </Link>
-            {!user ? (
-              <Button
-                size="sm"
-                asChild
-                className="w-full flex items-center justify-center gap-2 bg-australis-indigo text-white border border-australis-indigo transition-colors hover:bg-white hover:text-australis-indigo"
-                style={{ boxShadow: "0 1px 4px 0 rgba(60,98,255,.10)" }}
-              >
-                <Link to="/auth">
-                  <LogIn size={16} />
-                  Login / Signup
-                </Link>
-              </Button>
-            ) : (
-              <>
-                <span className="flex items-center gap-2 text-gray-800 text-sm">
-                  <UserIcon size={17} />
-                  {user.email}
-                </span>
-                <Button size="sm" variant="outline" className="w-full gap-2 mt-2" onClick={handleLogout}>
-                  <LogOut size={15} />
-                  Logout
-                </Button>
-              </>
-            )}
+            <Button
+              size="sm"
+              asChild
+              className="w-full flex items-center justify-center gap-2 bg-australis-indigo text-white border border-australis-indigo transition-colors hover:bg-white hover:text-australis-indigo"
+              style={{ boxShadow: "0 1px 4px 0 rgba(60,98,255,.10)" }}
+            >
+              <a href="#expert-panel">
+                Join Waitlist
+              </a>
+            </Button>
           </div>
         </div>
       )}
