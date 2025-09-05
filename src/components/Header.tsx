@@ -33,7 +33,7 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-lg border-b border-gray-200/50">
       <div className="container-custom flex items-center justify-between h-16">
         <div className="flex items-center gap-2">
-          <img alt="AE Logo" className="h-8 w-auto" src="/lovable-uploads/edc919d7-a5bd-4ead-bba9-be9e35909623.png" />
+          <img alt="AE Logo" className="h-8 w-auto" src="/lovable-uploads/6378b536-3d96-420f-a1c5-f35950ef9787.png" />
           <a href="#" className="text-xl font-bold text-black">
             Australis
           </a>
