@@ -64,8 +64,11 @@ const Footer = () => {
           </div>
         </div>
         
-        <div className="border-t border-gray-200 mt-12 pt-6 text-center md:text-left text-gray-500 text-sm">
+        <div className="border-t border-gray-200 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
           <p>&copy; {currentYear} Australis Technologies Ltd. All rights reserved.</p>
+          <div className="mt-4 md:mt-0">
+            <img alt="Australis Logo" className="h-8 w-auto opacity-80" src="/logo-white.png" style={{filter: 'brightness(0) invert(1)'}} />
+          </div>
         </div>
       </div>
     </footer>;
