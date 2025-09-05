@@ -2,13 +2,10 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PlayCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { AuroraBackground } from '@/components/ui/aurora-background';
-import VideoBackgroundToggle from '@/components/VideoBackgroundToggle';
 
 const HeroSection = () => {
   const [showFirstLine, setShowFirstLine] = useState(false);
   const [showSecondLine, setShowSecondLine] = useState(false);
-  const [useVideoBackground, setUseVideoBackground] = useState(false);
   
   useEffect(() => {
     const timer1 = setTimeout(() => {
@@ -28,36 +25,18 @@ const HeroSection = () => {
   };
   
   return (
-    <section className="pt-32 pb-20 relative overflow-hidden min-h-screen">
-      {useVideoBackground ? (
-        <div className="absolute inset-0">
-          <video
-            autoPlay
-            muted
-            loop
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src="https://player.vimeo.com/external/434045526.sd.mp4?s=c27eecc69&profile_id=139" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-black/40"></div>
-        </div>
-      ) : (
-        <AuroraBackground className="absolute inset-0" showRadialGradient={true}>
-          <div></div>
-        </AuroraBackground>
-      )}
-      
-      <VideoBackgroundToggle 
-        onToggle={setUseVideoBackground} 
-        isVideo={useVideoBackground} 
-      />
+    <section className="pt-32 pb-20 bg-gradient-to-br from-australis-offWhite via-white to-australis-lightGray relative overflow-hidden">
+      {/* Refined aurora-style light effects with layered depth */}
+      <div className="absolute -top-20 -right-20 w-96 h-96 bg-gradient-to-br from-australis-aqua/30 to-australis-aqua/10 rounded-full blur-3xl animate-pulse-slow"></div>
+      <div className="absolute -bottom-20 -left-20 w-96 h-96 rounded-full blur-3xl animate-pulse-slow bg-gradient-to-tr from-australis-indigo/25 to-australis-indigo/5"></div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-radial from-white/40 to-transparent rounded-full blur-2xl"></div>
       
       <div className="container-custom relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="animate-fade-in">
             {/* Elevated content card with translucent surface */}
             <div className="backdrop-blur-xl bg-white/20 border border-white/30 rounded-3xl p-8 shadow-2xl shadow-australis-navy/5">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white drop-shadow-lg">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-australis-navy drop-shadow-sm">
                 Find the best renewable energy sites.<br />
                 <span className="bg-gradient-to-r from-australis-indigo to-australis-aqua bg-clip-text text-transparent drop-shadow-none">
                   In minutes, not months.
@@ -65,10 +44,10 @@ const HeroSection = () => {
               </h1>
               
               <div className="space-y-2 mt-6 mb-8">
-                <p className={`transition-opacity duration-500 text-lg md:text-xl text-white/90 ${showFirstLine ? 'opacity-100' : 'opacity-0'}`}>
+                <p className={`transition-opacity duration-500 text-lg md:text-xl text-australis-navy/90 ${showFirstLine ? 'opacity-100' : 'opacity-0'}`}>
                   Focus on what works.
                 </p>
-                <p className={`transition-opacity duration-500 text-lg md:text-xl text-white/90 ${showSecondLine ? 'opacity-100' : 'opacity-0'}`}>
+                <p className={`transition-opacity duration-500 text-lg md:text-xl text-australis-navy/90 ${showSecondLine ? 'opacity-100' : 'opacity-0'}`}>
                   Skip what doesn't.
                 </p>
               </div>
@@ -85,7 +64,7 @@ const HeroSection = () => {
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="border-white/30 text-white hover:bg-white hover:text-australis-indigo backdrop-blur-sm bg-white/10 shadow-lg"
+                  className="border-australis-indigo/30 text-australis-indigo hover:bg-australis-navy hover:text-white backdrop-blur-sm bg-white/40 shadow-lg"
                 >
                   How It Works
                   <PlayCircle className="ml-2 h-4 w-4" />
@@ -95,7 +74,10 @@ const HeroSection = () => {
           </div>
           
           <div className="relative animate-fade-in">
-            {/* Placeholder for future content */}
+            {/* Layered floating accent elements */}
+            <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-australis-aqua/20 to-australis-aqua/5 rounded-full blur-2xl shadow-lg"></div>
+            <div className="absolute -top-6 -left-6 w-32 h-32 bg-gradient-to-tr from-australis-indigo/20 to-australis-indigo/5 rounded-full blur-2xl shadow-lg"></div>
+            <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-white/30 rounded-full blur-lg"></div>
           </div>
         </div>
       </div>
