@@ -1,5 +1,5 @@
-
 import { Button } from '@/components/ui/button';
+import AuroraBackground from '@/components/ui/aurora-background';
 import { ArrowRight, PlayCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -25,63 +25,68 @@ const HeroSection = () => {
   };
   
   return (
-    <section className="pt-32 pb-20 bg-gradient-to-br from-australis-offWhite via-white to-australis-lightGray relative overflow-hidden">
-      {/* Refined aurora-style light effects with layered depth */}
-      <div className="absolute -top-20 -right-20 w-96 h-96 bg-gradient-to-br from-australis-aqua/30 to-australis-aqua/10 rounded-full blur-3xl animate-pulse-slow"></div>
-      <div className="absolute -bottom-20 -left-20 w-96 h-96 rounded-full blur-3xl animate-pulse-slow bg-gradient-to-tr from-australis-indigo/25 to-australis-indigo/5"></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-radial from-white/40 to-transparent rounded-full blur-2xl"></div>
-      
-      <div className="container-custom relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="animate-fade-in">
-            {/* Elevated content card with translucent surface */}
-            <div className="backdrop-blur-xl bg-white/20 border border-white/30 rounded-3xl p-8 shadow-2xl shadow-australis-navy/5">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-australis-navy drop-shadow-sm">
-                Find the best renewable energy sites.<br />
-                <span className="bg-gradient-to-r from-australis-indigo to-australis-aqua bg-clip-text text-transparent drop-shadow-none">
-                  In minutes, not months.
-                </span>
-              </h1>
-              
-              <div className="space-y-2 mt-6 mb-8">
-                <p className={`transition-opacity duration-500 text-lg md:text-xl text-australis-navy/90 ${showFirstLine ? 'opacity-100' : 'opacity-0'}`}>
-                  Focus on what works.
-                </p>
-                <p className={`transition-opacity duration-500 text-lg md:text-xl text-australis-navy/90 ${showSecondLine ? 'opacity-100' : 'opacity-0'}`}>
-                  Skip what doesn't.
-                </p>
+    <AuroraBackground className="min-h-screen">
+      <section className="pt-32 pb-20 relative overflow-hidden">
+        <div className="container-custom relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[60vh]">
+            <div className="animate-fade-in">
+              {/* Elevated content card with glass morphism */}
+              <div className="backdrop-blur-xl bg-aurora-white/10 border border-aurora-white/20 rounded-3xl p-8 shadow-2xl">
+                <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-aurora-white drop-shadow-lg">
+                  Intelligent Energy Decisions<br />
+                  <span className="bg-gradient-to-r from-aurora-cyan to-aurora-green bg-clip-text text-transparent drop-shadow-none">
+                    Transform Your Portfolio
+                  </span>
+                </h1>
+                
+                <div className="space-y-3 mt-6 mb-8">
+                  <p className={`transition-opacity duration-500 text-lg md:text-xl text-aurora-white/90 font-medium ${showFirstLine ? 'opacity-100' : 'opacity-0'}`}>
+                    Fast, accurate simulation tools for energy analysts.
+                  </p>
+                  <p className={`transition-opacity duration-500 text-lg md:text-xl text-aurora-white/80 ${showSecondLine ? 'opacity-100' : 'opacity-0'}`}>
+                    Comprehensive tracking and value-stack visualization.
+                  </p>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-aurora-cyan to-aurora-green hover:from-aurora-cyan/90 hover:to-aurora-green/90 text-aurora-navy font-semibold shadow-lg shadow-aurora-cyan/20 backdrop-blur-sm border border-aurora-white/20 transition-all duration-300" 
+                    onClick={handleEarlyAccess}
+                  >
+                    Join Waitlist
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="border-aurora-white/40 text-aurora-white hover:bg-aurora-white/20 hover:text-aurora-white backdrop-blur-sm bg-aurora-white/10 shadow-lg transition-all duration-300"
+                  >
+                    Discover Features
+                    <PlayCircle className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-australis-indigo to-australis-indigo/90 hover:from-australis-indigo/90 hover:to-australis-indigo/80 shadow-lg shadow-australis-indigo/20 backdrop-blur-sm border border-white/20" 
-                  onClick={handleEarlyAccess}
-                >
-                  Request Early Access
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="border-australis-indigo/30 text-australis-indigo hover:bg-australis-navy hover:text-white backdrop-blur-sm bg-white/40 shadow-lg"
-                >
-                  How It Works
-                  <PlayCircle className="ml-2 h-4 w-4" />
-                </Button>
+            </div>
+            
+            <div className="relative animate-fade-in">
+              {/* Data visualization placeholder */}
+              <div className="backdrop-blur-sm bg-aurora-white/5 border border-aurora-white/20 rounded-2xl p-6 shadow-xl">
+                <div className="space-y-4">
+                  <div className="h-4 bg-gradient-to-r from-aurora-cyan/60 to-aurora-green/60 rounded animate-aurora-pulse"></div>
+                  <div className="h-3 bg-gradient-to-r from-aurora-indigo/40 to-aurora-purple/40 rounded w-3/4 animate-aurora-pulse" style={{ animationDelay: '0.5s' }}></div>
+                  <div className="h-3 bg-gradient-to-r from-aurora-pink/50 to-aurora-purple/50 rounded w-1/2 animate-aurora-pulse" style={{ animationDelay: '1s' }}></div>
+                  <div className="grid grid-cols-2 gap-3 mt-6">
+                    <div className="h-16 bg-gradient-to-br from-aurora-cyan/20 to-aurora-green/20 rounded border border-aurora-white/10"></div>
+                    <div className="h-16 bg-gradient-to-br from-aurora-indigo/20 to-aurora-purple/20 rounded border border-aurora-white/10"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          
-          <div className="relative animate-fade-in">
-            {/* Layered floating accent elements */}
-            <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-australis-aqua/20 to-australis-aqua/5 rounded-full blur-2xl shadow-lg"></div>
-            <div className="absolute -top-6 -left-6 w-32 h-32 bg-gradient-to-tr from-australis-indigo/20 to-australis-indigo/5 rounded-full blur-2xl shadow-lg"></div>
-            <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-white/30 rounded-full blur-lg"></div>
-          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </AuroraBackground>
   );
 };
 
